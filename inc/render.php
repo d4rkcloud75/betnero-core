@@ -14,12 +14,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /* ---------- Pezzi comuni ---------- */
 
-function bnc_logo( $op ) {
+/**
+ * Logo dell'operatore. $eager = true per i loghi in cima alla pagina
+ * (testata della recensione): caricati subito invece che in differita.
+ */
+function bnc_logo( $op, $eager = false ) {
+	$load = $eager ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
 	if ( $op['logo_id'] ) {
-		return wp_get_attachment_image( $op['logo_id'], 'medium', false, array( 'alt' => $op['name'], 'loading' => 'lazy', 'decoding' => 'async' ) );
+		return wp_get_attachment_image( $op['logo_id'], 'medium', false, array_merge( array( 'alt' => $op['name'] ), $load ) );
 	}
 	if ( $op['logo_url'] ) {
-		return '<img src="' . esc_url( $op['logo_url'] ) . '" alt="' . esc_attr( $op['name'] ) . '" loading="lazy" decoding="async">';
+		$attrs = '';
+		foreach ( $load as $k => $v ) {
+			$attrs .= ' ' . $k . '="' . esc_attr( $v ) . '"';
+		}
+		return '<img src="' . esc_url( $op['logo_url'] ) . '" alt="' . esc_attr( $op['name'] ) . '"' . $attrs . '>';
 	}
 	return '<span class="bnt-logo-text">' . esc_html( $op['name'] ) . '</span>';
 }
@@ -239,14 +248,20 @@ function bnc_rich( $html ) {
 	return do_shortcode( wp_kses_post( $html ) );
 }
 
-function bnc_gallery( $ids, $title ) {
+/**
+ * Galleria di immagini. $eager_first = true per la prima galleria della
+ * scheda: su mobile e' in cima alla pagina, quindi la prima immagine si
+ * carica subito (e' spesso l'elemento piu' grande visibile, cioe' l'LCP).
+ */
+function bnc_gallery( $ids, $title, $eager_first = false ) {
 	if ( empty( $ids ) ) {
 		return '';
 	}
 	$h = '<figure class="bns-gallery"><figcaption>' . esc_html( $title ) . '</figcaption><div class="bns-gallery-grid">';
-	foreach ( $ids as $id ) {
-		$full = wp_get_attachment_image_url( (int) $id, 'large' );
-		$h   .= '<a href="' . esc_url( (string) $full ) . '" target="_blank" rel="noopener">' . wp_get_attachment_image( (int) $id, 'medium', false, array( 'loading' => 'lazy' ) ) . '</a>';
+	foreach ( array_values( $ids ) as $i => $id ) {
+		$full  = wp_get_attachment_image_url( (int) $id, 'large' );
+		$load  = ( $eager_first && 0 === $i ) ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
+		$h    .= '<a href="' . esc_url( (string) $full ) . '" target="_blank" rel="noopener">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
 	}
 	return $h . '</div></figure>';
 }
@@ -273,7 +288,7 @@ function bnc_render_scheda( $attributes ) {
 		$titolo = (string) bnc_get( $id, 'titolo' );
 		$titolo = $titolo ? wp_strip_all_tags( $titolo ) : 'Recensione ' . preg_replace( '/\s+(Casino|Casinò|Scommesse|Sport)$/i', '', $op['name'] );
 		$h     .= '<section class="bns-hero">';
-		$h     .= '<div class="bns-logo">' . bnc_logo( $op ) . '</div>';
+		$h     .= '<div class="bns-logo">' . bnc_logo( $op, true ) . '</div>';
 		$h     .= '<div class="bns-main"><div class="bns-title">' . esc_html( $titolo ) . '</div>';
 		$h     .= '<div class="bns-bonus">' . bnc_bonus_html( $op['bonus'] ) . '</div>';
 		$h     .= '<ul class="bns-facts">';
@@ -291,7 +306,7 @@ function bnc_render_scheda( $attributes ) {
 		$h        .= '<div class="bns-cta">' . bnc_go_button( $op, 'Vai al sito', 'bnt-btn bnt-go bns-go' ) . '<div class="bns-adm">18+ | Gioca responsabilmente</div></div>';
 		$h        .= '</section>';
 
-		$gal = bnc_gallery( bnc_get( $id, 'gallery_sito' ), 'Il sito web' ) . bnc_gallery( bnc_get( $id, 'gallery_app' ), 'App' );
+		$gal = bnc_gallery( bnc_get( $id, 'gallery_sito' ), 'Il sito web', true ) . bnc_gallery( bnc_get( $id, 'gallery_app' ), 'App' );
 		$h  .= $gal ? '<div class="bns-galleries">' . $gal . '</div>' : '';
 	}
 

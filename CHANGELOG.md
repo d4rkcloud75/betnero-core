@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.8
+- Recensioni, velocità su mobile: il logo della testata e la prima immagine della galleria "Il sito web" si caricano subito con priorità alta invece che in differita (erano l'elemento principale della pagina, LCP, a 4,5 secondi su mobile).
+
 ## 0.1.7
 - Cache delle pagine: dopo una modifica agli operatori (salvataggio, ordine, cestino) o alle Impostazioni Betnero si svuota anche la cache di Velox Optimizer (oltre a WP Rocket e LiteSpeed Cache, se attivi).
 - Lo svuotamento parte un minuto dopo l'ultima modifica: più salvataggi o trascinamenti di fila ne fanno partire uno solo.
