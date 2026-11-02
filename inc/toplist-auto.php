@@ -35,7 +35,22 @@ function bnc_snippet_active() {
 /**
  * Tipo suggerito per una categoria dal suo slug (usato finche' non la imposti).
  */
-function bnc_guess_type( $term ) {
+function bnc_guess_one( $t ) {
+	$slug = $t->slug . ' ' . sanitize_title( $t->name );
+	if ( preg_match( '/academy/', $slug ) ) {
+		return 'none';
+	}
+	if ( preg_match( '/scommess|pronostic|calcio|sport|bookmaker|quot[ae]|serie-a|champions|tennis|basket|mondial/', $slug ) ) {
+		return 'scommesse';
+	}
+	if ( preg_match( '/casin|slot|poker|roulette|blackjack|gratta|bingo|lotter|provider/', $slug ) ) {
+		return 'casino';
+	}
+	return '';
+}
+
+/** Categoria e categorie madri, dalla piu' specifica. */
+function bnc_category_chain( $term ) {
 	$chain = array( $term );
 	foreach ( get_ancestors( $term->term_id, 'category' ) as $aid ) {
 		$t = get_term( $aid, 'category' );
@@ -43,36 +58,37 @@ function bnc_guess_type( $term ) {
 			$chain[] = $t;
 		}
 	}
-	foreach ( $chain as $t ) {
-		$slug = $t->slug . ' ' . sanitize_title( $t->name );
-		if ( preg_match( '/academy/', $slug ) ) {
-			return 'none';
-		}
-		if ( preg_match( '/scommess|pronostic|calcio|sport|bookmaker|quot[ae]|serie-a|champions|tennis|basket|mondial/', $slug ) ) {
-			return 'scommesse';
-		}
-		if ( preg_match( '/casin|slot|poker|roulette|blackjack|gratta|bingo|lotter|provider/', $slug ) ) {
-			return 'casino';
+	return $chain;
+}
+
+function bnc_guess_type( $term ) {
+	foreach ( bnc_category_chain( $term ) as $t ) {
+		$g = bnc_guess_one( $t );
+		if ( $g ) {
+			return $g;
 		}
 	}
 	return '';
 }
 
 /**
- * Tipo di toplist per una categoria: impostazione salvata, poi suggerimento, poi predefinito.
+ * Tipo di toplist per una categoria. Si parte dalla categoria stessa e si
+ * sale verso le madri: per ognuna vale prima l'impostazione salvata, poi il
+ * suggerimento dal nome. Cosi' "Pronostici" resta scommesse anche se la
+ * madre "Blog" e' impostata su "Nessuna".
  */
 function bnc_category_type( $term ) {
 	$s = bnc_toplist_settings();
-	if ( isset( $s['map'][ $term->term_id ] ) && '' !== $s['map'][ $term->term_id ] ) {
-		return $s['map'][ $term->term_id ];
-	}
-	foreach ( get_ancestors( $term->term_id, 'category' ) as $aid ) {
-		if ( isset( $s['map'][ $aid ] ) && '' !== $s['map'][ $aid ] ) {
-			return $s['map'][ $aid ];
+	foreach ( bnc_category_chain( $term ) as $t ) {
+		if ( isset( $s['map'][ $t->term_id ] ) && '' !== $s['map'][ $t->term_id ] ) {
+			return $s['map'][ $t->term_id ];
+		}
+		$g = bnc_guess_one( $t );
+		if ( $g ) {
+			return $g;
 		}
 	}
-	$g = bnc_guess_type( $term );
-	return $g ? $g : $s['default'];
+	return $s['default'];
 }
 
 /**
@@ -162,7 +178,7 @@ add_action( 'init', function () {
 			$type = is_singular( 'post' ) ? bnc_article_type( get_queried_object_id() ) : $s['default'];
 		}
 		if ( 'none' === $type ) {
-			return ''; // Es. Academy: nessuna toplist, neanche in sidebar.
+			$type = $s['default']; // Come lo snippet 8: in sidebar c'e' sempre una toplist.
 		}
 		return bnc_render_toplist( array( 'type' => $type, 'limit' => (int) $atts['limit'], 'layout' => 'side' ) );
 	} );

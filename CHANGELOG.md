@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+- Toplist: ogni categoria vale prima della sua categoria madre (Pronostici resta scommesse anche con Blog impostato su Nessuna).
+- Sidebar: come lo snippet 8, mostra sempre una toplist (casino se l'articolo non ne ha una nel testo).
+
 ## 0.1.3
 - Barre in basso: "Sportitaliabet Casino" non viene più scambiato per scommesse; tra operatori dello stesso marchio vince quello pubblicato (Eplay24 Scommesse invece di "Test - Eplay").
 - Le barre messe dall'importazione si ricalcolano a ogni importazione; quelle scelte a mano nella pagina non vengono toccate.
