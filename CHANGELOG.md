@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+- Cache delle pagine: dopo una modifica agli operatori (salvataggio, ordine, cestino) o alle Impostazioni Betnero si svuota anche la cache di Velox Optimizer (oltre a WP Rocket e LiteSpeed Cache, se attivi).
+- Lo svuotamento parte un minuto dopo l'ultima modifica: più salvataggi o trascinamenti di fila ne fanno partire uno solo.
+
 ## 0.1.6
 - Recensioni a blocchi: le tabelle nei testi (livelli VIP, metodi di pagamento, strumenti di gioco responsabile) diventano blocchi Tabella invece di blocchi HTML.
 - Tolti gli shortcode [su_accordion] rimasti spaiati nel testo (Gioco Digitale, Sisal).

@@ -190,10 +190,35 @@ function bnc_flush_cache() {
 	wp_cache_delete( 'bnc_ops_scommesse', 'betnero' );
 	delete_transient( 'bnc_ops_casino' );
 	delete_transient( 'bnc_ops_scommesse' );
-	if ( function_exists( 'rocket_clean_domain' ) ) {
-		rocket_clean_domain(); // WP Rocket: le tabelle sono su molte pagine.
-	}
+	bnc_schedule_page_cache_purge();
 }
+
+/**
+ * Le tabelle e le toplist sono su moltissime pagine: dopo una modifica agli
+ * operatori o alle impostazioni si svuota la cache delle pagine di tutto il
+ * sito. Lo svuotamento parte un minuto dopo l'ultima modifica, cosi' piu'
+ * salvataggi o trascinamenti di fila ne fanno partire uno solo (Velox dopo lo
+ * svuotamento ricomincia il precaricamento di tutta la sitemap).
+ */
+function bnc_schedule_page_cache_purge() {
+	wp_clear_scheduled_hook( 'bnc_purge_page_cache' );
+	wp_schedule_single_event( time() + 60, 'bnc_purge_page_cache' );
+}
+
+add_action( 'bnc_purge_page_cache', function () {
+	if ( has_action( 'velox_clean_domain' ) ) {
+		do_action( 'velox_clean_domain' ); // Velox Optimizer.
+	}
+	if ( function_exists( 'rocket_clean_domain' ) ) {
+		rocket_clean_domain(); // WP Rocket.
+	}
+	if ( has_action( 'litespeed_purge_all' ) ) {
+		do_action( 'litespeed_purge_all' ); // LiteSpeed Cache.
+	}
+} );
+
+// Impostazioni Betnero (categorie della toplist, barra in basso).
+add_action( 'update_option_bnc_toplist', 'bnc_schedule_page_cache_purge' );
 add_action( 'save_post_' . BNC_POST_TYPE, 'bnc_flush_cache' );
 add_action( 'trashed_post', function ( $id ) {
 	if ( BNC_POST_TYPE === get_post_type( $id ) ) {
