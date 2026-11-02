@@ -403,7 +403,87 @@ function bnc_popup_attachments() {
 			}
 		}
 	}
+
+	// Condizioni di visualizzazione di JetPopup ("mostra sulla pagina X").
+	foreach ( bnc_popup_conditions() as $popup_id => $pages ) {
+		foreach ( $pages as $page_id ) {
+			if ( ! isset( $out[ $page_id ] ) && 'publish' === get_post_status( $page_id ) ) {
+				$out[ $page_id ] = $popup_id;
+			}
+		}
+	}
 	return $out;
+}
+
+/**
+ * Pagine indicate nelle condizioni dei popup JetPopup pubblicati.
+ *
+ * @return array popup_id => int[] pagine
+ */
+function bnc_popup_conditions() {
+	global $wpdb;
+	$out  = array();
+	$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		"SELECT pm.post_id, pm.meta_value FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+		WHERE p.post_type = 'jet-popup' AND p.post_status = 'publish' AND pm.meta_value LIKE '%subGroupValue%'"
+	);
+	foreach ( $rows as $r ) {
+		$pages = bnc_condition_pages( $r->meta_value );
+		if ( $pages ) {
+			$out[ (int) $r->post_id ] = $pages;
+		}
+	}
+	if ( ! $out ) {
+		// Alcune versioni salvano tutte le condizioni in un'opzione, divise per popup.
+		$opts = $wpdb->get_col( "SELECT option_value FROM {$wpdb->options} WHERE option_name LIKE '%popup%' AND option_value LIKE '%subGroupValue%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		foreach ( $opts as $raw ) {
+			$data = maybe_unserialize( $raw );
+			if ( is_string( $data ) ) {
+				$data = json_decode( $data, true );
+			}
+			foreach ( (array) $data as $popup_id => $conds ) {
+				$pages = bnc_condition_pages( $conds );
+				if ( $pages && is_numeric( $popup_id ) && 'publish' === get_post_status( (int) $popup_id ) ) {
+					$out[ (int) $popup_id ] = $pages;
+				}
+			}
+		}
+	}
+	return $out;
+}
+
+/**
+ * Pagine incluse da un insieme di condizioni JetPopup (serializzato, JSON o array).
+ *
+ * @return int[]
+ */
+function bnc_condition_pages( $raw ) {
+	$data = is_string( $raw ) ? maybe_unserialize( $raw ) : $raw;
+	if ( is_string( $data ) ) {
+		$data = json_decode( $data, true );
+	}
+	$pages = array();
+	$walk  = function ( $node ) use ( &$walk, &$pages ) {
+		if ( ! is_array( $node ) ) {
+			return;
+		}
+		if ( isset( $node['subGroupValue'], $node['subGroup'] ) && 0 === strpos( (string) $node['subGroup'], 'singular-' ) ) {
+			$inc = ! isset( $node['include'] ) || true === $node['include'] || 'true' === $node['include'];
+			if ( $inc ) {
+				foreach ( (array) $node['subGroupValue'] as $v ) {
+					if ( is_numeric( $v ) ) {
+						$pages[] = (int) $v;
+					}
+				}
+			}
+			return;
+		}
+		foreach ( $node as $child ) {
+			$walk( $child );
+		}
+	};
+	$walk( $data );
+	return array_values( array_unique( array_filter( $pages ) ) );
 }
 
 function bnc_operator_for_popup( $popup_id, $ops ) {
