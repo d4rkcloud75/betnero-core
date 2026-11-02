@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.5
+- Recensioni a blocchi: i testi diventano blocchi veri (paragrafi, titoli, elenchi) invece di un blocco "Classico".
+- Gli accordion di Shortcodes Ultimate ([su_accordion], [su_spoiler]) diventano blocchi FAQ Betnero (con i dati strutturati FAQPage) o elenchi se non hanno testo.
+- Punti di forza e Difetti in due colonne affiancate, con spunta verde e croce rossa; ignorato il "Testo finto" rimasto negli spoiler.
+- Recensioni: pulsante "Rifai" per rigenerare il contenuto della pagina a blocchi (titolo, indirizzo e stato restano).
+- API REST betnero/v1 (operatori, campi di un operatore, crea o rifai la pagina a blocchi) per chi ha i permessi di Editor.
+
 ## 0.1.4
 - Toplist: ogni categoria vale prima della sua categoria madre (Pronostici resta scommesse anche con Blog impostato su Nessuna).
 - Sidebar: come lo snippet 8, mostra sempre una toplist (casino se l'articolo non ne ha una nel testo).

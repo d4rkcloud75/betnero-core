@@ -114,7 +114,7 @@ function bnc_tab_reviews( $base ) {
 	if ( isset( $_POST['bnc_draft'] ) && check_admin_referer( 'bnc_draft' ) ) {
 		$new = bnc_create_review_draft( absint( $_POST['bnc_draft'] ) );
 		if ( $new ) {
-			echo '<div class="notice notice-success"><p>Bozza creata: <a href="' . esc_url( get_edit_post_link( $new ) ) . '">modifica</a> &middot; <a href="' . esc_url( get_preview_post_link( $new ) ) . '" target="_blank">anteprima</a></p></div>';
+			echo '<div class="notice notice-success"><p>Pagina a blocchi pronta: <a href="' . esc_url( get_edit_post_link( $new ) ) . '">modifica</a> &middot; <a href="' . esc_url( get_preview_post_link( $new ) ) . '" target="_blank">anteprima</a></p></div>';
 		}
 	}
 	echo '<p>Per ogni operatore con una pagina recensione si può creare una <strong>bozza a blocchi</strong> della recensione: testata con logo, bonus, voto e "Vai al sito" presi dall\'operatore, poi i testi della recensione copiati nella pagina come testo modificabile, poi la tabella. La pagina originale non viene toccata.</p>';
@@ -122,10 +122,12 @@ function bnc_tab_reviews( $base ) {
 	echo '<table class="widefat striped"><thead><tr><th>Operatore</th><th>Pagina recensione</th><th>Bozza a blocchi</th></tr></thead><tbody>';
 	foreach ( $ops as $op ) {
 		$page  = (int) bnc_get( $op->ID, 'review_page' );
-		$draft = $page ? get_posts( array( 'post_type' => 'page', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_bn_bozza_di', 'meta_value' => $page ) ) : array(); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$draft = bnc_review_draft_id( $op->ID );
 		echo '<tr><td>' . esc_html( $op->post_title ) . '</td><td>' . ( $page ? '<a href="' . esc_url( get_permalink( $page ) ) . '" target="_blank">' . esc_html( get_the_title( $page ) ) . '</a>' : '-' ) . '</td><td>';
 		if ( $draft ) {
-			echo '<a href="' . esc_url( get_edit_post_link( $draft[0] ) ) . '">Apri bozza</a>';
+			echo '<form method="post" onsubmit="return confirm(\'Il contenuto della pagina viene rifatto dai campi dell\\\'operatore: le modifiche fatte a mano nella pagina si perdono. Continuare?\');">';
+			wp_nonce_field( 'bnc_draft' );
+			echo '<a href="' . esc_url( get_edit_post_link( $draft ) ) . '">Apri</a> &middot; <a href="' . esc_url( get_permalink( $draft ) ) . '" target="_blank">Vedi</a> &middot; <button class="button-link" name="bnc_draft" value="' . (int) $op->ID . '">Rifai</button></form>';
 		} elseif ( $page ) {
 			echo '<form method="post">';
 			wp_nonce_field( 'bnc_draft' );
@@ -137,7 +139,44 @@ function bnc_tab_reviews( $base ) {
 }
 
 /**
- * Nuova pagina in bozza con la recensione rifatta a blocchi.
+ * Contenuto a blocchi della recensione di un operatore.
+ */
+function bnc_review_draft_content( $op_id ) {
+	$type = bnc_tipo( $op_id );
+	$c    = '<!-- wp:betnero/scheda-operatore {"operatore":' . (int) $op_id . ',"parte":"testata"} /-->' . "\n\n";
+	foreach ( bnc_review_sections() as $key => $title ) {
+		if ( 'procontro' === $key ) {
+			$c .= bnc_block_procontro( bnc_get( $op_id, 'pro' ), bnc_get( $op_id, 'contro' ) );
+			continue;
+		}
+		$body = bnc_html_to_blocks( (string) bnc_get( $op_id, $key ) );
+		if ( '' === trim( $body ) ) {
+			continue;
+		}
+		if ( $title ) {
+			$c .= bnc_block_heading( esc_html( $title ), 2 );
+		}
+		$c .= $body;
+	}
+	$c .= '<!-- wp:betnero/tabella-' . ( 'scommesse' === $type ? 'scommesse' : 'casino' ) . ' {"showFilters":false} /-->' . "\n";
+	return $c;
+}
+
+/**
+ * Bozza gia' creata per la pagina recensione di un operatore (0 se non c'e').
+ */
+function bnc_review_draft_id( $op_id ) {
+	$page = (int) bnc_get( $op_id, 'review_page' );
+	if ( ! $page ) {
+		return 0;
+	}
+	$ids = get_posts( array( 'post_type' => 'page', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_bn_bozza_di', 'meta_value' => $page ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+	return $ids ? (int) $ids[0] : 0;
+}
+
+/**
+ * Crea la pagina a blocchi della recensione, oppure ne rifa' il contenuto se
+ * esiste gia' (titolo, indirizzo e stato restano quelli attuali).
  */
 function bnc_create_review_draft( $op_id ) {
 	if ( BNC_POST_TYPE !== get_post_type( $op_id ) ) {
@@ -145,38 +184,22 @@ function bnc_create_review_draft( $op_id ) {
 	}
 	$page = (int) bnc_get( $op_id, 'review_page' );
 	$orig = $page ? get_post( $page ) : null;
-	$type = bnc_tipo( $op_id );
+	$c    = bnc_review_draft_content( $op_id );
 
-	$c  = '<!-- wp:betnero/scheda-operatore {"operatore":' . (int) $op_id . ',"parte":"testata"} /-->' . "\n\n";
-	foreach ( bnc_review_sections() as $key => $title ) {
-		if ( 'procontro' === $key ) {
-			foreach ( array( 'pro' => 'Punti di forza', 'contro' => 'Difetti' ) as $k => $t ) {
-				$body = (string) bnc_get( $op_id, $k );
-				if ( trim( $body ) ) {
-					$c .= "<!-- wp:heading {\"level\":3} -->\n<h3 class=\"wp-block-heading\">" . esc_html( $t ) . "</h3>\n<!-- /wp:heading -->\n\n" . wp_kses_post( $body ) . "\n\n";
-				}
-			}
-			continue;
-		}
-		$body = (string) bnc_get( $op_id, $key );
-		if ( ! trim( $body ) ) {
-			continue;
-		}
-		if ( $title ) {
-			$c .= "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">" . esc_html( $title ) . "</h2>\n<!-- /wp:heading -->\n\n";
-		}
-		$c .= wp_kses_post( $body ) . "\n\n"; // Diventa un blocco "Classico": il testo resta identico e modificabile.
+	$existing = bnc_review_draft_id( $op_id );
+	if ( $existing ) {
+		$res = wp_update_post( wp_slash( array( 'ID' => $existing, 'post_content' => $c ) ), true );
+		return is_wp_error( $res ) ? 0 : $existing;
 	}
-	$c .= '<!-- wp:betnero/tabella-' . ( 'scommesse' === $type ? 'scommesse' : 'casino' ) . ' {"showFilters":false} /-->' . "\n";
 
-	$new = wp_insert_post( array(
+	$new = wp_insert_post( wp_slash( array(
 		'post_type'    => 'page',
 		'post_status'  => 'draft',
 		'post_title'   => ( $orig ? $orig->post_title : get_the_title( $op_id ) ) . ' (bozza a blocchi)',
 		'post_parent'  => $orig ? $orig->post_parent : 0,
 		'post_content' => $c,
 		'post_author'  => get_current_user_id(),
-	) );
+	) ) );
 	if ( ! $new || is_wp_error( $new ) ) {
 		return 0;
 	}
