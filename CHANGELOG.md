@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6
+- Recensioni a blocchi: le tabelle nei testi (livelli VIP, metodi di pagamento, strumenti di gioco responsabile) diventano blocchi Tabella invece di blocchi HTML.
+- Tolti gli shortcode [su_accordion] rimasti spaiati nel testo (Gioco Digitale, Sisal).
+
 ## 0.1.5
 - Recensioni a blocchi: i testi diventano blocchi veri (paragrafi, titoli, elenchi) invece di un blocco "Classico".
 - Gli accordion di Shortcodes Ultimate ([su_accordion], [su_spoiler]) diventano blocchi FAQ Betnero (con i dati strutturati FAQPage) o elenchi se non hanno testo.

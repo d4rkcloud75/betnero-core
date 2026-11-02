@@ -166,6 +166,8 @@ function bnc_html_to_blocks( $html ) {
 		$acc[] = bnc_su_items( $m[0] );
 		return "\n<!--BNCACC:" . ( count( $acc ) - 1 ) . "-->\n";
 	}, $html );
+	// Shortcode di Shortcodes Ultimate rimasti spaiati (es. un [su_accordion] aperto due volte).
+	$html = preg_replace( '#\[/?su_(?:accordion|spoiler)\b[^\]]*\]#', '', $html );
 	// Toglie i <p> rimasti attorno ai segnaposto.
 	$html = preg_replace( '#<p[^>]*>(?:\s|<br\s*/?>|&nbsp;)*(<!--BNCACC:\d+-->)(?:\s|<br\s*/?>|&nbsp;)*</p>#i', '$1', $html );
 	$html = preg_replace( '#<p[^>]*>(?:\s|<br\s*/?>|&nbsp;)*(<!--BNCACC:\d+-->)#i', '$1<p>', $html );
@@ -252,6 +254,9 @@ function bnc_walk_nodes( $parent, $doc, $acc, &$out, &$inline ) {
 			}
 		} elseif ( 'ul' === $tag || 'ol' === $tag ) {
 			$out .= bnc_list_from_node( $n, $doc );
+		} elseif ( 'table' === $tag ) {
+			$table = bnc_table_from_node( $n, $doc );
+			$out  .= $table ? $table : bnc_block_html( $doc->saveHTML( $n ) );
 		} elseif ( in_array( $tag, array( 'div', 'section', 'article', 'span', 'main', 'header', 'footer', 'center', 'font' ), true ) ) {
 			bnc_walk_nodes( $n, $doc, $acc, $out, $inline );
 			$flush();
@@ -307,6 +312,80 @@ function bnc_list_from_node( $node, $doc ) {
 		return '';
 	}
 	return $h . '</' . $tag . ">\n<!-- /wp:list -->\n\n";
+}
+
+/**
+ * Blocco Tabella da un nodo table. Le righe di thead (o la prima riga se
+ * e' tutta in grassetto) diventano l'intestazione. Restituisce '' se la
+ * tabella ha celle unite o tabelle annidate: in quel caso resta un blocco HTML.
+ */
+function bnc_table_from_node( $table, $doc ) {
+	if ( $table->getElementsByTagName( 'table' )->length ) {
+		return '';
+	}
+	$head = array();
+	$body = array();
+	foreach ( $table->getElementsByTagName( 'tr' ) as $tr ) {
+		$cells = array();
+		foreach ( $tr->childNodes as $cell ) {
+			if ( XML_ELEMENT_NODE !== $cell->nodeType || ! in_array( strtolower( $cell->nodeName ), array( 'td', 'th' ), true ) ) {
+				continue;
+			}
+			if ( $cell->hasAttribute( 'colspan' ) && (int) $cell->getAttribute( 'colspan' ) > 1 ) {
+				return '';
+			}
+			if ( $cell->hasAttribute( 'rowspan' ) && (int) $cell->getAttribute( 'rowspan' ) > 1 ) {
+				return '';
+			}
+			$inner = bnc_inner_html( $cell, $doc );
+			$inner = preg_replace( '#</p>\s*<p[^>]*>#i', '<br>', $inner );
+			$inner = preg_replace( '#</?p[^>]*>#i', '', $inner );
+			$cells[] = bnc_clean_inline( trim( $inner ) );
+		}
+		if ( ! $cells ) {
+			continue;
+		}
+		$in_head = 'thead' === strtolower( $tr->parentNode->nodeName );
+		if ( $in_head ) {
+			$head[] = $cells;
+		} else {
+			$body[] = $cells;
+		}
+	}
+	if ( ! $body && ! $head ) {
+		return '';
+	}
+	// Prima riga tutta in grassetto e nessun thead: diventa l'intestazione.
+	if ( ! $head && count( $body ) > 1 ) {
+		$bold = true;
+		foreach ( $body[0] as $c ) {
+			if ( '' !== $c && ! preg_match( '#^<(strong|b)>.*</\1>$#is', $c ) ) {
+				$bold = false;
+			}
+		}
+		if ( $bold ) {
+			$head[] = array_shift( $body );
+		}
+	}
+	$strip_bold = function ( $c ) {
+		return preg_replace( '#^<(strong|b)>(.*)</\1>$#is', '$2', $c );
+	};
+	$h = '<!-- wp:table -->' . "\n" . '<figure class="wp-block-table"><table class="has-fixed-layout">';
+	if ( $head ) {
+		$h .= '<thead>';
+		foreach ( $head as $row ) {
+			$h .= '<tr><th>' . implode( '</th><th>', array_map( $strip_bold, $row ) ) . '</th></tr>';
+		}
+		$h .= '</thead>';
+	}
+	if ( $body ) {
+		$h .= '<tbody>';
+		foreach ( $body as $row ) {
+			$h .= '<tr><td>' . implode( '</td><td>', $row ) . '</td></tr>';
+		}
+		$h .= '</tbody>';
+	}
+	return $h . "</table></figure>\n<!-- /wp:table -->\n\n";
 }
 
 /* ---------- Punti di forza e difetti ---------- */
