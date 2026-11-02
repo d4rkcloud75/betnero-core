@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2
+- Classifica a schede: lo script del selettore Casinò/Scommesse e dei filtri è escluso dal ritardo degli script di Velox Optimizer, così funziona già al primo clic.
+
 ## 0.2.1
 - Classifica a schede: selettore e filtri non prendono più i bordi rosa del reset del vecchio tema; avatar del parere non più schiacciato su mobile.
 - Numeri del sito: etichette su due righe senza sovrapporsi.

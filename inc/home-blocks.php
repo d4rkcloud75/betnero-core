@@ -258,3 +258,15 @@ function bnc_render_numeri( $a ) {
 add_action( 'save_post', function () {
 	delete_transient( 'bnc_site_numbers' );
 } );
+
+/*
+ * Velox Optimizer ritarda gli script fino alla prima interazione: il primo
+ * clic sul selettore Casino/Scommesse andrebbe perso. Lo script e' piccolo
+ * (meno di 2 KB, caricato in defer), quindi lo escludiamo dal ritardo.
+ */
+add_filter( 'velox_delay_js_extra_exclusions', function ( $list ) {
+	$list   = (array) $list;
+	$list[] = 'classifica.js';
+	$list[] = 'classifica.min.js';
+	return $list;
+} );
