@@ -253,7 +253,7 @@ function bnc_rich( $html ) {
  * scheda: su mobile e' in cima alla pagina, quindi la prima immagine si
  * carica subito (e' spesso l'elemento piu' grande visibile, cioe' l'LCP).
  */
-function bnc_gallery( $ids, $title, $eager_first = false ) {
+function bnc_gallery( $ids, $title, $eager_first = false, $name = '' ) {
 	if ( empty( $ids ) ) {
 		return '';
 	}
@@ -261,7 +261,13 @@ function bnc_gallery( $ids, $title, $eager_first = false ) {
 	foreach ( array_values( $ids ) as $i => $id ) {
 		$full  = wp_get_attachment_image_url( (int) $id, 'large' );
 		$load  = ( $eager_first && 0 === $i ) ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
-		$h    .= '<a href="' . esc_url( (string) $full ) . '" target="_blank" rel="noopener">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
+		// Testo alternativo e etichetta del link: servono a lettori di schermo e agenti AI.
+		$alt   = trim( (string) get_post_meta( (int) $id, '_wp_attachment_image_alt', true ) );
+		$label = ( '' !== $name ? $name . ', ' : '' ) . strtolower( $title ) . ', immagine ' . ( $i + 1 );
+		if ( '' === $alt ) {
+			$load['alt'] = $label;
+		}
+		$h .= '<a href="' . esc_url( (string) $full ) . '" target="_blank" rel="noopener" aria-label="' . esc_attr( 'Apri ' . $label . ' in una nuova scheda' ) . '">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
 	}
 	return $h . '</div></figure>';
 }
@@ -306,7 +312,8 @@ function bnc_render_scheda( $attributes ) {
 		$h        .= '<div class="bns-cta">' . bnc_go_button( $op, 'Vai al sito', 'bnt-btn bnt-go bns-go' ) . '<div class="bns-adm">18+ | Gioca responsabilmente</div></div>';
 		$h        .= '</section>';
 
-		$gal = bnc_gallery( bnc_get( $id, 'gallery_sito' ), 'Il sito web', true ) . bnc_gallery( bnc_get( $id, 'gallery_app' ), 'App' );
+		$gname = preg_replace( '/\s+(Casino|Casinò|Scommesse|Sport)$/iu', '', $op['name'] );
+		$gal   = bnc_gallery( bnc_get( $id, 'gallery_sito' ), 'Il sito web', true, $gname ) . bnc_gallery( bnc_get( $id, 'gallery_app' ), 'App', false, $gname );
 		$h  .= $gal ? '<div class="bns-galleries">' . $gal . '</div>' : '';
 	}
 
