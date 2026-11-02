@@ -358,18 +358,27 @@ function bnc_link_after_migration() {
 	}
 
 	// Popup "Bottom Bar" agganciati alle pagine => barra in basso.
+	$recheck = ! get_option( 'bnc_bar_auto_v1' ); // Una volta: ricalcola anche le barre messe dalla 0.1.2.
 	foreach ( bnc_popup_attachments() as $page_id => $popup_id ) {
-		if ( get_post_meta( $page_id, '_bn_barra', true ) ) {
+		// Non tocca le barre scelte a mano; quelle messe dall'importazione si ricalcolano.
+		if ( get_post_meta( $page_id, '_bn_barra', true ) && ! $recheck && ! get_post_meta( $page_id, '_bn_barra_auto', true ) ) {
 			continue;
 		}
 		$op = bnc_operator_for_popup( $popup_id, $ops );
 		if ( $op ) {
 			update_post_meta( $page_id, '_bn_barra', (string) $op );
-			$out[] = array( 'tipo' => 'barra', 'nome' => get_the_title( $page_id ), 'azione' => 'barra in basso: ' . get_the_title( $op ) . ' (da popup ' . get_the_title( $popup_id ) . ')' );
+			update_post_meta( $page_id, '_bn_barra_auto', '1' );
+			$out[] = array(
+				'tipo'   => 'barra',
+				'nome'   => get_the_title( $page_id ),
+				'azione' => 'barra in basso: ' . get_the_title( $op ) . ' (da popup ' . get_the_title( $popup_id ) . ')',
+				'note'   => 'publish' === get_post_status( $op ) ? array() : array( 'operatore in bozza: la barra non si vede finché non lo pubblichi' ),
+			);
 		} else {
 			$out[] = array( 'tipo' => 'barra', 'nome' => get_the_title( $page_id ), 'azione' => 'popup ' . get_the_title( $popup_id ) . ' senza operatore corrispondente: da impostare a mano', 'note' => array( 'da controllare' ) );
 		}
 	}
+	update_option( 'bnc_bar_auto_v1', '1', false );
 	return $out;
 }
 
@@ -489,17 +498,21 @@ function bnc_condition_pages( $raw ) {
 function bnc_operator_for_popup( $popup_id, $ops ) {
 	$title = get_the_title( $popup_id );
 	$brand = bnc_brand( $title );
-	$want  = preg_match( '/scommesse|sport/i', $title ) ? 'scommesse' : 'casino';
+	// Parole intere: "Sportitaliabet Casino" e' un casino, non scommesse.
+	$want  = preg_match( '/\b(scommesse|sport)\b/i', $title ) ? 'scommesse' : 'casino';
 	$best  = 0;
+	$score = -1;
 	foreach ( $ops as $op ) {
 		$b = bnc_brand( $op->post_title );
 		if ( ! $b || ! $brand || ( 0 !== strpos( $b, $brand ) && 0 !== strpos( $brand, $b ) ) ) {
 			continue;
 		}
-		if ( bnc_tipo( $op->ID ) === $want ) {
-			return $op->ID;
+		// Prima il tipo giusto, poi i pubblicati, poi quelli in tabella.
+		$sc = ( bnc_tipo( $op->ID ) === $want ? 4 : 0 ) + ( 'publish' === $op->post_status ? 2 : 0 ) + ( '1' === (string) bnc_get( $op->ID, 'in_tabella' ) ? 1 : 0 );
+		if ( $sc > $score ) {
+			$score = $sc;
+			$best  = $op->ID;
 		}
-		$best = $best ? $best : $op->ID;
 	}
 	return $best;
 }

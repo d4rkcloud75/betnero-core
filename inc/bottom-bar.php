@@ -77,6 +77,7 @@ add_action( 'save_post', function ( $post_id ) {
 	} else {
 		delete_post_meta( $post_id, '_bn_operatore' );
 	}
+	delete_post_meta( $post_id, '_bn_barra_auto' ); // Scelta a mano: l'importazione non la cambia piu'.
 	$bar = isset( $_POST['bnc_barra'] ) ? sanitize_text_field( wp_unslash( $_POST['bnc_barra'] ) ) : '';
 	if ( 'page' === $bar || absint( $bar ) ) {
 		update_post_meta( $post_id, '_bn_barra', 'page' === $bar ? 'page' : (string) absint( $bar ) );

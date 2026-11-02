@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+- Barre in basso: "Sportitaliabet Casino" non viene più scambiato per scommesse; tra operatori dello stesso marchio vince quello pubblicato (Eplay24 Scommesse invece di "Test - Eplay").
+- Le barre messe dall'importazione si ricalcolano a ogni importazione; quelle scelte a mano nella pagina non vengono toccate.
+- Resoconto: avviso se la barra punta a un operatore in bozza.
+
 ## 0.1.2
 - Importazione: legge le condizioni di visualizzazione di JetPopup ("mostra sulla pagina X"), che è il modo in cui sono agganciate le barre "Bottom Bar".
 
