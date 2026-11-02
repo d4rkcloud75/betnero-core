@@ -1,0 +1,37 @@
+# Crea il tag vX.Y.Z quando su main cambia la versione di betnero-core.php.
+# Git Updater scarica il pacchetto dal tag piu' recente.
+name: Tag automatico
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Crea il tag se manca
+        run: |
+          VERSION=$(grep -m1 -E '^\s*\*\s*Version:' betnero-core.php | sed -E 's/.*Version:\s*//' | tr -d '[:space:]')
+          CONST=$(grep -m1 "BETNERO_CORE_VERSION'," betnero-core.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          echo "Versione header: $VERSION, costante: $CONST"
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Versione non valida: $VERSION"; exit 1
+          fi
+          if [ "$VERSION" != "$CONST" ]; then
+            echo "::error::Header ($VERSION) e BETNERO_CORE_VERSION ($CONST) non coincidono"; exit 1
+          fi
+          TAG="v$VERSION"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Il tag $TAG esiste gia'"; exit 0
+          fi
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
+          echo "Creato il tag $TAG"
