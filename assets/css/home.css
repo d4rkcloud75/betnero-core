@@ -106,3 +106,16 @@
 @media (max-width: 760px) {
 	.bnn { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
 }
+
+/* Il reset del vecchio tema (Hello Elementor) colora bordi e sfondi dei pulsanti: qui si annulla */
+.bnk button.bnk-tab, .bnk button.bnk-chip { text-transform: none; letter-spacing: normal; font-family: inherit; box-shadow: none; }
+.bnk button.bnk-tab { border: 0; background: transparent; color: var(--bnk-muted); font-size: 14.5px; padding: 11px 18px; }
+.bnk button.bnk-tab:hover, .bnk button.bnk-tab:focus { background: rgba(255,255,255,.6); color: var(--bnk-ink); }
+.bnk button.bnk-tab[aria-selected="true"] { background: #fff; color: var(--bnk-ink); box-shadow: 0 1px 3px rgba(10,18,34,.12); }
+.bnk button.bnk-chip { border: 1px solid var(--bnk-line); background: #fff; color: var(--bnk-text); font-size: 13.5px; padding: 8px 14px; }
+.bnk button.bnk-chip:hover, .bnk button.bnk-chip:focus { background: var(--bnk-bg); color: var(--bnk-ink); border-color: #CBD3DF; }
+.bnk button.bnk-chip[aria-pressed="true"] { background: var(--bnk-ink); color: #fff; border-color: var(--bnk-ink); }
+.bnk-parere a, .bnk-parere img { flex: none; }
+.bnk-parere img { min-width: 28px; }
+.bnn { column-gap: 16px; }
+.bnn-item span { display: block; line-height: 1.35; margin-top: 6px; }
