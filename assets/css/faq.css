@@ -1,0 +1,8 @@
+/* Betnero Core: stile "FAQ Betnero" del blocco Dettagli (accordion) */
+.wp-block-details.is-style-bn-faq { border: 1px solid #E6E9EF; border-radius: 10px; background: #fff; padding: 0; margin: 0 0 10px; }
+.wp-block-details.is-style-bn-faq > summary { list-style: none; cursor: pointer; font-weight: 700; color: #1D2433; padding: 14px 44px 14px 16px; position: relative; }
+.wp-block-details.is-style-bn-faq > summary::-webkit-details-marker { display: none; }
+.wp-block-details.is-style-bn-faq > summary::after { content: "+"; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #036AA9; }
+.wp-block-details.is-style-bn-faq[open] > summary::after { content: "\2212"; }
+.wp-block-details.is-style-bn-faq > :not(summary) { padding: 0 16px; }
+.wp-block-details.is-style-bn-faq[open] { padding-bottom: 6px; }

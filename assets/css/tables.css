@@ -1,0 +1,116 @@
+/* Betnero: tabelle casino, scommesse e toplist */
+
+.bnt-table { --bnt-blue: #036AA9; --bnt-orange: #EEA700; --bnt-ink: #1D2433; --bnt-muted: #5D6676; --bnt-line: #E6E9EF; --bnt-bg: #F4F6F9;
+	border: 1px solid var(--bnt-line); border-radius: 12px; background: var(--bnt-bg); padding: 14px; margin: 18px 0 24px; font-family: inherit; }
+
+/* Intestazione toplist */
+.bnt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 4px 10px; }
+.bnt-title { font-weight: 800; font-size: 17px; color: var(--bnt-ink); }
+.bnt-all { font-size: 13px; font-weight: 600; color: var(--bnt-blue) !important; text-decoration: none !important; white-space: nowrap; }
+
+/* Filtri */
+.bnt-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0 0 14px; align-items: end; }
+.bnt-filter { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--bnt-ink); }
+.bnt-filter select { appearance: auto; width: 100%; padding: 9px 10px; border: 1px solid var(--bnt-line); border-radius: 8px; background: #fff; font: inherit; font-weight: 400; color: var(--bnt-ink); }
+.bnt-reset { justify-self: start; border: 0; background: none; color: var(--bnt-blue); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 9px 0; }
+.bnt-reset[hidden] { display: none; }
+
+/* Colonne e righe */
+.bnt-cols, .bnt-row { display: grid; gap: 8px; align-items: center; }
+.bnt-casino .bnt-cols, .bnt-casino .bnt-row { grid-template-columns: 150px 1fr 80px 80px 100px 130px; }
+.bnt-scommesse .bnt-cols, .bnt-scommesse .bnt-row { grid-template-columns: 150px 1fr 100px 100px 130px; }
+.bnt-cols { font-size: 11px; color: var(--bnt-muted); text-align: center; padding: 0 12px 6px; }
+.bnt-cols span:first-child { text-align: left; }
+.bnt-row { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0, 0, 0, .06); }
+.bnt-row[hidden] { display: none; }
+
+.bnt-logo { position: relative; display: flex; align-items: center; justify-content: center; min-height: 48px; }
+.bnt-logo img { max-width: 128px !important; max-height: 48px !important; width: auto !important; height: auto !important; object-fit: contain; margin: 0 !important; }
+.bnt-logo-text { font-weight: 800; color: var(--bnt-ink); }
+.bnt-rank { position: absolute; top: -8px; left: -6px; background: var(--bnt-blue); color: #fff; font-size: 11px; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+.bnt-bonus { text-align: center; line-height: 1.25; }
+.bnt-small { font-size: 12px; color: var(--bnt-muted); }
+.bnt-big { font-size: 20px; font-weight: 800; color: var(--bnt-ink); margin: 2px 0; }
+.bnt-yn { text-align: center; font-size: 14px; color: var(--bnt-ink); }
+.bnt-lbl { display: none; }
+.bnt-rate { text-align: center; }
+
+.bnt-stars { position: relative; display: inline-block; font-size: 16px; line-height: 1; letter-spacing: 1px; }
+.bnt-stars-bg { color: #DFE3EA; }
+.bnt-stars-fg { position: absolute; left: 0; top: 0; overflow: hidden; white-space: nowrap; color: var(--bnt-orange); }
+
+.bnt-btns { display: flex; flex-direction: column; gap: 6px; }
+.bnt-btn { display: block; text-align: center; font-weight: 700; font-size: 13px; line-height: 1.2; padding: 9px 10px; border-radius: 999px; text-decoration: none !important; color: #fff !important; }
+.bnt-go { background: var(--bnt-blue); }
+.bnt-rev { background: var(--bnt-orange); }
+.bnt-btn:hover { opacity: .9; }
+
+/* Parere dell'esperto: riga intera sotto l'operatore */
+.bnt-parere { grid-column: 1 / -1; border-top: 1px solid var(--bnt-line); padding-top: 8px; font-size: 12px; color: var(--bnt-muted); }
+.bnt-parere .parere { float: none; width: auto; border: 0; padding: 0; display: flex; align-items: center; gap: 8px; }
+.bnt-parere .parere a { flex: 0 0 auto; }
+.bnt-parere img { width: 28px !important; height: 28px !important; border-radius: 50% !important; object-fit: cover; margin: 0 !important; float: none !important; }
+
+.bnt-empty { text-align: center; color: var(--bnt-muted); padding: 16px; }
+.bnt-empty[hidden] { display: none; }
+.bnt-hint { display: none; }
+.bnt-adm { font-size: 10px; color: var(--bnt-muted); text-align: center; margin-top: 6px; }
+
+/* Mobile */
+@media (max-width: 767px) {
+	.bnt-cols { display: none; }
+	.bnt-filters { grid-template-columns: 1fr 1fr; gap: 8px; }
+	.bnt-filter { font-size: 11px; }
+	.bnt-filter select { padding: 7px 8px; font-size: 13px; }
+	.bnt-casino .bnt-row, .bnt-scommesse .bnt-row {
+		grid-template-columns: 1fr 1fr; grid-template-areas: "logo logo" "bonus bonus" "yn1 yn2" "rate rate" "btns btns" "parere parere";
+		gap: 8px; padding: 14px;
+	}
+	.bnt-logo { grid-area: logo; }
+	.bnt-bonus { grid-area: bonus; }
+	.bnt-row .bnt-yn:nth-of-type(3) { grid-area: yn1; }
+	.bnt-row .bnt-yn:nth-of-type(4) { grid-area: yn2; }
+	.bnt-scommesse .bnt-row { grid-template-areas: "logo logo" "bonus bonus" "yn1 yn1" "rate rate" "btns btns" "parere parere"; }
+	.bnt-rate { grid-area: rate; }
+	.bnt-btns { grid-area: btns; flex-direction: row; }
+	.bnt-btns .bnt-btn { flex: 1; }
+	.bnt-parere { grid-area: parere; }
+	.bnt-yn { font-size: 12px; color: var(--bnt-muted); }
+	.bnt-lbl { display: inline; }
+
+	/* Toplist: card scorrevoli in orizzontale */
+	.bnt-toplist { padding: 12px 0 12px 12px; }
+	.bnt-toplist .bnt-head { margin-right: 12px; }
+	.bnt-scroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding: 8px 12px 10px 4px; }
+	.bnt-toplist .bnt-row { flex: 0 0 78%; display: flex; flex-direction: column; align-items: stretch; gap: 8px; scroll-snap-align: start; margin: 0; }
+	.bnt-toplist .bnt-yn { display: inline-block; }
+	.bnt-toplist .bnt-hint { display: block; font-size: 11px; color: var(--bnt-muted); text-align: center; padding-right: 12px; }
+	.bnt-toplist .bnt-adm { padding-right: 12px; }
+}
+
+/* Banner di altri plugin (Ad Inserter) dentro le toplist: nascosti */
+.bnt-toplist .code-block { display: none !important; }
+
+/* Toplist in sidebar: card una sotto l'altra */
+.bnt-side { padding: 12px; }
+.bnt-side .bnt-head { flex-direction: column; align-items: flex-start; gap: 2px; margin: 0 0 10px; }
+.bnt-side .bnt-title { font-size: 16px; }
+.bnt-side .bnt-row,
+.bnt-casino.bnt-side .bnt-row,
+.bnt-scommesse.bnt-side .bnt-row {
+	display: grid; grid-template-columns: 1fr 1fr; grid-template-areas: "logo logo" "bonus bonus" "yn1 yn2" "rate rate" "btns btns";
+	gap: 6px; padding: 12px;
+}
+.bnt-scommesse.bnt-side .bnt-row { grid-template-areas: "logo logo" "bonus bonus" "yn1 yn1" "rate rate" "btns btns"; }
+.bnt-side .bnt-logo { grid-area: logo; }
+.bnt-side .bnt-bonus { grid-area: bonus; }
+.bnt-side .bnt-row .bnt-yn:nth-of-type(3) { grid-area: yn1; }
+.bnt-side .bnt-row .bnt-yn:nth-of-type(4) { grid-area: yn2; }
+.bnt-side .bnt-rate { grid-area: rate; }
+.bnt-side .bnt-btns { grid-area: btns; flex-direction: row; }
+.bnt-side .bnt-btns .bnt-btn { flex: 1; }
+.bnt-side .bnt-yn { font-size: 12px; color: var(--bnt-muted); }
+.bnt-side .bnt-lbl { display: inline; }
+.bnt-side .bnt-big { font-size: 17px; }
+.bnt-side .bnt-row, .bnt-toplist.bnt-side .bnt-row { margin: 0 0 8px !important; }

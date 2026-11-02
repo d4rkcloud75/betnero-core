@@ -1,0 +1,34 @@
+/* Betnero Core: scheda operatore (pagine recensione) */
+.bns-scheda { --bns-blue: #036AA9; --bns-orange: #EEA700; --bns-ink: #1D2433; --bns-muted: #5D6676; --bns-line: #E6E9EF; --bns-bg: #F4F6F9; margin: 0 0 32px; }
+.bns-hero { display: grid; grid-template-columns: 180px 1fr 200px; gap: 24px; align-items: center; background: var(--bns-bg); border: 1px solid var(--bns-line); border-radius: 14px; padding: 22px; }
+.bns-logo { background: #fff; border-radius: 12px; min-height: 110px; display: flex; align-items: center; justify-content: center; padding: 12px; }
+.bns-logo img { max-width: 150px !important; max-height: 80px !important; width: auto !important; height: auto !important; object-fit: contain; margin: 0 !important; }
+.bns-title { font-size: 22px; font-weight: 800; color: var(--bns-ink); line-height: 1.25; margin: 0 0 6px; }
+.bns-bonus { margin: 0 0 12px; }
+.bns-bonus .bnt-big { font-size: 22px; }
+.bns-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--bns-muted); }
+.bns-facts li { display: flex; gap: 6px; align-items: center; }
+.bns-facts b { color: var(--bns-ink); }
+.bns-riepilogo { margin-top: 12px; font-size: 14px; color: var(--bns-ink); }
+.bns-riepilogo p { margin: 0 0 6px; }
+.bns-cta { display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.bns-go { background: #036AA9 !important; color: #fff !important; font-size: 16px !important; padding: 14px 16px !important; }
+.bns-adm { font-size: 11px; color: var(--bns-muted); }
+.bns-galleries { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.bns-gallery { margin: 0; min-width: 0; }
+.bns-gallery figcaption { font-weight: 700; color: var(--bns-ink); margin: 0 0 8px; }
+.bns-gallery-grid { display: flex; gap: 8px; overflow-x: auto; }
+.bns-gallery-grid img { height: 180px !important; width: auto !important; border-radius: 8px; border: 1px solid var(--bns-line); }
+.bns-section { margin: 28px 0 0; }
+.bns-procontro { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0 0; }
+.bns-pro, .bns-contro { border-radius: 12px; padding: 16px 18px; border: 1px solid var(--bns-line); }
+.bns-pro { background: #F1F8EC; }
+.bns-contro { background: #FDF3F2; }
+.bns-pro h3, .bns-contro h3 { margin: 0 0 8px; font-size: 17px; }
+.bns-pro ul, .bns-contro ul { margin: 0; padding-left: 18px; }
+.bns-empty { padding: 12px; border: 1px dashed #c3c4c7; color: #646970; }
+@media (max-width: 781px) {
+	.bns-hero { grid-template-columns: 1fr; text-align: center; padding: 16px; gap: 14px; }
+	.bns-facts { justify-content: center; }
+	.bns-galleries, .bns-procontro { grid-template-columns: 1fr; }
+}

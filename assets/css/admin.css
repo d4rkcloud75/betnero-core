@@ -1,0 +1,15 @@
+/* Betnero Core: admin */
+.column-bn_order { width: 90px; }
+.column-bn_logo { width: 110px; }
+.column-bn_tipo, .column-bn_rating, .column-bn_tabella { width: 90px; }
+.bnc-handle { cursor: move; color: #8c8f94; }
+#the-list.bnc-saving { opacity: .6; }
+#the-list .ui-sortable-helper { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+.bnc-fields th { width: 220px; }
+.bnc-fields .wp-editor-wrap { max-width: 900px; }
+.bnc-report td, .bnc-report th { vertical-align: top; }
+.bnc-ok { color: #1a7f37; font-weight: 600; }
+.bnc-warn { color: #b32d2e; font-weight: 600; }
+.bnc-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.bnc-card { background: #fff; border: 1px solid #dcdcde; border-radius: 6px; padding: 12px 16px; }
+.bnc-card strong { display: block; font-size: 24px; margin-top: 4px; }
