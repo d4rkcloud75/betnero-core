@@ -126,4 +126,62 @@
 		},
 		save: function () { return null; }
 	} );
+	wp.blocks.registerBlockType( 'betnero/classifica', {
+		title: 'Classifica a schede',
+		icon: 'awards',
+		category: 'betnero',
+		description: 'Casino e bookmaker in schede, con selettore Casino/Scommesse e filtri.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Testi' },
+						el( TextControl, { label: 'Etichetta sopra il titolo', value: a.eyebrow, onChange: set( props, 'eyebrow' ) } ),
+						el( TextControl, { label: 'Titolo casino', value: a.titleCasino, onChange: set( props, 'titleCasino' ) } ),
+						el( TextControl, { label: 'Titolo scommesse', value: a.titleSport, onChange: set( props, 'titleSport' ) } ),
+						el( TextControl, { label: 'Descrizione', value: a.description, onChange: set( props, 'description' ) } )
+					),
+					el( PanelBody, { title: 'Impostazioni' },
+						el( ToggleControl, { label: 'Mostra i filtri', checked: a.showFilters, onChange: set( props, 'showFilters' ) } ),
+						el( RangeControl, { label: 'Numero di casino (0 = tutti)', value: a.limitCasino, min: 0, max: 30, onChange: function ( v ) { props.setAttributes( { limitCasino: v || 0 } ); } } ),
+						el( RangeControl, { label: 'Numero di bookmaker (0 = tutti)', value: a.limitSport, min: 0, max: 30, onChange: function ( v ) { props.setAttributes( { limitSport: v || 0 } ); } } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/classifica', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
+
+	wp.blocks.registerBlockType( 'betnero/podio', {
+		title: 'Podio operatori',
+		icon: 'star-filled',
+		category: 'betnero',
+		description: 'I primi operatori in schede compatte, per la hero.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( SelectControl, { label: 'Tipo', value: a.type, options: [ { label: 'Casino', value: 'casino' }, { label: 'Scommesse', value: 'scommesse' } ], onChange: set( props, 'type' ) } ),
+						el( RangeControl, { label: 'Quanti operatori', value: a.limit, min: 1, max: 5, onChange: function ( v ) { props.setAttributes( { limit: v || 3 } ); } } ),
+						el( TextControl, { label: 'Titolo (vuoto = "Podio casinò di" + mese)', value: a.title, onChange: set( props, 'title' ) } )
+					)
+				),
+				el( 'div', { key: 'p', style: { background: '#3C95D1', padding: '12px', borderRadius: '12px' } }, preview( 'betnero/podio', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
+
+	wp.blocks.registerBlockType( 'betnero/numeri', {
+		title: 'Numeri del sito',
+		icon: 'chart-bar',
+		category: 'betnero',
+		description: 'Operatori, recensioni, pronostici e guide: contati in automatico.',
+		edit: function ( props ) {
+			return el( 'div', { style: { background: '#3C95D1', padding: '12px', borderRadius: '12px' } }, preview( 'betnero/numeri', props.attributes ) );
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

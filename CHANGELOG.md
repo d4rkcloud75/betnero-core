@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+- Nuovo blocco "Classifica a schede" (betnero/classifica): casino e bookmaker in schede con voto, badge (senza deposito, SPID, bonus multipla), parere dell'esperto, selettore Casinò/Scommesse e filtri rapidi.
+- Nuovo blocco "Podio operatori" (betnero/podio): i primi 3 in schede compatte, pensato per la hero blu della home.
+- Nuovo blocco "Numeri del sito" (betnero/numeri): operatori, recensioni, pronostici e guide dell'Academy contati in automatico (aggiornati al massimo ogni ora).
+
 ## 0.1.9
 - Recensioni, accessibilità: le immagini delle gallerie "Il sito web" e "App" hanno un testo alternativo (se manca nella libreria media) e i link un'etichetta ("Apri Leovegas, il sito web, immagine 1 in una nuova scheda"). Corregge il controllo "albero di accessibilità" di Lighthouse (Agentic browsing).
 
