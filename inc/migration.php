@@ -129,10 +129,12 @@ function bnc_page_from_url( $url ) {
 	if ( ! $id ) {
 		$slug = trim( preg_replace( '/\.html?$/i', '', $path ), '/' );
 		$page = $slug ? get_page_by_path( $slug, OBJECT, array( 'page', 'post' ) ) : null;
-		if ( ! $page && false !== strpos( $slug, '/' ) ) {
-			$page = get_page_by_path( basename( $slug ), OBJECT, array( 'page', 'post' ) );
-		}
 		$id = $page ? $page->ID : 0;
+		if ( ! $id ) {
+			// Stesso slug in un'altra posizione (es. pagina spostata sotto /recensioni/).
+			$found = get_posts( array( 'post_type' => array( 'page', 'post' ), 'post_status' => 'publish', 'name' => basename( $slug ), 'numberposts' => 1, 'fields' => 'ids' ) );
+			$id    = $found ? (int) $found[0] : 0;
+		}
 	}
 	return (int) $id;
 }
@@ -310,23 +312,40 @@ function bnc_link_after_migration() {
 	$out = array();
 	$ops = get_posts( array( 'post_type' => BNC_POST_TYPE, 'post_status' => 'any', 'numberposts' => -1 ) );
 
-	// Stesso marchio, tipo diverso => operatori collegati.
+	// Stesso marchio, tipo diverso => operatori collegati (prima i pubblicati in tabella).
 	$by_brand = array();
 	foreach ( $ops as $op ) {
-		$by_brand[ bnc_brand( $op->post_title ) ][ bnc_tipo( $op->ID ) ][] = $op->ID;
+		$by_brand[ bnc_brand( $op->post_title ) ][ bnc_tipo( $op->ID ) ][] = $op;
 	}
+	$best = function ( $list ) {
+		usort( $list, function ( $a, $b ) {
+			$sa = ( 'publish' === $a->post_status ? 2 : 0 ) + ( '1' === (string) bnc_get( $a->ID, 'in_tabella' ) ? 1 : 0 );
+			$sb = ( 'publish' === $b->post_status ? 2 : 0 ) + ( '1' === (string) bnc_get( $b->ID, 'in_tabella' ) ? 1 : 0 );
+			return $sb - $sa;
+		} );
+		return $list[0]->ID;
+	};
+	$is_weak = function ( $id ) {
+		return ! $id || 'publish' !== get_post_status( $id );
+	};
 	foreach ( $by_brand as $brand => $types ) {
 		if ( ! $brand || empty( $types['casino'] ) || empty( $types['scommesse'] ) ) {
 			continue;
 		}
-		$c = $types['casino'][0];
-		$s = $types['scommesse'][0];
-		if ( bnc_get( $c, 'collegato' ) || bnc_get( $s, 'collegato' ) ) {
-			continue;
+		$c = $best( $types['casino'] );
+		$s = $best( $types['scommesse'] );
+		$done = false;
+		foreach ( array( array( $c, $s ), array( $s, $c ) ) as $pair ) {
+			$cur = (int) bnc_get( $pair[0], 'collegato' );
+			// Si imposta se vuoto o se punta a un operatore non pubblicato (es. "Test - Eplay").
+			if ( $cur !== $pair[1] && $is_weak( $cur ) && ! $is_weak( $pair[1] ) ) {
+				bnc_set( $pair[0], 'collegato', $pair[1] );
+				$done = true;
+			}
 		}
-		bnc_set( $c, 'collegato', $s );
-		bnc_set( $s, 'collegato', $c );
-		$out[] = array( 'tipo' => 'link', 'nome' => get_the_title( $c ) . ' + ' . get_the_title( $s ), 'azione' => 'operatori collegati' );
+		if ( $done ) {
+			$out[] = array( 'tipo' => 'link', 'nome' => get_the_title( $c ) . ' + ' . get_the_title( $s ), 'azione' => 'operatori collegati' );
+		}
 	}
 
 	// Pagina recensione => operatore della pagina.
@@ -361,14 +380,26 @@ function bnc_link_after_migration() {
  */
 function bnc_popup_attachments() {
 	global $wpdb;
-	$rows = $wpdb->get_results( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_page_settings' AND meta_value LIKE '%jet_attached_popup%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$out  = array();
+	$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		"SELECT pm.post_id, pm.meta_value FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+		WHERE pm.meta_key IN ('_elementor_page_settings','_elementor_data') AND pm.meta_value LIKE '%jet_attached_popup%'
+		AND p.post_status = 'publish' AND p.post_type IN ('page','post')"
+	);
+	$out = array();
 	foreach ( $rows as $r ) {
-		$s = maybe_unserialize( $r->meta_value );
-		if ( is_array( $s ) && ! empty( $s['jet_attached_popup'] ) ) {
-			$pid = is_array( $s['jet_attached_popup'] ) ? (int) reset( $s['jet_attached_popup'] ) : (int) $s['jet_attached_popup'];
-			if ( $pid && 'publish' === get_post_status( (int) $r->post_id ) ) {
+		// Popup agganciato alle impostazioni pagina (serializzate) o a un elemento (JSON).
+		$ids = array();
+		$set = maybe_unserialize( $r->meta_value );
+		if ( is_array( $set ) && ! empty( $set['jet_attached_popup'] ) ) {
+			$ids[] = is_array( $set['jet_attached_popup'] ) ? reset( $set['jet_attached_popup'] ) : $set['jet_attached_popup'];
+		} elseif ( preg_match_all( '/"jet_attached_popup":\[?"?(\d+)/', $r->meta_value, $m ) ) {
+			$ids = $m[1];
+		}
+		foreach ( $ids as $pid ) {
+			$pid = (int) $pid;
+			if ( $pid && 'jet-popup' === get_post_type( $pid ) && 'publish' === get_post_status( $pid ) ) {
 				$out[ (int) $r->post_id ] = $pid;
+				break;
 			}
 		}
 	}
