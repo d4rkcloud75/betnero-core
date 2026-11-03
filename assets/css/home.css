@@ -133,3 +133,14 @@
 	.bnk-ind, .bnk .bnk-has-ind button.bnk-tab, .bnk-op, .bnk button.bnk-chip { transition: none; }
 	.bnk-op:hover { transform: none; }
 }
+
+/* 0.2.4: menu a tendina dei filtri (Tipologia bonus, Pagamenti) nello stile dei pulsanti */
+.bnk-sel { position: relative; display: inline-flex; }
+.bnk-sel select { -webkit-appearance: none; appearance: none; border: 1px solid var(--bnk-line); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B6578' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center / 12px; border-radius: 999px; padding: 8px 34px 8px 14px; font: inherit; font-size: 13.5px; font-weight: 600; line-height: 1.15; color: var(--bnk-text); cursor: pointer; height: auto; min-height: 0; box-shadow: none; transition: background-color .2s ease, color .2s ease, border-color .2s ease; }
+.bnk-sel select:hover { border-color: #CBD3DF; background-color: var(--bnk-bg); }
+.bnk-sel select:focus-visible { outline: 2px solid var(--bnk-blue); outline-offset: 2px; }
+.bnk-sel.is-active select { background-color: var(--bnk-ink); color: #fff; border-color: var(--bnk-ink); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+.bnk-sel.is-active select option { color: var(--bnk-text); background: #fff; }
+.bnk .bnk-reset { border: 0; background: transparent; color: var(--bnk-blue-text); font: inherit; font-size: 13.5px; font-weight: 700; padding: 8px 6px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.bnk .bnk-reset:hover { background: transparent; color: var(--bnk-ink); }
+.screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }

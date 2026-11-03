@@ -63,8 +63,8 @@ function bnc_fields() {
 
 		/* Filtri */
 		'welcome'           => array( 'label' => 'Welcome bonus', 'type' => 'checks', 'tipo' => $casino, 'group' => 'filtri', 'options' => array( '0' => '0€', '100' => '100€', '200' => '200€' ) ),
-		'tipologia'         => array( 'label' => 'Tipologia bonus', 'type' => 'checks', 'tipo' => $casino, 'group' => 'filtri', 'options' => array( '50' => '50% sul deposito', '100' => '100% sul deposito', '125' => '125% sul deposito' ) ),
-		'pagamenti'         => array( 'label' => 'Pagamenti', 'type' => 'checks', 'tipo' => $casino, 'group' => 'filtri', 'options' => array( 'assegno_vidimato' => 'Assegno vidimato', 'bancoposta' => 'Bancoposta' ) ),
+		'tipologia'         => array( 'label' => 'Tipologia bonus', 'type' => 'checks', 'tipo' => $casino, 'group' => 'filtri', 'options' => array( 'deposito' => 'Bonus sul deposito', 'free_spin' => 'Free spin', 'cashback' => 'Cashback', 'fun_bonus' => 'Fun bonus', 'game_show' => 'Crazy Time / Aviator' ) ),
+		'pagamenti'         => array( 'label' => 'Pagamenti', 'type' => 'checks', 'tipo' => $casino, 'group' => 'filtri', 'options' => array( 'paypal' => 'PayPal', 'carte' => 'Visa / Mastercard', 'postepay' => 'PostePay', 'skrill' => 'Skrill', 'neteller' => 'Neteller', 'paysafecard' => 'Paysafecard', 'apple_pay' => 'Apple Pay', 'google_pay' => 'Google Pay', 'bonifico' => 'Bonifico / Trustly', 'contanti' => 'Contanti in punto vendita' ) ),
 
 		/* Scheda recensione */
 		'titolo'            => array( 'label' => 'Titolo scheda', 'type' => 'text', 'tipo' => $both, 'group' => 'recensione', 'help' => 'Vuoto = "Recensione" + nome.' ),

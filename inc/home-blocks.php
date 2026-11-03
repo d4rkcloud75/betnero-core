@@ -100,7 +100,9 @@ function bnc_classifica_card( $op, $n ) {
 	$r   = max( 0, min( 5, (float) str_replace( ',', '.', (string) $op['rating'] ) ) );
 	$rev = $op['review_url'] ? '<a class="bnk-rev" href="' . esc_url( $op['review_url'] ) . '"><span class="bnk-d">Leggi la recensione</span><span class="bnk-m">Recensione</span></a>' : '';
 
-	$h  = '<article class="bnk-op' . ( 1 === $n ? ' bnk-top' : '' ) . '" data-nd="' . ( $nd ? 1 : 0 ) . '" data-spid="' . ( $spid ? 1 : 0 ) . '">';
+	$tipo_tok = $casino ? implode( ' ', (array) $op['tipologia'] ) : '';
+	$pay_tok  = $casino ? implode( ' ', (array) $op['pagamenti'] ) : '';
+	$h  = '<article class="bnk-op' . ( 1 === $n ? ' bnk-top' : '' ) . '" data-nd="' . ( $nd ? 1 : 0 ) . '" data-spid="' . ( $spid ? 1 : 0 ) . '" data-tipo="' . esc_attr( $tipo_tok ) . '" data-pay="' . esc_attr( $pay_tok ) . '">';
 	$h .= '<div class="bnk-main">';
 	$h .= '<span class="bnk-rank">' . (int) $n . '</span>';
 	$h .= '<span class="bnk-logo">' . bnc_logo( $op ) . '</span>';
@@ -117,6 +119,29 @@ function bnc_classifica_card( $op, $n ) {
 		$h .= '<div class="bnk-foot"><div class="bnk-parere">' . wp_kses_post( $op['parere'] ) . '</div><span class="bnk-tc">18+ · T&amp;C</span></div>';
 	}
 	return $h . '</article>';
+}
+
+/**
+ * Menu a tendina di un filtro: solo le opzioni che almeno un operatore ha.
+ */
+function bnc_classifica_select( $key, $label, $field, $ops ) {
+	$f    = bnc_fields();
+	$have = array();
+	foreach ( $ops as $op ) {
+		foreach ( (array) $op[ $field ] as $v ) {
+			$have[ (string) $v ] = true;
+		}
+	}
+	$opts = '';
+	foreach ( $f[ $field ]['options'] as $val => $text ) {
+		if ( isset( $have[ (string) $val ] ) ) {
+			$opts .= '<option value="' . esc_attr( $val ) . '">' . esc_html( $text ) . '</option>';
+		}
+	}
+	if ( '' === $opts ) {
+		return '';
+	}
+	return '<label class="bnk-sel"><span class="screen-reader-text">' . esc_html( $label ) . '</span><select data-fs="' . esc_attr( $key ) . '"><option value="">' . esc_html( $label ) . '</option>' . $opts . '</select></label>';
 }
 
 function bnc_render_classifica( $a ) {
@@ -152,7 +177,10 @@ function bnc_render_classifica( $a ) {
 	if ( ! empty( $a['showFilters'] ) ) {
 		$h .= '<div class="bnk-filters" data-bnk-filters><span class="bnk-flbl">Filtra:</span>';
 		$h .= '<button type="button" class="bnk-chip" aria-pressed="false" data-f="nd">Bonus senza deposito</button>';
-		$h .= '<button type="button" class="bnk-chip" aria-pressed="false" data-f="spid">Registrazione SPID</button></div>';
+		$h .= '<button type="button" class="bnk-chip" aria-pressed="false" data-f="spid">Registrazione SPID</button>';
+		$h .= bnc_classifica_select( 'tipo', 'Tipologia bonus', 'tipologia', $lists['casino'] );
+		$h .= bnc_classifica_select( 'pay', 'Pagamenti', 'pagamenti', $lists['casino'] );
+		$h .= '<button type="button" class="bnk-reset" data-bnk-reset hidden>Rimuovi filtri</button></div>';
 	}
 
 	foreach ( $lists as $type => $ops ) {

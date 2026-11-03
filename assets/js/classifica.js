@@ -147,65 +147,108 @@
 		} );
 
 		if ( filters ) {
+			var selects = filters.querySelectorAll( 'select[data-fs]' );
+			var reset = filters.querySelector( '[data-bnk-reset]' );
+
+			function matches( op ) {
+				var ok = Object.keys( active ).every( function ( k ) {
+					return ! active[ k ] || op.getAttribute( 'data-' + k ) === '1';
+				} );
+				Array.prototype.forEach.call( selects, function ( sel ) {
+					if ( ok && sel.value ) {
+						var tokens = ( op.getAttribute( 'data-' + sel.getAttribute( 'data-fs' ) ) || '' ).split( ' ' );
+						ok = tokens.indexOf( sel.value ) !== -1;
+					}
+				} );
+				return ok;
+			}
+
+			function anyActive() {
+				return Object.keys( active ).some( function ( k ) {
+					return active[ k ];
+				} ) || Array.prototype.some.call( selects, function ( sel ) {
+					return !! sel.value;
+				} );
+			}
+
+			function apply() {
+				var list = listOf( 'casino' );
+				var leaving = [];
+				var entering = [];
+				var shown = 0;
+				list.querySelectorAll( '.bnk-op' ).forEach( function ( op ) {
+					var ok = matches( op );
+					shown += ok ? 1 : 0;
+					if ( ok && op.hidden ) {
+						entering.push( op );
+					} else if ( ! ok && ! op.hidden ) {
+						leaving.push( op );
+					}
+				} );
+				var empty = list.querySelector( '.bnk-empty' );
+				if ( reset ) {
+					reset.hidden = ! anyActive();
+				}
+				Array.prototype.forEach.call( selects, function ( sel ) {
+					sel.parentNode.classList.toggle( 'is-active', !! sel.value );
+				} );
+
+				function finish() {
+					leaving.forEach( function ( op ) {
+						op.hidden = true;
+						op.getAnimations && op.getAnimations().forEach( function ( a ) {
+							a.cancel();
+						} );
+					} );
+					entering.forEach( function ( op ) {
+						op.hidden = false;
+					} );
+					if ( empty ) {
+						empty.hidden = shown > 0;
+						if ( ! shown ) {
+							anim( empty, [ { opacity: 0 }, { opacity: 1 } ], { duration: 250 } );
+						}
+					}
+					cardsIn( entering );
+				}
+
+				var last = null;
+				leaving.forEach( function ( op ) {
+					last = anim( op, [ { opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.98)' } ], { duration: 180, easing: 'ease-in', fill: 'forwards' } ) || last;
+				} );
+				if ( last ) {
+					last.onfinish = finish;
+				} else {
+					finish();
+				}
+			}
+
 			filters.querySelectorAll( '.bnk-chip' ).forEach( function ( c ) {
 				c.addEventListener( 'click', function () {
 					var f = c.getAttribute( 'data-f' );
 					active[ f ] = ! active[ f ];
 					c.setAttribute( 'aria-pressed', active[ f ] ? 'true' : 'false' );
 					anim( c, [ { transform: 'scale(.94)' }, { transform: 'scale(1)' } ], { duration: 200, easing: EASE } );
-
-					var list = listOf( 'casino' );
-					var leaving = [];
-					var entering = [];
-					var shown = 0;
-					list.querySelectorAll( '.bnk-op' ).forEach( function ( op ) {
-						var ok = Object.keys( active ).every( function ( k ) {
-							return ! active[ k ] || op.getAttribute( 'data-' + k ) === '1';
-						} );
-						shown += ok ? 1 : 0;
-						if ( ok && op.hidden ) {
-							entering.push( op );
-						} else if ( ! ok && ! op.hidden ) {
-							leaving.push( op );
-						}
-					} );
-					var empty = list.querySelector( '.bnk-empty' );
-
-					function finish() {
-						leaving.forEach( function ( op ) {
-							op.hidden = true;
-						} );
-						entering.forEach( function ( op ) {
-							op.hidden = false;
-						} );
-						if ( empty ) {
-							empty.hidden = shown > 0;
-						}
-						cardsIn( entering );
-					}
-
-					if ( ! leaving.length ) {
-						finish();
-						return;
-					}
-					var last = null;
-					leaving.forEach( function ( op ) {
-						last = anim( op, [ { opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.98)' } ], { duration: 180, easing: 'ease-in', fill: 'forwards' } ) || last;
-					} );
-					if ( last ) {
-						last.onfinish = function () {
-							finish();
-							leaving.forEach( function ( op ) {
-								op.getAnimations().forEach( function ( a ) {
-									a.cancel();
-								} );
-							} );
-						};
-					} else {
-						finish();
-					}
+					apply();
 				} );
 			} );
+			Array.prototype.forEach.call( selects, function ( sel ) {
+				sel.addEventListener( 'change', apply );
+			} );
+			if ( reset ) {
+				reset.addEventListener( 'click', function () {
+					Object.keys( active ).forEach( function ( k ) {
+						active[ k ] = false;
+					} );
+					filters.querySelectorAll( '.bnk-chip' ).forEach( function ( c ) {
+						c.setAttribute( 'aria-pressed', 'false' );
+					} );
+					Array.prototype.forEach.call( selects, function ( sel ) {
+						sel.value = '';
+					} );
+					apply();
+				} );
+			}
 		}
 	}
 

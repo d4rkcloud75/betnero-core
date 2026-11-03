@@ -6,6 +6,7 @@
  * GET  /wp-json/betnero/v1/operatori              elenco operatori con recensione e pagina a blocchi
  * GET  /wp-json/betnero/v1/operatori/<id>          tutti i campi di un operatore
  * POST /wp-json/betnero/v1/operatori/<id>/bozza    crea (o rifa') la pagina a blocchi della recensione
+ * POST /wp-json/betnero/v1/operatori/<id>/campi    scrive i campi indicati (es. {"campi":{"pagamenti":["paypal"]}})
  *
  * Servono i permessi per modificare le pagine (ruolo Editor o superiore).
  *
@@ -88,6 +89,32 @@ add_action( 'rest_api_init', function () {
 				'stato'  => get_post_status( $page ),
 				'link'   => get_permalink( $page ),
 			);
+		},
+	) );
+	register_rest_route( 'betnero/v1', '/operatori/(?P<id>\d+)/campi', array(
+		'methods'             => 'POST',
+		'permission_callback' => function ( $req ) {
+			return current_user_can( 'edit_post', (int) $req['id'] );
+		},
+		'callback'            => function ( $req ) {
+			$id = (int) $req['id'];
+			if ( BNC_POST_TYPE !== get_post_type( $id ) ) {
+				return new WP_Error( 'bnc_not_found', 'Operatore non trovato', array( 'status' => 404 ) );
+			}
+			$campi  = (array) $req->get_param( 'campi' );
+			$fields = bnc_fields();
+			$fatti  = array();
+			foreach ( $campi as $k => $v ) {
+				if ( ! isset( $fields[ $k ] ) ) {
+					continue;
+				}
+				bnc_set( $id, $k, $v );
+				$fatti[ $k ] = bnc_get( $id, $k );
+			}
+			if ( $fatti ) {
+				bnc_flush_cache();
+			}
+			return array( 'id' => $id, 'campi' => $fatti );
 		},
 	) );
 } );

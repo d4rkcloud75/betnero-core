@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+- Operatori: nuove opzioni reali per "Tipologia bonus" (bonus sul deposito, free spin, cashback, fun bonus, Crazy Time / Aviator) e "Pagamenti" (PayPal, Visa / Mastercard, PostePay, Skrill, Neteller, Paysafecard, Apple Pay, Google Pay, bonifico / Trustly, contanti in punto vendita) al posto dei valori segnaposto di JetEngine.
+- Classifica a schede: filtri "Tipologia bonus" e "Pagamenti" come menu a tendina (solo le opzioni che almeno un casino ha) e pulsante "Rimuovi filtri".
+- API REST: POST /betnero/v1/operatori/<id>/campi per scrivere i campi di un operatore (permesso di modifica dell'operatore).
+
 ## 0.2.3
 - FAQ (stile "FAQ Betnero"): apertura e chiusura animate in tutto il sito; nella hero della home aprendo una domanda si chiudono le altre (contenitore .bn-hh-faq o attributo data-bn-exclusive).
 - Classifica a schede: la pillola del selettore scivola sull'opzione scelta, la lista cambia con una dissolvenza e le schede entrano una dopo l'altra; i filtri fanno sparire e ricomparire le schede con una dissolvenza; leggero sollevamento della scheda al passaggio del mouse.
