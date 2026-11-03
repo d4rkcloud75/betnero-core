@@ -261,12 +261,14 @@ add_action( 'save_post', function () {
 
 /*
  * Velox Optimizer ritarda gli script fino alla prima interazione: il primo
- * clic sul selettore Casino/Scommesse andrebbe perso. Lo script e' piccolo
- * (meno di 2 KB, caricato in defer), quindi lo escludiamo dal ritardo.
+ * clic sul selettore Casino/Scommesse o su una FAQ andrebbe perso. Gli script
+ * sono piccoli (pochi KB, caricati in defer), quindi li escludiamo dal ritardo.
  */
 add_filter( 'velox_delay_js_extra_exclusions', function ( $list ) {
 	$list   = (array) $list;
 	$list[] = 'classifica.js';
 	$list[] = 'classifica.min.js';
+	$list[] = 'betnero-core/assets/js/faq.js';
+	$list[] = '/faq.min.js';
 	return $list;
 } );

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+- FAQ (stile "FAQ Betnero"): apertura e chiusura animate in tutto il sito; nella hero della home aprendo una domanda si chiudono le altre (contenitore .bn-hh-faq o attributo data-bn-exclusive).
+- Classifica a schede: la pillola del selettore scivola sull'opzione scelta, la lista cambia con una dissolvenza e le schede entrano una dopo l'altra; i filtri fanno sparire e ricomparire le schede con una dissolvenza; leggero sollevamento della scheda al passaggio del mouse.
+- Con "riduci movimento" attivo nel sistema operativo tutto cambia senza animazioni.
+- Lo script delle FAQ è escluso dal ritardo di Velox Optimizer, come quello della classifica.
+
 ## 0.2.2
 - Classifica a schede: lo script del selettore Casinò/Scommesse e dei filtri è escluso dal ritardo degli script di Velox Optimizer, così funziona già al primo clic.
 

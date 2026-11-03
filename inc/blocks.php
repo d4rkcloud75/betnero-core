@@ -25,6 +25,7 @@ add_action( 'init', function () {
 	wp_register_style( 'betnero-faq', BETNERO_CORE_URL . 'assets/css/faq.css', array(), $v );
 	wp_register_script( 'betnero-tables', BETNERO_CORE_URL . 'assets/js/tables.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'betnero-bar', BETNERO_CORE_URL . 'assets/js/bar.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'betnero-faq', BETNERO_CORE_URL . 'assets/js/faq.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script(
 		'betnero-blocks-editor',
 		BETNERO_CORE_URL . 'assets/js/blocks-editor.js',
@@ -155,3 +156,11 @@ function bnc_flatten_blocks( $blocks ) {
 	}
 	return $out;
 }
+
+/* FAQ animate: lo script si carica solo dove c'e' almeno un blocco Dettagli "FAQ Betnero". */
+add_filter( 'render_block_core/details', function ( $html, $block ) {
+	if ( false !== strpos( isset( $block['attrs']['className'] ) ? $block['attrs']['className'] : '', 'is-style-bn-faq' ) ) {
+		wp_enqueue_script( 'betnero-faq' );
+	}
+	return $html;
+}, 10, 2 );

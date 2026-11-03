@@ -6,3 +6,6 @@
 .wp-block-details.is-style-bn-faq[open] > summary::after { content: "\2212"; }
 .wp-block-details.is-style-bn-faq > :not(summary) { padding: 0 16px; }
 .wp-block-details.is-style-bn-faq[open] { padding-bottom: 6px; }
+/* Durante la chiusura animata l'icona torna subito su "+" */
+.wp-block-details.is-style-bn-faq[data-bn-state="closing"] > summary::after { content: "+"; }
+.wp-block-details.is-style-bn-faq > summary::after { transition: transform .25s ease; }

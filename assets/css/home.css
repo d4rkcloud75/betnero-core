@@ -119,3 +119,17 @@
 .bnk-parere img { min-width: 28px; }
 .bnn { column-gap: 16px; }
 .bnn-item span { display: block; line-height: 1.35; margin-top: 6px; }
+
+/* 0.2.3: animazioni. Pillola del selettore che scivola sull'opzione scelta. */
+.bnk-tabs.bnk-has-ind { position: relative; }
+.bnk-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 9px; background: #fff; box-shadow: 0 1px 3px rgba(10,18,34,.12); transition: transform .35s cubic-bezier(.2,.7,.2,1), width .35s cubic-bezier(.2,.7,.2,1); pointer-events: none; }
+.bnk .bnk-has-ind button.bnk-tab { position: relative; z-index: 1; transition: color .25s ease; }
+.bnk .bnk-has-ind button.bnk-tab[aria-selected="true"], .bnk .bnk-has-ind button.bnk-tab:hover, .bnk .bnk-has-ind button.bnk-tab:focus { background: transparent; box-shadow: none; }
+.bnk .bnk-has-ind button.bnk-tab[aria-selected="true"] { color: var(--bnk-ink); }
+.bnk button.bnk-chip { transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.bnk-op { transition: box-shadow .2s ease, transform .2s ease; }
+@media (hover: hover) { .bnk-op:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(10,18,34,.06), 0 12px 32px rgba(10,18,34,.08); } }
+@media (prefers-reduced-motion: reduce) {
+	.bnk-ind, .bnk .bnk-has-ind button.bnk-tab, .bnk-op, .bnk button.bnk-chip { transition: none; }
+	.bnk-op:hover { transform: none; }
+}
