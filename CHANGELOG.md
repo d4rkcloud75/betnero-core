@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.6
+- FAQ: anche il cassetto "Le domande più frequenti" (Dettagli con classe bn-faqbox) si apre e si chiude animato; le FAQ al suo interno sono esclusive (aprendone una si chiudono le altre).
+
 ## 0.2.5
 - Classifica a schede: opzione "Cosa mostrare" (casino e scommesse con selettore, solo casino, solo scommesse).
 - API REST per convertire le pagine Elementor: /converti (HTML -> blocchi), /pagine/<id>/blocchi (salva i blocchi e spegne Elementor per la pagina, con copia di sicurezza), /pagine/<id>/elementor (torna alla versione Elementor).

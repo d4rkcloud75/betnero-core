@@ -1,7 +1,8 @@
 /*
  * Betnero Core: FAQ (blocco Dettagli con stile "FAQ Betnero").
  * - apertura e chiusura animate (altezza e dissolvenza del testo);
- * - nei gruppi esclusivi (contenitore .bn-hh-faq o [data-bn-exclusive])
+ * - anche il contenitore "Le domande piu' frequenti" (details.bn-faqbox) si apre animato;
+ * - nei gruppi esclusivi (contenitore .bn-hh-faq, details.bn-faqbox o [data-bn-exclusive])
  *   aprendo una domanda si chiudono le altre.
  * Con "riduci movimento" attivo nel sistema le FAQ si aprono senza animazione.
  */
@@ -80,11 +81,11 @@
 
 	function exclusiveGroup( el ) {
 		var p = el.parentElement;
-		return p && ( p.classList.contains( 'bn-hh-faq' ) || p.hasAttribute( 'data-bn-exclusive' ) ) ? p : null;
+		return p && ( p.classList.contains( 'bn-hh-faq' ) || p.classList.contains( 'bn-faqbox' ) || p.hasAttribute( 'data-bn-exclusive' ) ) ? p : null;
 	}
 
 	document.addEventListener( 'click', function ( e ) {
-		var summary = e.target.closest( 'details.is-style-bn-faq > summary' );
+		var summary = e.target.closest( 'details.is-style-bn-faq > summary, details.bn-faqbox > summary' );
 		if ( ! summary ) {
 			return;
 		}
@@ -95,7 +96,7 @@
 		if ( opening ) {
 			var g = exclusiveGroup( el );
 			if ( g ) {
-				Array.prototype.forEach.call( g.querySelectorAll( ':scope > details.is-style-bn-faq[open]' ), function ( other ) {
+				Array.prototype.forEach.call( g.querySelectorAll( ':scope > details[open]' ), function ( other ) {
 					if ( other !== el ) {
 						animateTo( other, false );
 					}

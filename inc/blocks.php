@@ -159,7 +159,8 @@ function bnc_flatten_blocks( $blocks ) {
 
 /* FAQ animate: lo script si carica solo dove c'e' almeno un blocco Dettagli "FAQ Betnero". */
 add_filter( 'render_block_core/details', function ( $html, $block ) {
-	if ( false !== strpos( isset( $block['attrs']['className'] ) ? $block['attrs']['className'] : '', 'is-style-bn-faq' ) ) {
+	$cls = isset( $block['attrs']['className'] ) ? $block['attrs']['className'] : '';
+	if ( false !== strpos( $cls, 'is-style-bn-faq' ) || false !== strpos( $cls, 'bn-faqbox' ) ) {
 		wp_enqueue_script( 'betnero-faq' );
 	}
 	return $html;
