@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.7
+- Dati strutturati FAQPage: solo le voci che sono vere domande (finiscono con "?"); le fisarmoniche di contenuto delle pagine convertite da Elementor (es. sezioni per provider) non entrano più nello schema.
+
 ## 0.2.6
 - FAQ: anche il cassetto "Le domande più frequenti" (Dettagli con classe bn-faqbox) si apre e si chiude animato; le FAQ al suo interno sono esclusive (aprendone una si chiudono le altre).
 

@@ -137,7 +137,8 @@ add_action( 'wp_footer', function () {
 		}
 		$q = trim( wp_strip_all_tags( $m[1] ) );
 		$a = trim( wp_strip_all_tags( $m[2] ) );
-		if ( $q && $a ) {
+		// Solo le vere domande (le fisarmoniche di contenuto, es. "Pragmatic Play", non sono FAQ).
+		if ( $q && $a && '?' === mb_substr( $q, -1 ) ) {
 			$items[] = array( '@type' => 'Question', 'name' => $q, 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $a ) );
 		}
 	}
