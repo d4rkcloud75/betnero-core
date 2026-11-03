@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5
+- Classifica a schede: opzione "Cosa mostrare" (casino e scommesse con selettore, solo casino, solo scommesse).
+- API REST per convertire le pagine Elementor: /converti (HTML -> blocchi), /pagine/<id>/blocchi (salva i blocchi e spegne Elementor per la pagina, con copia di sicurezza), /pagine/<id>/elementor (torna alla versione Elementor).
+
 ## 0.2.4
 - Operatori: nuove opzioni reali per "Tipologia bonus" (bonus sul deposito, free spin, cashback, fun bonus, Crazy Time / Aviator) e "Pagamenti" (PayPal, Visa / Mastercard, PostePay, Skrill, Neteller, Paysafecard, Apple Pay, Google Pay, bonifico / Trustly, contanti in punto vendita) al posto dei valori segnaposto di JetEngine.
 - Classifica a schede: filtri "Tipologia bonus" e "Pagamenti" come menu a tendina (solo le opzioni che almeno un casino ha) e pulsante "Rimuovi filtri".

@@ -37,6 +37,7 @@ add_action( 'init', function () {
 			'limitCasino'  => array( 'type' => 'number', 'default' => 0 ),
 			'limitSport'   => array( 'type' => 'number', 'default' => 0 ),
 			'showFilters'  => array( 'type' => 'boolean', 'default' => true ),
+			'tipi'         => array( 'type' => 'string', 'default' => 'entrambi' ),
 			'align'        => array( 'type' => 'string' ),
 			'className'    => array( 'type' => 'string' ),
 		),
@@ -147,10 +148,15 @@ function bnc_classifica_select( $key, $label, $field, $ops ) {
 function bnc_render_classifica( $a ) {
 	wp_enqueue_style( 'betnero-tables' );
 	wp_enqueue_script( 'betnero-classifica' );
-	$lists = array(
-		'casino'    => bnc_operators( 'casino' ),
-		'scommesse' => bnc_operators( 'scommesse' ),
-	);
+	$tipi  = $a['tipi'] ?? 'entrambi';
+	$lists = array();
+	if ( 'scommesse' !== $tipi ) {
+		$lists['casino'] = bnc_operators( 'casino' );
+	}
+	if ( 'casino' !== $tipi ) {
+		$lists['scommesse'] = bnc_operators( 'scommesse' );
+	}
+	$first = array_key_first( $lists );
 	$limits = array(
 		'casino'    => (int) ( $a['limitCasino'] ?? 0 ),
 		'scommesse' => (int) ( $a['limitSport'] ?? 0 ),
@@ -166,15 +172,18 @@ function bnc_render_classifica( $a ) {
 	$h  = '<div class="bnk' . esc_attr( $align . $cls ) . '" data-bnk>';
 	$h .= '<div class="bnk-head"><div>';
 	$h .= ! empty( $a['eyebrow'] ) ? '<span class="bnk-eyebrow">' . esc_html( $a['eyebrow'] ) . '</span>' : '';
-	$h .= '<h2 class="bnk-title" data-casino="' . esc_attr( $titles['casino'] ) . '" data-scommesse="' . esc_attr( $titles['scommesse'] ) . '">' . esc_html( $titles['casino'] ) . '</h2>';
+	$h .= '<h2 class="bnk-title" data-casino="' . esc_attr( $titles['casino'] ) . '" data-scommesse="' . esc_attr( $titles['scommesse'] ) . '">' . esc_html( $titles[ $first ] ) . '</h2>';
 	$h .= ! empty( $a['description'] ) ? '<p class="bnk-desc">' . esc_html( $a['description'] ) . '</p>' : '';
 	$h .= '</div>';
-	$h .= '<div class="bnk-tabs" role="tablist" aria-label="Tipo di classifica">';
-	$h .= '<button type="button" class="bnk-tab" role="tab" id="' . $uid . '-t-casino" aria-controls="' . $uid . '-casino" aria-selected="true" data-tab="casino">Casinò</button>';
-	$h .= '<button type="button" class="bnk-tab" role="tab" id="' . $uid . '-t-scommesse" aria-controls="' . $uid . '-scommesse" aria-selected="false" tabindex="-1" data-tab="scommesse">Scommesse</button>';
-	$h .= '</div></div>';
+	if ( count( $lists ) > 1 ) {
+		$h .= '<div class="bnk-tabs" role="tablist" aria-label="Tipo di classifica">';
+		$h .= '<button type="button" class="bnk-tab" role="tab" id="' . $uid . '-t-casino" aria-controls="' . $uid . '-casino" aria-selected="true" data-tab="casino">Casinò</button>';
+		$h .= '<button type="button" class="bnk-tab" role="tab" id="' . $uid . '-t-scommesse" aria-controls="' . $uid . '-scommesse" aria-selected="false" tabindex="-1" data-tab="scommesse">Scommesse</button>';
+		$h .= '</div>';
+	}
+	$h .= '</div>';
 
-	if ( ! empty( $a['showFilters'] ) ) {
+	if ( ! empty( $a['showFilters'] ) && isset( $lists['casino'] ) ) {
 		$h .= '<div class="bnk-filters" data-bnk-filters><span class="bnk-flbl">Filtra:</span>';
 		$h .= '<button type="button" class="bnk-chip" aria-pressed="false" data-f="nd">Bonus senza deposito</button>';
 		$h .= '<button type="button" class="bnk-chip" aria-pressed="false" data-f="spid">Registrazione SPID</button>';
@@ -187,7 +196,7 @@ function bnc_render_classifica( $a ) {
 		if ( $limits[ $type ] > 0 ) {
 			$ops = array_slice( $ops, 0, $limits[ $type ] );
 		}
-		$hidden = 'casino' === $type ? '' : ' hidden';
+		$hidden = $first === $type ? '' : ' hidden';
 		$h     .= '<div class="bnk-list" role="tabpanel" id="' . $uid . '-' . $type . '" aria-labelledby="' . $uid . '-t-' . $type . '" data-bnk-list="' . $type . '"' . $hidden . '>';
 		foreach ( array_values( $ops ) as $i => $op ) {
 			$h .= bnc_classifica_card( $op, $i + 1 );

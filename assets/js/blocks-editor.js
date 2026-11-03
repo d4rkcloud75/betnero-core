@@ -142,6 +142,7 @@
 						el( TextControl, { label: 'Descrizione', value: a.description, onChange: set( props, 'description' ) } )
 					),
 					el( PanelBody, { title: 'Impostazioni' },
+						el( SelectControl, { label: 'Cosa mostrare', value: a.tipi, options: [ { label: 'Casino e scommesse (con selettore)', value: 'entrambi' }, { label: 'Solo casino', value: 'casino' }, { label: 'Solo scommesse', value: 'scommesse' } ], onChange: set( props, 'tipi' ) } ),
 						el( ToggleControl, { label: 'Mostra i filtri', checked: a.showFilters, onChange: set( props, 'showFilters' ) } ),
 						el( RangeControl, { label: 'Numero di casino (0 = tutti)', value: a.limitCasino, min: 0, max: 30, onChange: function ( v ) { props.setAttributes( { limitCasino: v || 0 } ); } } ),
 						el( RangeControl, { label: 'Numero di bookmaker (0 = tutti)', value: a.limitSport, min: 0, max: 30, onChange: function ( v ) { props.setAttributes( { limitSport: v || 0 } ); } } )

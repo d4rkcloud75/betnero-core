@@ -33,17 +33,16 @@
 		var title = box.querySelector( '.bnk-title' );
 		var filters = box.querySelector( '[data-bnk-filters]' );
 		var active = {};
-		var current = 'casino';
+		var firstList = box.querySelector( '[data-bnk-list]:not([hidden])' );
+		var current = firstList ? firstList.getAttribute( 'data-bnk-list' ) : 'casino';
 		var busy = null;
 
-		// Pillola che scivola sotto l'opzione scelta.
-		var ind = document.createElement( 'span' );
-		ind.className = 'bnk-ind';
-		ind.setAttribute( 'aria-hidden', 'true' );
-		tabsWrap.insertBefore( ind, tabsWrap.firstChild );
-		tabsWrap.classList.add( 'bnk-has-ind' );
-
+		// Pillola che scivola sotto l'opzione scelta (solo se c'e' il selettore).
+		var ind = null;
 		function placeInd( instant ) {
+			if ( ! ind ) {
+				return;
+			}
 			var sel = tabsWrap.querySelector( '.bnk-tab[aria-selected="true"]' );
 			if ( ! sel ) {
 				return;
@@ -58,14 +57,21 @@
 				ind.style.transition = '';
 			}
 		}
-		placeInd( true );
-		window.addEventListener( 'resize', function () {
+		if ( tabsWrap ) {
+			ind = document.createElement( 'span' );
+			ind.className = 'bnk-ind';
+			ind.setAttribute( 'aria-hidden', 'true' );
+			tabsWrap.insertBefore( ind, tabsWrap.firstChild );
+			tabsWrap.classList.add( 'bnk-has-ind' );
 			placeInd( true );
-		} );
-		if ( document.fonts && document.fonts.ready ) {
-			document.fonts.ready.then( function () {
+			window.addEventListener( 'resize', function () {
 				placeInd( true );
 			} );
+			if ( document.fonts && document.fonts.ready ) {
+				document.fonts.ready.then( function () {
+					placeInd( true );
+				} );
+			}
 		}
 
 		function listOf( type ) {

@@ -7,6 +7,9 @@
  * GET  /wp-json/betnero/v1/operatori/<id>          tutti i campi di un operatore
  * POST /wp-json/betnero/v1/operatori/<id>/bozza    crea (o rifa') la pagina a blocchi della recensione
  * POST /wp-json/betnero/v1/operatori/<id>/campi    scrive i campi indicati (es. {"campi":{"pagamenti":["paypal"]}})
+ * POST /wp-json/betnero/v1/converti                 HTML classico -> blocchi
+ * POST /wp-json/betnero/v1/pagine/<id>/blocchi      passa la pagina da Elementor ai blocchi (con copia di sicurezza)
+ * POST /wp-json/betnero/v1/pagine/<id>/elementor    torna alla versione Elementor
  *
  * Servono i permessi per modificare le pagine (ruolo Editor o superiore).
  *
@@ -115,6 +118,74 @@ add_action( 'rest_api_init', function () {
 				bnc_flush_cache();
 			}
 			return array( 'id' => $id, 'campi' => $fatti );
+		},
+	) );
+	// HTML classico -> blocchi (stesso convertitore delle recensioni).
+	register_rest_route( 'betnero/v1', '/converti', array(
+		'methods'             => 'POST',
+		'permission_callback' => $can,
+		'callback'            => function ( $req ) {
+			return array( 'blocchi' => bnc_html_to_blocks( (string) $req->get_param( 'html' ) ) );
+		},
+	) );
+
+	/*
+	 * Passa una pagina da Elementor ai blocchi: salva il contenuto a blocchi e
+	 * spegne Elementor per quella pagina. I dati di Elementor restano salvati
+	 * (copia in _bn_elementor_edit_mode) e si torna indietro con /elementor.
+	 */
+	register_rest_route( 'betnero/v1', '/pagine/(?P<id>\d+)/blocchi', array(
+		'methods'             => 'POST',
+		'permission_callback' => function ( $req ) {
+			return current_user_can( 'edit_post', (int) $req['id'] );
+		},
+		'callback'            => function ( $req ) {
+			$id = (int) $req['id'];
+			if ( ! in_array( get_post_type( $id ), array( 'page', 'post' ), true ) ) {
+				return new WP_Error( 'bnc_not_found', 'Pagina non trovata', array( 'status' => 404 ) );
+			}
+			$content = (string) $req->get_param( 'content' );
+			if ( '' === trim( $content ) ) {
+				return new WP_Error( 'bnc_empty', 'Contenuto vuoto', array( 'status' => 400 ) );
+			}
+			$mode = get_post_meta( $id, '_elementor_edit_mode', true );
+			if ( $mode ) {
+				update_post_meta( $id, '_bn_elementor_edit_mode', $mode );
+				delete_post_meta( $id, '_elementor_edit_mode' );
+			}
+			$tpl = get_post_meta( $id, '_wp_page_template', true );
+			if ( $tpl && false !== strpos( $tpl, 'elementor' ) ) {
+				update_post_meta( $id, '_bn_page_template', $tpl );
+				delete_post_meta( $id, '_wp_page_template' );
+			}
+			$res = wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $content ) ), true );
+			if ( is_wp_error( $res ) ) {
+				return $res;
+			}
+			return array( 'id' => $id, 'link' => get_permalink( $id ), 'elementor_spento' => (bool) $mode );
+		},
+	) );
+
+	register_rest_route( 'betnero/v1', '/pagine/(?P<id>\d+)/elementor', array(
+		'methods'             => 'POST',
+		'permission_callback' => function ( $req ) {
+			return current_user_can( 'edit_post', (int) $req['id'] );
+		},
+		'callback'            => function ( $req ) {
+			$id   = (int) $req['id'];
+			$mode = get_post_meta( $id, '_bn_elementor_edit_mode', true );
+			if ( ! $mode ) {
+				return new WP_Error( 'bnc_no_backup', 'Nessuna copia di Elementor per questa pagina', array( 'status' => 404 ) );
+			}
+			update_post_meta( $id, '_elementor_edit_mode', $mode );
+			delete_post_meta( $id, '_bn_elementor_edit_mode' );
+			$tpl = get_post_meta( $id, '_bn_page_template', true );
+			if ( $tpl ) {
+				update_post_meta( $id, '_wp_page_template', $tpl );
+				delete_post_meta( $id, '_bn_page_template' );
+			}
+			clean_post_cache( $id );
+			return array( 'id' => $id, 'elementor_riattivato' => true );
 		},
 	) );
 } );
