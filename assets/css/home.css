@@ -144,3 +144,11 @@
 .bnk .bnk-reset { border: 0; background: transparent; color: var(--bnk-blue-text); font: inherit; font-size: 13.5px; font-weight: 700; padding: 8px 6px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .bnk .bnk-reset:hover { background: transparent; color: var(--bnk-ink); }
 .screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }
+
+/* 0.2.8: su mobile i filtri della classifica scorrono in orizzontale su una riga */
+@media (max-width: 760px) {
+	.bnk-filters { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scrollbar-width: none; margin-left: -16px; margin-right: -16px; padding: 2px 16px 6px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent 100%); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent 100%); }
+	.bnk-filters::-webkit-scrollbar { display: none; }
+	.bnk-filters > * { flex: none; scroll-snap-align: start; }
+	.bnk-filters .bnk-chip, .bnk-filters .bnk-sel select { white-space: nowrap; }
+}

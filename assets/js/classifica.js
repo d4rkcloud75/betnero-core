@@ -67,6 +67,11 @@
 			window.addEventListener( 'resize', function () {
 				placeInd( true );
 			} );
+			if ( window.ResizeObserver ) {
+				new ResizeObserver( function () {
+					placeInd( true );
+				} ).observe( tabsWrap );
+			}
 			if ( document.fonts && document.fonts.ready ) {
 				document.fonts.ready.then( function () {
 					placeInd( true );

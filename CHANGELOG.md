@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.8
+- Classifica a schede: su mobile i filtri stanno su una sola riga che scorre in orizzontale (su desktop restano come prima).
+- La pillola del selettore Casinò/Scommesse si ricalcola quando i pulsanti cambiano larghezza.
+
 ## 0.2.7
 - Dati strutturati FAQPage: solo le voci che sono vere domande (finiscono con "?"); le fisarmoniche di contenuto delle pagine convertite da Elementor (es. sezioni per provider) non entrano più nello schema.
 
