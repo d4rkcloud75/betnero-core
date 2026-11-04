@@ -114,3 +114,14 @@
 .bnt-side .bnt-lbl { display: inline; }
 .bnt-side .bnt-big { font-size: 17px; }
 .bnt-side .bnt-row, .bnt-toplist.bnt-side .bnt-row { margin: 0 0 8px !important; }
+
+/* Sidebar degli articoli (come il sito originale) */
+.bns2 { font-family: inherit; }
+.bns2-title { font-size: 18px; font-weight: 600; color: #333; margin: 0 0 20px; }
+.bns2-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 62px; margin: 0 0 14px; }
+.bns2-logo { flex: 0 0 124px; display: flex; align-items: center; justify-content: center; height: 62px; }
+.bns2-logo img { max-width: 124px !important; max-height: 62px !important; width: auto !important; height: auto !important; object-fit: contain; }
+.bns2-go { display: inline-flex; align-items: center; justify-content: center; background: var(--wp--preset--color--primary, #3C95D1); color: #fff !important; font-size: 12px; font-weight: 700; line-height: 1.2; padding: 10px; border-radius: 12px; text-decoration: none !important; white-space: nowrap; transition: background .2s ease; }
+.bns2-go:hover { background: var(--wp--preset--color--accent, #2F7FB6); }
+.bns2-banner { margin-top: 28px; }
+.bns2-banner img { display: block; width: 100%; height: auto; }

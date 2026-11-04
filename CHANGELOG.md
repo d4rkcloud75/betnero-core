@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.9
+- Sidebar degli articoli uguale al sito originale: per le scommesse "I migliori bookmaker" (tutti i bookmaker in tabella, logo e "Vai al sito"); per i casino "Ultimi Casinò aggiunti" (l'ultimo casino aggiunto) e il banner LeoVegas (filtro bnc_sidebar_banner per cambiarlo).
+
 ## 0.2.8
 - Classifica a schede: su mobile i filtri stanno su una sola riga che scorre in orizzontale (su desktop restano come prima).
 - La pillola del selettore Casinò/Scommesse si ricalcola quando i pulsanti cambiano larghezza.

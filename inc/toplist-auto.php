@@ -180,7 +180,7 @@ add_action( 'init', function () {
 		if ( 'none' === $type ) {
 			$type = $s['default']; // Come lo snippet 8: in sidebar c'e' sempre una toplist.
 		}
-		return bnc_render_toplist( array( 'type' => $type, 'limit' => (int) $atts['limit'], 'layout' => 'side' ) );
+		return bnc_render_sidebar( $type );
 	} );
 }, 20 );
 
@@ -219,3 +219,61 @@ add_action( 'save_post_post', function ( $post_id ) {
 		delete_post_meta( $post_id, '_bn_toplist' );
 	}
 } );
+
+
+/*
+ * Sidebar degli articoli, come nel sito originale (template Elementor 1084 e 53296):
+ * - scommesse: "I migliori bookmaker", tutti i bookmaker in tabella, logo e "Vai al sito";
+ * - casino: "Ultimi Casinò aggiunti" (il casino aggiunto per ultimo) e il banner LeoVegas.
+ */
+function bnc_sidebar_row( $op ) {
+	$logo = bnc_logo( $op );
+	$logo = $op['review_url'] ? '<a class="bns2-logo" href="' . esc_url( $op['review_url'] ) . '">' . $logo . '</a>' : '<span class="bns2-logo">' . $logo . '</span>';
+	return '<div class="bns2-row">' . $logo . bnc_go_button( $op, 'Vai al sito', 'bns2-go' ) . '</div>';
+}
+
+function bnc_render_sidebar( $type ) {
+	wp_enqueue_style( 'betnero-tables' );
+	if ( 'scommesse' === $type ) {
+		$ops = bnc_operators( 'scommesse' );
+		$h   = '<div class="bns2"><p class="bns2-title">I migliori bookmaker</p>';
+		foreach ( $ops as $op ) {
+			$h .= bnc_sidebar_row( $op );
+		}
+		return $h . '</div>';
+	}
+	$ops = bnc_operators( 'casino' );
+	if ( empty( $ops ) ) {
+		return '';
+	}
+	// L'ultimo aggiunto: l'id piu' alto delle tabelle JetEngine (_bn_cct "casino:ID"), altrimenti il piu' recente.
+	$latest = null;
+	$best   = -1;
+	foreach ( $ops as $op ) {
+		$cct = (string) get_post_meta( $op['id'], '_bn_cct', true );
+		$n   = preg_match( '/:(\d+)$/', $cct, $m ) ? (int) $m[1] : 0;
+		$n   = $n ? $n : (int) get_post_time( 'U', true, $op['id'] );
+		if ( $n > $best ) {
+			$best   = $n;
+			$latest = $op;
+		}
+	}
+	$h = '<div class="bns2"><p class="bns2-title">Ultimi Casinò aggiunti</p>' . bnc_sidebar_row( $latest );
+	$banner = apply_filters( 'bnc_sidebar_banner', array(
+		'img'      => content_url( 'uploads/2024/08/Banner_Leovegas_2026.jpg' ),
+		'operator' => 'Leovegas',
+		'alt'      => 'LeoVegas: bonus di benvenuto',
+	) );
+	if ( $banner && ! empty( $banner['img'] ) ) {
+		$href = '';
+		foreach ( bnc_operators( 'casino', false ) as $op ) {
+			if ( false !== stripos( $op['name'], $banner['operator'] ) && $op['go_url'] ) {
+				$href = $op['go_url'];
+				break;
+			}
+		}
+		$img = '<img src="' . esc_url( $banner['img'] ) . '" alt="' . esc_attr( $banner['alt'] ) . '" width="322" height="669" loading="lazy" decoding="async">';
+		$h  .= '<div class="bns2-banner">' . ( $href ? '<a href="' . esc_url( $href ) . '" rel="nofollow sponsored noopener" target="_blank">' . $img . '</a>' : $img ) . '</div>';
+	}
+	return $h . '</div>';
+}
