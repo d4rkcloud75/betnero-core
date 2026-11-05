@@ -23,3 +23,9 @@ body.bnb-has-bar { padding-bottom: 76px; }
 	.bnb-btn { flex: 1; text-align: center; padding: 10px 8px; font-size: 13px; }
 	body.bnb-has-bar { padding-bottom: 120px; }
 }
+/* Pulsanti che "pulsano": leggero zoom, il secondo sfasato di 0,5 s */
+@keyframes bnbPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.bnb-btn { animation: bnbPulse 1.8s ease-in-out infinite; will-change: transform; }
+.bnb-btns .bnb-btn:nth-child(2) { animation-delay: .5s; }
+.bnb-btn:hover, .bnb-btn:focus-visible { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .bnb-btn { animation: none; } }
