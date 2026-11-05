@@ -1,7 +1,7 @@
 /* Betnero Core: scheda operatore (pagine recensione) */
 .bns-scheda { --bns-blue: #036AA9; --bns-orange: #EEA700; --bns-ink: #1D2433; --bns-muted: #5D6676; --bns-line: #E6E9EF; --bns-bg: #F4F6F9; margin: 0 0 32px; }
 /* Spazio sotto il menu: selettore doppio per battere la regola di WordPress sul primo blocco */
-.bns-scheda.bns-scheda { margin-top: 36px; }
+.bns-scheda.bns-scheda.bns-scheda { margin-top: 36px; }
 .bns-hero { display: grid; grid-template-columns: 250px 1fr 200px; gap: 24px; align-items: center; background: var(--bns-bg); border: 1px solid var(--bns-line); border-radius: 14px; padding: 22px; }
 .bns-logo { background: #fff; border-radius: 12px; min-height: 150px; display: flex; align-items: center; justify-content: center; padding: 12px; }
 .bns-logo img { max-width: 210px !important; max-height: 120px !important; width: auto !important; height: auto !important; object-fit: contain; margin: 0 !important; }
@@ -55,7 +55,7 @@ html.bn-lb-open { overflow: hidden; }
 @keyframes bnLbIn { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .bn-lb { animation: none; } }
 @media (max-width: 781px) {
-	.bns-scheda.bns-scheda { margin-top: 20px; }
+	.bns-scheda.bns-scheda.bns-scheda { margin-top: 20px; }
 	.bn-lb { padding: 56px 8px; }
 	.bn-lb-prev, .bn-lb-next { top: auto; bottom: 14px; transform: none; }
 	.bn-lb-prev { left: calc(50% - 56px); }
