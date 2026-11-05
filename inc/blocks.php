@@ -25,6 +25,7 @@ add_action( 'init', function () {
 	wp_register_style( 'betnero-faq', BETNERO_CORE_URL . 'assets/css/faq.css', array(), $v );
 	wp_register_script( 'betnero-tables', BETNERO_CORE_URL . 'assets/js/tables.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'betnero-bar', BETNERO_CORE_URL . 'assets/js/bar.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'betnero-lightbox', BETNERO_CORE_URL . 'assets/js/lightbox.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'betnero-faq', BETNERO_CORE_URL . 'assets/js/faq.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script(
 		'betnero-blocks-editor',

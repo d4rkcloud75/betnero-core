@@ -257,9 +257,10 @@ function bnc_gallery( $ids, $title, $eager_first = false, $name = '' ) {
 	if ( empty( $ids ) ) {
 		return '';
 	}
+	wp_enqueue_script( 'betnero-lightbox' );
 	$h = '<figure class="bns-gallery"><figcaption>' . esc_html( $title ) . '</figcaption><div class="bns-gallery-grid">';
 	foreach ( array_values( $ids ) as $i => $id ) {
-		$full  = wp_get_attachment_image_url( (int) $id, 'large' );
+		$full  = wp_get_attachment_image_url( (int) $id, 'full' );
 		$load  = ( $eager_first && 0 === $i ) ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
 		// Testo alternativo e etichetta del link: servono a lettori di schermo e agenti AI.
 		$alt   = trim( (string) get_post_meta( (int) $id, '_wp_attachment_image_alt', true ) );
@@ -267,7 +268,7 @@ function bnc_gallery( $ids, $title, $eager_first = false, $name = '' ) {
 		if ( '' === $alt ) {
 			$load['alt'] = $label;
 		}
-		$h .= '<a href="' . esc_url( (string) $full ) . '" target="_blank" rel="noopener" aria-label="' . esc_attr( 'Apri ' . $label . ' in una nuova scheda' ) . '">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
+		$h .= '<a href="' . esc_url( (string) $full ) . '" data-bn-lb data-elementor-open-lightbox="no" aria-label="' . esc_attr( 'Ingrandisci ' . $label ) . '">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
 	}
 	return $h . '</div></figure>';
 }

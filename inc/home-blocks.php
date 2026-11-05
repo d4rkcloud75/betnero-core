@@ -307,5 +307,7 @@ add_filter( 'velox_delay_js_extra_exclusions', function ( $list ) {
 	$list[] = 'classifica.min.js';
 	$list[] = 'betnero-core/assets/js/faq.js';
 	$list[] = '/faq.min.js';
+	$list[] = 'betnero-core/assets/js/lightbox.js';
+	$list[] = '/lightbox.min.js';
 	return $list;
 } );
