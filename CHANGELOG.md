@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.9
+- Pagine fatte con Elementor: ripristinati gli stili dei riquadri JetEngine (pulsanti "Recensione" arancione e "Vai al sito" blu, foto piccola e rotonda nel "Parere dell'esperto"), che stavano nel tema child di Hello. Tolto il caricamento del CSS delle tabelle introdotto nella 0.3.8, che non serviva.
+
 ## 0.3.8
 - Pagine fatte con Elementor: caricati gli stili delle tabelle di Betnero Core, che servono ai riquadri "Parere dell'esperto" (foto rotonda piccola accanto al testo).
 

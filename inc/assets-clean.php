@@ -175,13 +175,17 @@ function bnc_clean_assets_needs( $wp_scripts, $h, $dep, $depth = 0 ) {
 }
 
 /**
- * Pagine fatte con Elementor (recensioni degli ex partner): i riquadri JetEngine
- * "Parere dell'esperto" usano gli stili delle tabelle di Betnero Core.
+ * Pagine fatte con Elementor (recensioni degli ex partner): stili dei riquadri
+ * JetEngine che stavano nel tema child di Hello e nel CSS della produzione
+ * (pulsanti "Recensione" e "Vai al sito", riquadro "Parere dell'esperto").
  */
 add_action( 'wp_enqueue_scripts', function () {
-	if ( is_singular() && 'builder' === get_post_meta( get_queried_object_id(), '_elementor_edit_mode', true ) ) {
-		wp_enqueue_style( 'betnero-tables' );
+	if ( ! is_singular() || 'builder' !== get_post_meta( get_queried_object_id(), '_elementor_edit_mode', true ) ) {
+		return;
 	}
+	wp_register_style( 'bnc-elementor-legacy', false, array(), BETNERO_CORE_VERSION );
+	wp_enqueue_style( 'bnc-elementor-legacy' );
+	wp_add_inline_style( 'bnc-elementor-legacy', '.parere{width:100%;float:left;text-align:left;border-bottom:2px solid #036AA933;padding-bottom:10px;font-size:12px}.parere-img{float:left;width:30px!important;height:auto;margin-right:10px;border-radius:38px!important}.casino-scheda a,a.casino-scheda{background:#EEA700;color:#fff!important;padding:6px 20px;border-radius:1em;font-size:14px;margin:0 auto;display:block;width:140px;text-align:center;text-decoration:none}.casino-url a,a.casino-url{background:#036AA9;color:#fff!important;padding:10px 40px;border-radius:1em;text-decoration:none;display:inline-block}@media (max-width:767px){.parere-img{width:20px!important}}' );
 }, 20 );
 
 // Dopo che tutti hanno messo in coda i loro file (anche quelli caricati nel footer).
