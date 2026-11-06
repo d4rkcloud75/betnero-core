@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0
+- Velox: lo script di Cookie Notice non viene piu' ritardato fino alla prima interazione, cosi' il banner dei cookie compare subito.
+
 ## 0.3.9
 - Pagine fatte con Elementor: ripristinati gli stili dei riquadri JetEngine (pulsanti "Recensione" arancione e "Vai al sito" blu, foto piccola e rotonda nel "Parere dell'esperto"), che stavano nel tema child di Hello. Tolto il caricamento del CSS delle tabelle introdotto nella 0.3.8, che non serviva.
 
