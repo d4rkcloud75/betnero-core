@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.7
+- Misura del tempo di generazione: con ?bnc_timing=1 la pagina scrive in fondo un commento con tempo PHP, numero di query, plugin attivi e memoria.
+
 ## 0.3.6
 - Pagine a blocchi piu' leggere: non vengono caricati CSS e JS di Elementor, Pro Elements, Happy Addons, Crocoblock, MetForm, WP Social, Contact Form 7, WP Ultimate Review, GutenKit, Sticky Header (ne' jQuery, se nessuno lo usa); niente popup di Elementor. Le pagine fatte con Elementor restano come sono. Si controlla con ?bnc_assets=debug.
 
