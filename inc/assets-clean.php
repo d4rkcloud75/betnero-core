@@ -174,6 +174,16 @@ function bnc_clean_assets_needs( $wp_scripts, $h, $dep, $depth = 0 ) {
 	return false;
 }
 
+/**
+ * Pagine fatte con Elementor (recensioni degli ex partner): i riquadri JetEngine
+ * "Parere dell'esperto" usano gli stili delle tabelle di Betnero Core.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( is_singular() && 'builder' === get_post_meta( get_queried_object_id(), '_elementor_edit_mode', true ) ) {
+		wp_enqueue_style( 'betnero-tables' );
+	}
+}, 20 );
+
 // Dopo che tutti hanno messo in coda i loro file (anche quelli caricati nel footer).
 add_action( 'wp_enqueue_scripts', 'bnc_clean_assets_dequeue', 9999 );
 add_action( 'wp_print_styles', 'bnc_clean_assets_dequeue', 9999 );

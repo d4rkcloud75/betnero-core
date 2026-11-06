@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.8
+- Pagine fatte con Elementor: caricati gli stili delle tabelle di Betnero Core, che servono ai riquadri "Parere dell'esperto" (foto rotonda piccola accanto al testo).
+
 ## 0.3.7
 - Misura del tempo di generazione: con ?bnc_timing=1 la pagina scrive in fondo un commento con tempo PHP, numero di query, plugin attivi e memoria.
 
