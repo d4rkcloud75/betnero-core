@@ -296,7 +296,12 @@ function bnc_render_scheda( $attributes ) {
 		$titolo = $titolo ? wp_strip_all_tags( $titolo ) : 'Recensione ' . preg_replace( '/\s+(Casino|Casinò|Scommesse|Sport)$/i', '', $op['name'] );
 		$h     .= '<section class="bns-hero">';
 		$h     .= '<div class="bns-logo">' . bnc_logo( $op, true ) . '</div>';
-		$h     .= '<div class="bns-main"><div class="bns-title">' . esc_html( $titolo ) . '</div>';
+		// La prima scheda della pagina porta l'H1, se il testo della pagina non ne ha gia' uno.
+		static $h1_done = false;
+		$own_h1 = false !== stripos( (string) get_post_field( 'post_content', get_the_ID() ), '<h1' );
+		$tag    = ( ! $h1_done && ! $own_h1 && is_singular() ) ? 'h1' : 'div';
+		$h1_done = $h1_done || 'h1' === $tag;
+		$h     .= '<div class="bns-main"><' . $tag . ' class="bns-title">' . esc_html( $titolo ) . '</' . $tag . '>';
 		$h     .= '<div class="bns-bonus">' . bnc_bonus_html( $op['bonus'] ) . '</div>';
 		$h     .= '<ul class="bns-facts">';
 		if ( 'casino' === $op['tipo'] ) {

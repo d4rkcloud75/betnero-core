@@ -5,7 +5,7 @@
 .bns-hero { display: grid; grid-template-columns: 250px 1fr 200px; gap: 24px; align-items: center; background: var(--bns-bg); border: 1px solid var(--bns-line); border-radius: 14px; padding: 22px; }
 .bns-logo { background: #fff; border-radius: 12px; min-height: 150px; display: flex; align-items: center; justify-content: center; padding: 12px; }
 .bns-logo img { max-width: 210px !important; max-height: 120px !important; width: auto !important; height: auto !important; object-fit: contain; margin: 0 !important; }
-.bns-title { font-size: 22px; font-weight: 800; color: var(--bns-ink); line-height: 1.25; margin: 0 0 6px; }
+.bns-title, h1.bns-title { font-family: inherit; letter-spacing: normal; text-transform: none; font-size: 22px; font-weight: 800; color: var(--bns-ink); line-height: 1.25; margin: 0 0 6px; }
 .bns-bonus { margin: 0 0 12px; }
 .bns-bonus .bnt-big { font-size: 22px; }
 .bns-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--bns-muted); }

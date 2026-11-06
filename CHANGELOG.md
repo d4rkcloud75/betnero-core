@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.5
+- Scheda recensione: il titolo ("Recensione Snai Casino") e' l'H1 della pagina, se il testo non ne ha gia' uno.
+
 ## 0.3.4
 - Apertura e chiusura animate per tutti i blocchi Dettagli (non solo le FAQ) e per l'indice dell'Academy.
 - Sezione "Guida Betnero" della home: aprendo una voce si chiudono le altre.
