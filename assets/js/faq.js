@@ -2,8 +2,10 @@
  * Betnero Core: FAQ (blocco Dettagli con stile "FAQ Betnero").
  * - apertura e chiusura animate (altezza e dissolvenza del testo);
  * - anche il contenitore "Le domande piu' frequenti" (details.bn-faqbox) si apre animato;
- * - nei gruppi esclusivi (contenitore .bn-hh-faq, details.bn-faqbox o [data-bn-exclusive])
- *   aprendo una domanda si chiudono le altre.
+ * - dalla 0.3.4 l'animazione vale per tutti i blocchi Dettagli e per l'indice dell'Academy;
+ * - nei gruppi esclusivi (contenitore .bn-hh-faq, details.bn-faqbox, .bn-guide-grid o [data-bn-exclusive])
+ *   aprendo una voce si chiudono le altre;
+ * - un clic su un link dentro il titolo segue il link, senza aprire o chiudere.
  * Con "riduci movimento" attivo nel sistema le FAQ si aprono senza animazione.
  */
 ( function () {
@@ -81,12 +83,12 @@
 
 	function exclusiveGroup( el ) {
 		var p = el.parentElement;
-		return p && ( p.classList.contains( 'bn-hh-faq' ) || p.classList.contains( 'bn-faqbox' ) || p.hasAttribute( 'data-bn-exclusive' ) ) ? p : null;
+		return p && ( p.classList.contains( 'bn-hh-faq' ) || p.classList.contains( 'bn-faqbox' ) || p.classList.contains( 'bn-guide-grid' ) || p.hasAttribute( 'data-bn-exclusive' ) ) ? p : null;
 	}
 
 	document.addEventListener( 'click', function ( e ) {
-		var summary = e.target.closest( 'details.is-style-bn-faq > summary, details.bn-faqbox > summary' );
-		if ( ! summary ) {
+		var summary = e.target.closest( 'details.wp-block-details > summary, .bn-acad-index details > summary' );
+		if ( ! summary || e.target.closest( 'summary a' ) ) {
 			return;
 		}
 		var el = summary.parentElement;

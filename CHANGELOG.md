@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.4
+- Apertura e chiusura animate per tutti i blocchi Dettagli (non solo le FAQ) e per l'indice dell'Academy.
+- Sezione "Guida Betnero" della home: aprendo una voce si chiudono le altre.
+- Un clic su un link nel titolo di una voce segue il link senza aprirla.
+
 ## 0.2.9
 - Sidebar degli articoli uguale al sito originale: per le scommesse "I migliori bookmaker" (tutti i bookmaker in tabella, logo e "Vai al sito"); per i casino "Ultimi Casinò aggiunti" (l'ultimo casino aggiunto) e il banner LeoVegas (filtro bnc_sidebar_banner per cambiarlo).
 
