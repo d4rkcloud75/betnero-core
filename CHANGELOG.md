@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.6
+- Pagine a blocchi piu' leggere: non vengono caricati CSS e JS di Elementor, Pro Elements, Happy Addons, Crocoblock, MetForm, WP Social, Contact Form 7, WP Ultimate Review, GutenKit, Sticky Header (ne' jQuery, se nessuno lo usa); niente popup di Elementor. Le pagine fatte con Elementor restano come sono. Si controlla con ?bnc_assets=debug.
+
 ## 0.3.5
 - Scheda recensione: il titolo ("Recensione Snai Casino") e' l'H1 della pagina, se il testo non ne ha gia' uno.
 
