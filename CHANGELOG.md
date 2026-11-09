@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+- Barra in basso: tolta la X per chiuderla, resta sempre visibile.
+- Il pulsante "torna su" si alza sopra la barra solo nelle pagine che ce l'hanno (altezza misurata, desktop e mobile).
+
 ## 0.4.1
 - Recensioni di operatori con bonus casino e bonus sport (campo "collegato"): nella scheda in alto si vedono entrambi i bonus, con un pulsante ciascuno; nella barra in basso due righe, una per bonus. Come in produzione, per essere compliant.
 

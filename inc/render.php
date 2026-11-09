@@ -402,7 +402,6 @@ function bnc_render_bar( $op_id ) {
 	}
 	$h .= '<div class="bnb-text">' . $txt . '<span class="bnb-adm">18+ | Gioca responsabilmente | T&amp;C applicati</span></div>';
 	$h .= '<div class="bnb-btns">' . $buttons . '</div>';
-	$h .= '<button type="button" class="bnb-close" aria-label="Chiudi">&times;</button>';
 	$h .= '</div></div>';
 	return $h;
 }
