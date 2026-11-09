@@ -322,7 +322,7 @@ function bnc_render_scheda( $attributes ) {
 			// Operatore con bonus casino e bonus sport: si vedono entrambi (come in produzione).
 			$h .= '<div class="bns-bonus bns-bonus-duo">';
 			foreach ( array( $op, $linked ) as $o ) {
-				$h .= '<div class="bns-bonus-item"><span class="bns-bonus-tipo">Bonus ' . esc_html( bnc_tipo_label( $o['tipo'] ) ) . '</span>' . bnc_bonus_html( $o['bonus'] ) . '</div>';
+				$h .= '<div class="bns-bonus-item"><span class="bns-bonus-tipo bns-bonus-tipo--' . esc_attr( $o['tipo'] ) . '">Bonus ' . esc_html( bnc_tipo_label( $o['tipo'] ) ) . '</span>' . bnc_bonus_html( $o['bonus'] ) . '</div>';
 			}
 			$h .= '</div>';
 		} else {
@@ -341,7 +341,7 @@ function bnc_render_scheda( $attributes ) {
 		$h        .= $riepilogo ? '<div class="bns-riepilogo">' . bnc_rich( $riepilogo ) . '</div>' : '';
 		$h        .= '</div>';
 		$cta = $linked
-			? bnc_go_button( $op, 'Bonus ' . bnc_tipo_label( $op['tipo'] ), 'bnt-btn bnt-go bns-go' ) . bnc_go_button( $linked, 'Bonus ' . bnc_tipo_label( $linked['tipo'] ), 'bnt-btn bnt-go bns-go bns-go-alt' )
+			? bnc_go_button( $op, 'Bonus ' . bnc_tipo_label( $op['tipo'] ), 'bnt-btn bnt-go bns-go' . ( 'casino' === $op['tipo'] ? '' : ' bns-go-alt' ) ) . bnc_go_button( $linked, 'Bonus ' . bnc_tipo_label( $linked['tipo'] ), 'bnt-btn bnt-go bns-go' . ( 'casino' === $linked['tipo'] ? '' : ' bns-go-alt' ) )
 			: bnc_go_button( $op, 'Vai al sito', 'bnt-btn bnt-go bns-go' );
 		$h  .= '<div class="bns-cta">' . $cta . '<div class="bns-adm">18+ | Gioca responsabilmente</div></div>';
 		$h        .= '</section>';
@@ -385,9 +385,10 @@ function bnc_render_bar( $op_id ) {
 	$buttons = '';
 	$linked  = bnc_linked_operator( $op );
 	if ( $linked ) {
-		$first   = 'Bonus ' . strtolower( bnc_tipo_label( $op['tipo'] ) );
-		$second  = 'Bonus ' . strtolower( bnc_tipo_label( $linked['tipo'] ) );
-		$buttons = bnc_go_button( $op, $first, 'bnb-btn' ) . bnc_go_button( $linked, $second, 'bnb-btn bnb-btn-alt' );
+		$first   = 'Bonus ' . mb_strtolower( bnc_tipo_label( $op['tipo'] ) );
+		$second  = 'Bonus ' . mb_strtolower( bnc_tipo_label( $linked['tipo'] ) );
+		// Colore per tipo: casino blu, sport arancione (non per posizione).
+		$buttons = bnc_go_button( $op, $first, 'bnb-btn' . ( 'casino' === $op['tipo'] ? '' : ' bnb-btn-alt' ) ) . bnc_go_button( $linked, $second, 'bnb-btn' . ( 'casino' === $linked['tipo'] ? '' : ' bnb-btn-alt' ) );
 	} else {
 		$buttons = bnc_go_button( $op, 'Vai al sito', 'bnb-btn' );
 	}
@@ -395,8 +396,10 @@ function bnc_render_bar( $op_id ) {
 	$h .= '<div class="bnb-inner">';
 	$h .= '<div class="bnb-logo">' . bnc_logo( $op ) . '</div>';
 	if ( $linked ) {
-		$txt = '<span class="bnb-bonus bnb-bonus-duo"><b>' . esc_html( bnc_tipo_label( $op['tipo'] ) ) . ':</b> ' . esc_html( bnc_bonus_text( $op['bonus'] ) ) . '</span>'
-			. '<span class="bnb-bonus bnb-bonus-duo"><b>' . esc_html( bnc_tipo_label( $linked['tipo'] ) ) . ':</b> ' . esc_html( bnc_bonus_text( $linked['bonus'] ) ) . '</span>';
+		$txt = '';
+		foreach ( array( $op, $linked ) as $o ) {
+			$txt .= '<span class="bnb-bonus bnb-bonus-duo bnb-bonus--' . esc_attr( $o['tipo'] ) . '"><b>' . esc_html( bnc_tipo_label( $o['tipo'] ) ) . ':</b> ' . esc_html( bnc_bonus_text( $o['bonus'] ) ) . '</span>';
+		}
 	} else {
 		$txt = '<span class="bnb-bonus">' . esc_html( bnc_bonus_text( $op['bonus'] ) ) . '</span>';
 	}

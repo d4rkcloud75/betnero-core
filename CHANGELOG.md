@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.3
+- Colori uniformi per tipo di bonus, nella scheda e nella barra: casino blu, sport arancione (anche le etichette "Bonus Sport" e "Sport:").
+
 ## 0.4.2
 - Barra in basso: tolta la X per chiuderla, resta sempre visibile.
 - Il pulsante "torna su" si alza sopra la barra solo nelle pagine che ce l'hanno (altezza misurata, desktop e mobile).
