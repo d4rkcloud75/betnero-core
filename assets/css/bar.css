@@ -34,3 +34,10 @@ body.bnb-has-bar { padding-bottom: 76px; }
 	.bnb-btns { gap: 14px; }
 	.bnb-btn { animation-name: bnbPulseSm; }
 }
+
+/* 0.4.1: due bonus nella barra (casino e sport) */
+.bnb-bonus-duo { font-size: 13.5px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bnb-bonus-duo b { color: #226FA6; font-weight: 800; }
+@media (max-width: 767px) {
+	.bnb-bonus-duo { font-size: 12px; }
+}

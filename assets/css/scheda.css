@@ -64,3 +64,13 @@ html.bn-lb-open { overflow: hidden; }
 	.bns-facts { justify-content: center; }
 	.bns-galleries, .bns-procontro { grid-template-columns: 1fr; }
 }
+
+/* 0.4.1: operatori con bonus casino e bonus sport (entrambi visibili) */
+.bns-bonus-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bns-bonus-item { background: #fff; border: 1px solid var(--bns-line); border-radius: 10px; padding: 10px 12px; }
+.bns-bonus-tipo { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #226FA6; background: #EAF4FB; border-radius: 6px; padding: 3px 7px; margin-bottom: 6px; }
+.bns-bonus-duo .bnt-big { font-size: 18px; }
+.bns-go-alt { background: #1D2433 !important; }
+@media (max-width: 767px) {
+	.bns-bonus-duo { grid-template-columns: 1fr; text-align: center; }
+}

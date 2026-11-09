@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+- Recensioni di operatori con bonus casino e bonus sport (campo "collegato"): nella scheda in alto si vedono entrambi i bonus, con un pulsante ciascuno; nella barra in basso due righe, una per bonus. Come in produzione, per essere compliant.
+
 ## 0.4.0
 - Velox: lo script di Cookie Notice non viene piu' ritardato fino alla prima interazione, cosi' il banner dei cookie compare subito.
 
