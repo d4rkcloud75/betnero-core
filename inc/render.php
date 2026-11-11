@@ -19,7 +19,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * (testata della recensione): caricati subito invece che in differita.
  */
 function bnc_logo( $op, $eager = false ) {
-	$load = $eager ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
+	// $eager: true = subito e con priorita' alta; 'subito' = subito ma senza scavalcare l'immagine principale (LCP).
+	if ( 'subito' === $eager ) {
+		$load = array( 'loading' => 'eager', 'decoding' => 'async' );
+	} else {
+		$load = $eager ? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) : array( 'loading' => 'lazy', 'decoding' => 'async' );
+	}
 	if ( $op['logo_id'] ) {
 		return wp_get_attachment_image( $op['logo_id'], 'medium', false, array_merge( array( 'alt' => $op['name'] ), $load ) );
 	}
@@ -310,7 +315,7 @@ function bnc_render_scheda( $attributes ) {
 		$titolo = (string) bnc_get( $id, 'titolo' );
 		$titolo = $titolo ? wp_strip_all_tags( $titolo ) : 'Recensione ' . preg_replace( '/\s+(Casino|Casinò|Scommesse|Sport)$/i', '', $op['name'] );
 		$h     .= '<section class="bns-hero">';
-		$h     .= '<div class="bns-logo">' . bnc_logo( $op, true ) . '</div>';
+		$h     .= '<div class="bns-logo">' . bnc_logo( $op, 'subito' ) . '</div>';
 		// La prima scheda della pagina porta l'H1, se il testo della pagina non ne ha gia' uno.
 		static $h1_done = false;
 		$own_h1 = false !== stripos( (string) get_post_field( 'post_content', get_the_ID() ), '<h1' );
