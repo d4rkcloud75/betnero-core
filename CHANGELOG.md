@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.4
+- Aggiornamento da GitHub senza tag e senza zip: POST /wp-json/betnero/v1/aggiorna con {"cosa":"tema"|"core","ref":"main"} (solo amministratori, solo i repository di Betnero).
+
 ## 0.4.3
 - Colori uniformi per tipo di bonus, nella scheda e nella barra: casino blu, sport arancione (anche le etichette "Bonus Sport" e "Sport:").
 
