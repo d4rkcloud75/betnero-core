@@ -68,7 +68,9 @@
 }
 @media (max-width: 760px) {
 	.bnk-main { grid-template-columns: 40px 1fr; gap: 12px 14px; padding: 16px; }
-	.bnk-logo { height: 56px; justify-self: start; min-width: 140px; }
+	/* Loghi tutti della stessa misura (0.4.5): il logo riempie il riquadro, qualunque sia il formato dell'immagine */
+	.bnk-logo { width: 176px; height: 64px; min-width: 0; justify-self: start; padding: 4px 6px; overflow: hidden; grid-template: 100% / 100%; box-sizing: border-box; }
+	.bnk-logo img { display: block; width: 100% !important; height: 100% !important; max-height: none; min-height: 0; object-fit: contain; }
 	.bnk-main .bnk-bonus, .bnk-main .bnk-cta { grid-column: 1 / -1; }
 	.bnk-main .bnk-score { display: flex; grid-column: 1 / -1; }
 	.bnk-cta { flex-direction: row; }
