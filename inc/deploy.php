@@ -105,6 +105,8 @@ function bnc_deploy_run( $cosa, $ref ) {
 		@opcache_reset(); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	}
 	do_action( 'bnc_deployed', $cosa, $ref );
+	// 0.5.2: dopo ogni aggiornamento si svuota subito la cache delle pagine (Velox), altrimenti i visitatori vedono la versione vecchia.
+	do_action( 'bnc_purge_page_cache' );
 
 	return array(
 		'cosa'  => $cosa,
