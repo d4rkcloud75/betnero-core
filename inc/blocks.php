@@ -127,6 +127,10 @@ add_action( 'wp_footer', function () {
 	if ( ! $post || false === strpos( $post->post_content, 'is-style-bn-faq' ) || has_block( 'yoast/faq-block', $post ) ) {
 		return;
 	}
+	// 0.4.7: se la pagina ha gia' un FAQPage scritto a mano (plugin Betnero Schema Markup), non se ne aggiunge un secondo.
+	if ( bnc_has_manual_faq_schema( $post->ID ) ) {
+		return;
+	}
 	$items = array();
 	foreach ( bnc_flatten_blocks( parse_blocks( $post->post_content ) ) as $b ) {
 		if ( 'core/details' !== $b['blockName'] || false === strpos( isset( $b['attrs']['className'] ) ? $b['attrs']['className'] : '', 'is-style-bn-faq' ) ) {
@@ -147,6 +151,20 @@ add_action( 'wp_footer', function () {
 		echo '<script type="application/ld+json">' . wp_json_encode( array( '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $items ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
 	}
 } );
+
+function bnc_has_manual_faq_schema( $post_id ) {
+	foreach ( (array) get_post_meta( $post_id ) as $key => $vals ) {
+		if ( 0 === strpos( $key, '_yoast' ) ) {
+			continue;
+		}
+		foreach ( (array) $vals as $v ) {
+			if ( is_string( $v ) && false !== strpos( $v, 'FAQPage' ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
 function bnc_flatten_blocks( $blocks ) {
 	$out = array();
