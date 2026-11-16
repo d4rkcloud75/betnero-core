@@ -131,8 +131,17 @@ add_action( 'wp_footer', function () {
 	if ( bnc_has_manual_faq_schema( $post->ID ) ) {
 		return;
 	}
-	$items = array();
-	foreach ( bnc_flatten_blocks( parse_blocks( $post->post_content ) ) as $b ) {
+	$items  = array();
+	$blocks = parse_blocks( $post->post_content );
+	// 0.4.8: se la pagina ha il riquadro "Le domande piu' frequenti" (bn-faqbox), valgono solo le domande li' dentro;
+	// le altre fisarmoniche della pagina sono sezioni di contenuto, non FAQ.
+	$box = array();
+	foreach ( bnc_flatten_blocks( $blocks ) as $b ) {
+		if ( false !== strpos( isset( $b['attrs']['className'] ) ? $b['attrs']['className'] : '', 'bn-faqbox' ) && ! empty( $b['innerBlocks'] ) ) {
+			$box = array_merge( $box, $b['innerBlocks'] );
+		}
+	}
+	foreach ( bnc_flatten_blocks( $box ? $box : $blocks ) as $b ) {
 		if ( 'core/details' !== $b['blockName'] || false === strpos( isset( $b['attrs']['className'] ) ? $b['attrs']['className'] : '', 'is-style-bn-faq' ) ) {
 			continue;
 		}
@@ -153,6 +162,11 @@ add_action( 'wp_footer', function () {
 } );
 
 function bnc_has_manual_faq_schema( $post_id ) {
+	// Conta solo se il plugin che stampa gli schema scritti a mano e' attivo: spento, i suoi dati restano ma non escono.
+	$active = (array) get_option( 'active_plugins', array() );
+	if ( ! in_array( 'betnero-schema-markup/betnero-schema-markup.php', $active, true ) ) {
+		return false;
+	}
 	foreach ( (array) get_post_meta( $post_id ) as $key => $vals ) {
 		if ( 0 === strpos( $key, '_yoast' ) ) {
 			continue;
