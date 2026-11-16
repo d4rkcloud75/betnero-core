@@ -18,6 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Logo dell'operatore. $eager = true per i loghi in cima alla pagina
  * (testata della recensione): caricati subito invece che in differita.
  */
+/**
+ * Parere dell'esperto senza link alla pagina dell'autore (0.5.1): resta solo la foto.
+ * Troppi link ripetuti verso /autore/ in ogni classifica.
+ */
+function bnc_parere_html( $html ) {
+	$html = preg_replace( '#<a\b[^>]*href="[^"]*/autore/[^"]*"[^>]*>(.*?)</a>#is', '$1', (string) $html );
+	return wp_kses_post( $html );
+}
+
 function bnc_logo( $op, $eager = false ) {
 	// $eager: true = subito e con priorita' alta; 'subito' = subito ma senza scavalcare l'immagine principale (LCP).
 	if ( 'subito' === $eager ) {
@@ -195,7 +204,7 @@ function bnc_render_table( $type, $attributes ) {
 		}
 		$h .= '<div class="bnt-row"' . $data . '>' . bnc_row_cells( $op, $n );
 		if ( $show_parere && $op['parere'] ) {
-			$h .= '<div class="bnt-parere">' . wp_kses_post( $op['parere'] ) . '</div>';
+			$h .= '<div class="bnt-parere">' . bnc_parere_html( $op['parere'] ) . '</div>';
 		}
 		$h .= '</div>';
 	}

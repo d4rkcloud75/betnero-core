@@ -117,7 +117,7 @@ function bnc_classifica_card( $op, $n ) {
 	$h .= '<div class="bnk-cta">' . bnc_go_button( $op, 'Vai al sito', 'bnk-go' ) . $rev . '</div>';
 	$h .= '</div>';
 	if ( $op['parere'] ) {
-		$h .= '<div class="bnk-foot"><div class="bnk-parere">' . wp_kses_post( $op['parere'] ) . '</div><span class="bnk-tc">18+ · T&amp;C</span></div>';
+		$h .= '<div class="bnk-foot"><div class="bnk-parere">' . bnc_parere_html( $op['parere'] ) . '</div><span class="bnk-tc">18+ · T&amp;C</span></div>';
 	}
 	return $h . '</article>';
 }
