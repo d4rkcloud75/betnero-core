@@ -98,3 +98,38 @@ add_action( 'wp_head', function () {
 		$head
 	);
 }, PHP_INT_MAX );
+
+// 0.5.3: se lo schema scritto a mano sostituisce Yoast ma non contiene il breadcrumb,
+// si aggiunge il BreadcrumbList di Yoast (stesse voci del percorso visibile).
+add_action( 'wp_head', function () {
+	if ( ! is_singular() ) {
+		return;
+	}
+	$id = get_queried_object_id();
+	if ( ! bnc_manual_schema_replaces_yoast( $id ) ) {
+		return;
+	}
+	foreach ( bnc_manual_schema_texts( $id ) as $txt ) {
+		if ( false !== strpos( $txt, 'BreadcrumbList' ) ) {
+			return;
+		}
+	}
+	if ( ! function_exists( 'YoastSEO' ) ) {
+		return;
+	}
+	$crumbs = YoastSEO()->meta->for_current_page()->breadcrumbs;
+	if ( empty( $crumbs ) || ! is_array( $crumbs ) ) {
+		return;
+	}
+	$items = array();
+	$n     = 0;
+	$last  = count( $crumbs ) - 1;
+	foreach ( $crumbs as $i => $c ) {
+		$it = array( '@type' => 'ListItem', 'position' => ++$n, 'name' => wp_strip_all_tags( isset( $c['text'] ) ? $c['text'] : '' ) );
+		if ( $i !== $last && ! empty( $c['url'] ) ) {
+			$it['item'] = $c['url'];
+		}
+		$items[] = $it;
+	}
+	echo '<script type="application/ld+json">' . wp_json_encode( array( '@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $items ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+}, 20 );
