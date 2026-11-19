@@ -265,6 +265,7 @@ log('4. Dati degli operatori')
 
 def meta_operatore(meta):
     out = {}
+    meta = meta if isinstance(meta, dict) else {}
     for k, v in meta.items():
         if k in ('_bn_bozza_di',):
             continue
@@ -298,8 +299,16 @@ def contenuto(raw):
     return testo(raw)
 
 
+# Titolo SEO e meta description di Yoast restano quelli della produzione (Francesco li aggiorna li').
+YOAST_PROD = ('_yoast_wpseo_title', '_yoast_wpseo_metadesc')
+
+
 def meta_pagina(st_meta, pr_meta):
     out = {}
+    st_meta = st_meta if isinstance(st_meta, dict) else {}  # nessun dato: WordPress restituisce [] invece di {}
+    pr_meta = pr_meta if isinstance(pr_meta, dict) else {}
+    st_meta = {k: v for k, v in st_meta.items() if k not in YOAST_PROD}
+    pr_meta = {k: v for k, v in pr_meta.items() if k not in YOAST_PROD}
     for k, v in st_meta.items():
         if k == '_bn_operatore':
             v = oid(v)
@@ -315,7 +324,10 @@ def meta_pagina(st_meta, pr_meta):
 
 
 errori = []
+SOLO = set(filter(None, os.environ.get('GOLIVE_SOLO', '').split(',')))  # es. GOLIVE_SOLO=newsletter,password-reset
 for p in st_pages:
+    if SOLO and p['slug'] not in SOLO:
+        continue
     if str(p['id']) not in mappa['pagine'] or p['slug'] in SALTA_SLUG:
         continue
     nid = mappa['pagine'][str(p['id'])]
