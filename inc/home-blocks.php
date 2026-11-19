@@ -201,7 +201,7 @@ function bnc_render_classifica( $a ) {
 		foreach ( array_values( $ops ) as $i => $op ) {
 			$h .= bnc_classifica_card( $op, $i + 1 );
 		}
-		$h .= '<p class="bnk-empty" hidden>Nessun operatore corrisponde ai filtri.</p></div>';
+		$h .= '<p class="bnk-empty" hidden></p></div>';
 	}
 	$h .= '<p class="bnk-legal">18+ · Gioca responsabilmente · I bonus sono soggetti ai termini e condizioni dell\'operatore · Betnero riceve una commissione dagli operatori, senza influenza sul voto.</p>';
 	return $h . '</div>';

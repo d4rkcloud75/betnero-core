@@ -209,7 +209,7 @@ function bnc_render_table( $type, $attributes ) {
 		$h .= '</div>';
 	}
 	$h .= '</div>';
-	$h .= '<p class="bnt-empty" hidden>Nessun operatore corrisponde ai filtri. Rimuovi uno o più filtri.</p>';
+	$h .= '<p class="bnt-empty" hidden></p>';
 	$h .= bnc_adm_line() . '</div>';
 	return $h;
 }

@@ -215,6 +215,10 @@
 						op.hidden = false;
 					} );
 					if ( empty ) {
+						// 0.5.4: il testo si scrive solo quando serve (non resta ripetuto nel codice della pagina).
+						if ( ! empty.textContent ) {
+							empty.textContent = 'Nessun operatore corrisponde ai filtri.';
+						}
 						empty.hidden = shown > 0;
 						if ( ! shown ) {
 							anim( empty, [ { opacity: 0 }, { opacity: 1 } ], { duration: 250 } );

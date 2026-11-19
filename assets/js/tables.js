@@ -31,7 +31,10 @@
 			}
 		} );
 		var empty = table.querySelector( '.bnt-empty' );
-		if ( empty ) { empty.hidden = visible > 0; }
+		if ( empty ) {
+			if ( ! empty.textContent ) { empty.textContent = 'Nessun operatore corrisponde ai filtri. Rimuovi uno o più filtri.'; }
+			empty.hidden = visible > 0;
+		}
 		var reset = table.querySelector( '[data-bnt-reset]' );
 		if ( reset ) { reset.hidden = ! active; }
 	}
