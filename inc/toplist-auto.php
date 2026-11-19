@@ -265,15 +265,17 @@ function bnc_render_sidebar( $type ) {
 		'alt'      => 'LeoVegas: bonus di benvenuto',
 	) );
 	if ( $banner && ! empty( $banner['img'] ) ) {
-		$href = '';
+		$href  = '';
+		$blank = false;
 		foreach ( bnc_operators( 'casino', false ) as $op ) {
 			if ( false !== stripos( $op['name'], $banner['operator'] ) && $op['go_url'] ) {
-				$href = $op['go_url'];
+				$href  = $op['go_url'];
+				$blank = ! empty( $op['go_blank'] ); // 0.5.5: come il pulsante "Vai al sito" dell'operatore.
 				break;
 			}
 		}
 		$img = '<img src="' . esc_url( $banner['img'] ) . '" alt="' . esc_attr( $banner['alt'] ) . '" width="322" height="669" loading="lazy" decoding="async">';
-		$h  .= '<div class="bns2-banner">' . ( $href ? '<a href="' . esc_url( $href ) . '" rel="nofollow sponsored noopener" target="_blank">' . $img . '</a>' : $img ) . '</div>';
+		$h  .= '<div class="bns2-banner">' . ( $href ? '<a href="' . esc_url( $href ) . '" rel="nofollow sponsored noopener"' . ( $blank ? ' target="_blank"' : '' ) . '>' . $img . '</a>' : $img ) . '</div>';
 	}
 	return $h . '</div>';
 }
