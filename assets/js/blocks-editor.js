@@ -221,4 +221,60 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.7.0: Tabella partite (quote 1X2 migliori di piu' partite). */
+	function TabellaControls( props ) {
+		var a = props.attributes;
+		var st = useState( null );
+		var data = st[ 0 ];
+		var setData = st[ 1 ];
+		var qs = useState( '' );
+		var q = qs[ 0 ];
+		var setQ = qs[ 1 ];
+		useEffect( function () {
+			wp.apiFetch( { path: '/betnero/v1/quote/partite' } ).then( setData ).catch( function () { setData( { campionati: {}, partite: [] } ); } );
+		}, [] );
+		var camp = [ { label: 'Scegli...', value: '' } ];
+		Object.keys( ( data && data.campionati ) || {} ).forEach( function ( k ) {
+			camp.push( { label: data.campionati[ k ], value: k } );
+		} );
+		var sel = a.partite || [];
+		var lista = ( ( data && data.partite ) || [] ).filter( function ( p ) {
+			var t = ( p.label + ' ' + p.lega ).toLowerCase();
+			return sel.indexOf( p.id ) > -1 || ! q || t.indexOf( q.toLowerCase() ) > -1;
+		} ).slice( 0, 80 );
+		var CheckboxControl = wp.components.CheckboxControl;
+		return el( PanelBody, { title: 'Partite' },
+			el( SelectControl, { label: 'Scelta delle partite', value: a.modo, options: [ { label: 'Automatica: campionato e giorni', value: 'auto' }, { label: 'A mano: spunta le partite', value: 'manuale' } ], onChange: set( props, 'modo' ) } ),
+			a.modo === 'auto' ? [
+				el( SelectControl, { key: 'c', label: 'Campionato', value: a.campionato, options: camp, onChange: set( props, 'campionato' ) } ),
+				el( RangeControl, { key: 'g', label: 'Prossimi giorni', value: a.giorni, min: 1, max: 14, onChange: function ( v ) { props.setAttributes( { giorni: v || 7 } ); } } )
+			] : [
+				el( TextControl, { key: 's', label: 'Cerca squadra o campionato', value: q, onChange: setQ } ),
+				el( 'div', { key: 'l', style: { maxHeight: '320px', overflow: 'auto' } }, data ? lista.map( function ( p ) {
+					return el( CheckboxControl, { key: p.id, label: p.label, help: p.lega, checked: sel.indexOf( p.id ) > -1, onChange: function ( on ) {
+						var n = sel.filter( function ( x ) { return x !== p.id; } );
+						if ( on ) { n.push( p.id ); }
+						props.setAttributes( { partite: n } );
+					} } );
+				} ) : 'Caricamento...' ),
+				el( 'p', { key: 'n', style: { fontSize: '12px', color: '#757575' } }, sel.length + ' partite scelte' )
+			],
+			el( ToggleControl, { label: 'Mostra i risultati delle ultime 24 ore', checked: a.risultati, onChange: set( props, 'risultati' ) } ),
+			el( TextControl, { label: 'Titolo (vuoto = automatico)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+		);
+	}
+
+	wp.blocks.registerBlockType( 'betnero/tabella-partite', {
+		title: 'Tabella partite',
+		icon: 'calendar-alt',
+		category: 'betnero',
+		description: 'Piu\' partite con le quote 1X2 migliori tra i bookmaker: per campionato o scelte a mano.',
+		edit: function ( props ) {
+			return [
+				el( InspectorControls, { key: 'i' }, el( TabellaControls, props ) ),
+				el( 'div', { key: 'p' }, preview( 'betnero/tabella-partite', props.attributes ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

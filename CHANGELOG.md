@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.0
+- Blocco "Tabella partite": piu' partite con le quote 1X2 migliori tra i bookmaker (ogni quota porta al sito di chi la offre). Scelta automatica (campionato e prossimi giorni) o a mano (partite spuntate nel blocco, con ricerca). Raggruppata per giorno; partite finite con il risultato, quelle in corso segnate "In corso". Legge solo la copia locale e si rinfresca via REST.
+
 ## 0.6.8
 - Operatori > Quote: con la ricerca attiva i campionati restano uno sotto l'altro (prima finivano tutti sulla stessa riga).
 
