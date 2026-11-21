@@ -1,0 +1,38 @@
+/* Betnero Core: blocchi "Quota del pronostico" e "Confronto quote". */
+.bnq { --bnq-blue: #036AA9; --bnq-green: #13834A; --bnq-ink: #1D2433; --bnq-muted: #5D6676; --bnq-line: #E6E9EF; --bnq-bg: #F4F6F9;
+	border: 1px solid var(--bnq-line); border-radius: 12px; background: var(--bnq-bg); padding: 14px; margin: 18px 0 24px; color: var(--bnq-ink); }
+.bnq-match { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+.bnq-league { font-size: 12px; color: var(--bnq-muted); }
+.bnq-teams { font-size: 19px; font-weight: 800; line-height: 1.25; }
+.bnq-teams span { color: var(--bnq-muted); font-weight: 400; }
+.bnq-k { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--bnq-muted); }
+.bnq-pick-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; background: #fff; border-radius: 10px; padding: 12px 14px; }
+.bnq-pick-sel strong { font-size: 16px; }
+.bnq-pick-best { text-align: center; }
+.bnq-odd { font-weight: 800; font-variant-numeric: tabular-nums; }
+.bnq-pick-best .bnq-odd { font-size: 26px; color: var(--bnq-green); line-height: 1.1; }
+.bnq-pick-op { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 130px; }
+.bnq-logo img { max-width: 110px; max-height: 34px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; }
+.bnq-title { font-weight: 800; font-size: 15px; margin: 0 0 8px; }
+.bnq-table { display: flex; flex-direction: column; gap: 6px; }
+.bnq-tr { display: grid; grid-template-columns: 130px repeat(var(--bnq-cols, 3), minmax(52px, 1fr)) 120px; gap: 8px; align-items: center; background: #fff; border-radius: 10px; padding: 8px 12px; }
+.bnq-th { background: none; padding-top: 0; padding-bottom: 0; font-size: 11px; color: var(--bnq-muted); text-align: center; }
+.bnq-th span:first-child { text-align: left; }
+.bnq-tr .bnq-odd { text-align: center; font-size: 15px; border-radius: 6px; padding: 6px 0; }
+.bnq-tr .bnq-odd.is-best { background: #E4F4EA; color: var(--bnq-green); }
+.bnq-tr .bnq-odd.is-pick { outline: 2px solid var(--bnq-blue); outline-offset: -2px; }
+.bnq .bnt-btn { display: block; text-align: center; font-weight: 700; font-size: 13px; line-height: 1.2; padding: 9px 10px; border-radius: 999px; text-decoration: none !important; color: #fff !important; background: var(--bnq-blue); }
+.bnq-note { font-size: 12px; color: var(--bnq-muted); margin: 8px 0 0; }
+.bnq-adm { font-size: 10px; color: var(--bnq-muted); text-align: center; margin: 6px 0 0; }
+.bnq-empty { padding: 12px; border: 1px dashed #c3c4c7; border-radius: 8px; color: #50575e; }
+@media (max-width: 640px) {
+	.bnq-pick-row { grid-template-columns: 1fr auto; }
+	.bnq-pick-op { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; }
+	.bnq-pick-op .bnt-btn { flex: 0 0 auto; padding-left: 22px; padding-right: 22px; }
+	.bnq-th { display: none; }
+	.bnq-tr { grid-template-columns: repeat(var(--bnq-cols, 3), 1fr); padding: 10px; }
+	.bnq-tr > .bnq-logo { grid-column: 1 / -1; }
+	.bnq-tr > .bnq-logo img { margin: 0; }
+	.bnq-tr > span:last-child { grid-column: 1 / -1; }
+	.bnq-tr .bnq-odd::before { content: attr(data-label); display: block; font-size: 10px; font-weight: 400; color: var(--bnq-muted); }
+}

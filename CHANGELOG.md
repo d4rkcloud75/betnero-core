@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0
+- Quote da odds-api.io. Operatori > Quote: chiave (mai mostrata), bookmaker scelti nel pannello di odds-api.io collegati agli operatori Betnero, campionati da seguire, stato e "Aggiorna adesso".
+- Lettura ogni 10 minuti con copia locale (tabella bnc_quote): le pagine leggono la copia, le richieste non dipendono dal traffico e se l'API non risponde restano le ultime quote.
+- Articoli: riquadro "Quote del pronostico" (partita e pronostico: 1X2, Doppia chance, Under/Over 2,5, Goal/No Goal) e blocchi "Quota del pronostico" e "Confronto quote". Dopo il caricamento i blocchi si aggiornano via REST, anche sulle pagine in cache.
+
 ## 0.4.4
 - Aggiornamento da GitHub senza tag e senza zip: POST /wp-json/betnero/v1/aggiorna con {"cosa":"tema"|"core","ref":"main"} (solo amministratori, solo i repository di Betnero).
 

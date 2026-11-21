@@ -185,4 +185,40 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.6.0: quote da odds-api.io (partita e pronostico nel riquadro "Quote del pronostico"). */
+	wp.blocks.registerBlockType( 'betnero/quota-pronostico', {
+		title: 'Quota del pronostico',
+		icon: 'money-alt',
+		category: 'betnero',
+		description: 'Il pronostico con la quota migliore tra i bookmaker e il pulsante Vai al sito.',
+		edit: function ( props ) {
+			return el( 'div', {}, preview( 'betnero/quota-pronostico', props.attributes ) );
+		},
+		save: function () { return null; }
+	} );
+
+	wp.blocks.registerBlockType( 'betnero/confronto-quote', {
+		title: 'Confronto quote',
+		icon: 'editor-table',
+		category: 'betnero',
+		description: 'Le quote dei bookmaker per la partita del pronostico, con la migliore evidenziata.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( SelectControl, { label: 'Mercato', value: a.mercato, options: [
+							{ label: 'Quello del pronostico', value: 'auto' },
+							{ label: 'Esito finale 1X2', value: '1x2' },
+							{ label: 'Doppia chance', value: 'dc' },
+							{ label: 'Under/Over 2,5', value: 'uo' },
+							{ label: 'Goal/No Goal', value: 'gg' }
+						], onChange: set( props, 'mercato' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/confronto-quote', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );
