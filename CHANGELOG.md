@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.8
+- Operatori > Quote: con la ricerca attiva i campionati restano uno sotto l'altro (prima finivano tutti sulla stessa riga).
+
 ## 0.6.7
 - Velox: lo script che rinfresca le quote non aspetta la prima interazione del lettore.
 

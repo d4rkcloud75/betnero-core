@@ -885,7 +885,7 @@ function bnc_odds_page() {
 			$ib = in_array( $b, $s['leagues'], true );
 			return $ia === $ib ? strcmp( $a, $b ) : ( $ia ? -1 : 1 );
 		} );
-		echo '<p><input type="search" placeholder="Cerca (es. italy, england, uefa)" oninput="var q=this.value.toLowerCase();document.querySelectorAll(\'#bnc-leagues label\').forEach(function(l){l.style.display=l.textContent.toLowerCase().indexOf(q)>-1?\'\':\'none\'})" class="regular-text"></p>';
+		echo '<p><input type="search" placeholder="Cerca (es. italy, england, uefa)" oninput="var q=this.value.toLowerCase();document.querySelectorAll(\'#bnc-leagues label\').forEach(function(l){l.style.display=l.textContent.toLowerCase().indexOf(q)>-1?\'block\':\'none\'})" class="regular-text"></p>';
 		echo '<div id="bnc-leagues" style="max-height:320px;overflow:auto;border:1px solid #dcdcde;background:#fff;padding:8px 12px;max-width:720px">';
 		foreach ( $known as $slug => $label ) {
 			echo '<label style="display:block;margin:2px 0"><input type="checkbox" name="bnc_odds[leagues][]" value="' . esc_attr( $slug ) . '"' . checked( in_array( $slug, $s['leagues'], true ), true, false ) . '> ' . esc_html( $label ) . ' <code style="font-size:11px">' . esc_html( $slug ) . '</code></label>';
