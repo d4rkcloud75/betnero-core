@@ -328,6 +328,7 @@ function bnc_odds_dc_key( $k ) {
  * Restituisce un float o 0 se manca.
  */
 function bnc_odds_price( $odds, $mkt, $out ) {
+	$out     = (string) $out; // 0.6.2: le chiavi "1", "2" e "12" arrivano come numeri dagli array PHP
 	$markets = bnc_odds_markets();
 	if ( ! isset( $markets[ $mkt ] ) || ! is_array( $odds ) ) {
 		return 0.0;
@@ -569,7 +570,7 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	$h  = '<div class="bnq bnq-cmp">' . $solo . '<p class="bnq-title">' . esc_html( 'Confronto quote: ' . $markets[ $cm ]['label'] ) . '</p>';
 	$h .= '<div class="bnq-table" style="--bnq-cols:' . count( $cols ) . '"><div class="bnq-tr bnq-th"><span>Bookmaker</span>';
 	foreach ( $cols as $ck => $cl ) {
-		$is_pick = $cm === $mk && $ck === $out;
+		$is_pick = $cm === $mk && (string) $ck === (string) $out;
 		$h      .= '<span' . ( $is_pick ? ' class="is-pick" title="Il nostro pronostico"' : '' ) . '>' . esc_html( $cl ) . ( $is_pick ? ' &#9733;' : '' ) . '</span>';
 	}
 	$h .= '<span></span></div>';
@@ -577,7 +578,7 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 		$h .= '<div class="bnq-tr"><span class="bnq-logo">' . bnc_logo( $g['op'] ) . '</span>';
 		foreach ( $cols as $ck => $cl ) {
 			$is_best = $g['p'][ $ck ] > 0 && abs( $g['p'][ $ck ] - $best[ $ck ] ) < 0.0001;
-			$is_pick = $cm === $mk && $ck === $out;
+			$is_pick = $cm === $mk && (string) $ck === (string) $out;
 			$h      .= '<span class="bnq-odd' . ( $is_best ? ' is-best' : '' ) . ( $is_pick ? ' is-pick' : '' ) . '" data-label="' . esc_attr( $cl ) . '">' . esc_html( bnc_odds_fmt( $g['p'][ $ck ] ) ) . '</span>';
 		}
 		$h .= '<span>' . bnc_go_button( $g['op'], 'Vai al sito', 'bnt-btn bnt-go' ) . '</span></div>';

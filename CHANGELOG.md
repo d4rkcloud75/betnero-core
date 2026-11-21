@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2
+- Confronto quote: la colonna del pronostico ora si evidenzia davvero (con "1", "2" e "12" il confronto falliva perche' PHP trasforma quelle chiavi in numeri). Per lo stesso motivo la colonna "12" della Doppia chance restava vuota.
+
 ## 0.6.1
 - Quote: il campo della chiave non viene piu' riempito dal browser con una password salvata.
 - L'aggiornamento automatico si programma subito dopo il salvataggio di chiave e campionati.
