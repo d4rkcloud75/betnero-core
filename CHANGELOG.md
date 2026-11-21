@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3
+- Editor a blocchi: il pannello "Meta Box" in basso (Schema Markup, Yoast) parte chiuso all'apertura, invece di coprire i blocchi. Si apre con un clic sulla barra.
+
 ## 0.6.2
 - Confronto quote: la colonna del pronostico ora si evidenzia davvero (con "1", "2" e "12" il confronto falliva perche' PHP trasforma quelle chiavi in numeri). Per lo stesso motivo la colonna "12" della Doppia chance restava vuota.
 

@@ -798,3 +798,13 @@ function bnc_odds_page() {
 	}
 	echo '</div>';
 }
+
+/* ---------- Editor: pannello "Meta Box" chiuso all'apertura (0.6.3) ---------- */
+
+// Con riquadri vecchio stile (Schema Markup, Yoast) l'editor apre il pannello in basso e copre i blocchi,
+// e sullo staging la preferenza salvata non si aggiorna. All'apertura il pannello parte sempre chiuso:
+// resta la barra "Meta Box", che con un clic lo apre.
+add_action( 'enqueue_block_editor_assets', function () {
+	wp_add_inline_script( 'wp-preferences', "window.addEventListener('load',function(){try{wp.data.dispatch('core/preferences').set('core/edit-post','metaBoxesMainIsOpen',false);}catch(e){}});", 'after' );
+	wp_enqueue_script( 'wp-preferences' );
+} );
