@@ -799,12 +799,24 @@ function bnc_odds_page() {
 	echo '</div>';
 }
 
-/* ---------- Editor: pannello "Meta Box" chiuso all'apertura (0.6.3) ---------- */
+/* ---------- Editor: pannello "Meta Box" chiuso all'apertura (0.6.4) ---------- */
 
-// Con riquadri vecchio stile (Schema Markup, Yoast) l'editor apre il pannello in basso e copre i blocchi,
-// e sullo staging la preferenza salvata non si aggiorna. All'apertura il pannello parte sempre chiuso:
-// resta la barra "Meta Box", che con un clic lo apre.
-add_action( 'enqueue_block_editor_assets', function () {
-	wp_add_inline_script( 'wp-preferences', "window.addEventListener('load',function(){try{wp.data.dispatch('core/preferences').set('core/edit-post','metaBoxesMainIsOpen',false);}catch(e){}});", 'after' );
-	wp_enqueue_script( 'wp-preferences' );
-} );
+// Con riquadri vecchio stile (Schema Markup, Yoast) l'editor apre il pannello in basso e copre i blocchi.
+// La preferenza "aperto" salvata per l'utente non si riesce a cambiare dal browser, quindi la si corregge
+// quando WordPress la legge per l'editor: pannello chiuso, e dati segnati come i piu' recenti, cosi' il
+// browser non li sostituisce con la sua copia locale. Il pannello si apre con un clic sulla barra "Meta Box".
+add_filter( 'get_user_metadata', function ( $value, $user_id, $meta_key, $single ) {
+	global $wpdb;
+	static $busy = false;
+	if ( $busy || ! is_admin() || $meta_key !== $wpdb->get_blog_prefix() . 'persisted_preferences' ) {
+		return $value;
+	}
+	$busy = true;
+	$raw  = get_user_meta( $user_id, $meta_key, true );
+	$busy = false;
+	$raw  = is_array( $raw ) ? $raw : array();
+	$raw['core/edit-post']                        = isset( $raw['core/edit-post'] ) && is_array( $raw['core/edit-post'] ) ? $raw['core/edit-post'] : array();
+	$raw['core/edit-post']['metaBoxesMainIsOpen'] = false;
+	$raw['_modified']                             = gmdate( 'Y-m-d\TH:i:s.000\Z' );
+	return array( $raw );
+}, 10, 4 );

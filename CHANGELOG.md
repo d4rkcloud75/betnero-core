@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4
+- Editor: il pannello "Meta Box" parte chiuso correggendo la preferenza dell'utente quando WordPress la legge (la 0.6.3 lo faceva dal browser, troppo tardi).
+
 ## 0.6.3
 - Editor a blocchi: il pannello "Meta Box" in basso (Schema Markup, Yoast) parte chiuso all'apertura, invece di coprire i blocchi. Si apre con un clic sulla barra.
 
