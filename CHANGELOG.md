@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.2
+- Quote automatiche: comparivano di nuovo anche negli articoli che contengono una Tabella partite (la tabella veniva scambiata per i blocchi del pronostico e il riquadro automatico non si aggiungeva).
+
 ## 0.7.1
 - Tabella partite: colonne delle quote di larghezza fissa e allineate anche per le partite finite, quote in blu cliccabili, nome breve del bookmaker ("Marathonbet" invece di "Marathonbet Scommesse").
 - Nomi in italiano in tutti i riquadri delle quote: campionato senza il paese ("Serie A", "UEFA Champions League") e squadre con il nome usato in Italia ("Juventus", "Napoli", "Inter", "Milan"). Correzioni possibili con i filtri bnc_odds_team e bnc_odds_league_label.

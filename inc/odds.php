@@ -721,7 +721,7 @@ add_filter( 'the_content', function ( $content ) {
 		return $content;
 	}
 	$pid = get_the_ID();
-	if ( ! get_post_meta( $pid, '_bn_quote_evento', true ) || has_block( 'betnero/quota-pronostico', $pid ) || has_block( 'betnero/confronto-quote', $pid ) || false !== strpos( $content, 'bnq-live' ) ) {
+	if ( ! get_post_meta( $pid, '_bn_quote_evento', true ) || has_block( 'betnero/quota-pronostico', $pid ) || has_block( 'betnero/confronto-quote', $pid ) || false !== strpos( $content, 'class="bnq-live" data-post=' ) ) {
 		return $content;
 	}
 	$marker = '<div class="bnq-auto" data-bnq-auto="1"></div>';
