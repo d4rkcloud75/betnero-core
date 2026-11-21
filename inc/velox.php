@@ -15,5 +15,8 @@ add_filter( 'velox_delay_js_extra_exclusions', function ( $list ) {
 	$list   = (array) $list;
 	$list[] = 'cookie-notice';
 	$list[] = 'cnArgs';
+	// 0.6.7: quote sempre fresche anche sulle pagine in cache, senza aspettare che il lettore si muova.
+	$list[] = 'betnero-quote';
+	$list[] = 'quote.min.js';
 	return $list;
 } );

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.7
+- Velox: lo script che rinfresca le quote non aspetta la prima interazione del lettore.
+
 ## 0.6.6
 - Tolta la correzione del pannello "Meta Box" (0.6.3 e 0.6.4): il pannello lo apre apposta lo snippet "Apri Meta Box", che serve per lo Schema Markup. L'altezza si regola nello snippet.
 
