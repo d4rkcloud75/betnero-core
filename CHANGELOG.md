@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.6
+- Tolta la correzione del pannello "Meta Box" (0.6.3 e 0.6.4): il pannello lo apre apposta lo snippet "Apri Meta Box", che serve per lo Schema Markup. L'altezza si regola nello snippet.
+
 ## 0.6.5
 - Quote automatiche: negli articoli con partita collegata, pronostico e confronto compaiono da soli prima del primo H2 (prima della toplist), se non ci sono gia' i blocchi. Si spegne in Operatori > Quote.
 - Riquadro "Quote del pronostico": ricerca della partita per squadra o campionato, e anteprima delle quote (bookmaker con quote, ora dell'aggiornamento, quota migliore per il pronostico).
