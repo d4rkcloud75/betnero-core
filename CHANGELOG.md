@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+- Tabella partite: colonne delle quote di larghezza fissa e allineate anche per le partite finite, quote in blu cliccabili, nome breve del bookmaker ("Marathonbet" invece di "Marathonbet Scommesse").
+- Nomi in italiano in tutti i riquadri delle quote: campionato senza il paese ("Serie A", "UEFA Champions League") e squadre con il nome usato in Italia ("Juventus", "Napoli", "Inter", "Milan"). Correzioni possibili con i filtri bnc_odds_team e bnc_odds_league_label.
+
 ## 0.7.0
 - Blocco "Tabella partite": piu' partite con le quote 1X2 migliori tra i bookmaker (ogni quota porta al sito di chi la offre). Scelta automatica (campionato e prossimi giorni) o a mano (partite spuntate nel blocco, con ricerca). Raggruppata per giorno; partite finite con il risultato, quelle in corso segnate "In corso". Legge solo la copia locale e si rinfresca via REST.
 

@@ -75,7 +75,7 @@ function bnc_odds_table_render( $a ) {
 	}
 	$books  = bnc_odds_shown_books();
 	$outs   = array( '1' => '1', 'X' => 'X', '2' => '2' );
-	$titolo = '' !== $a['titolo'] ? $a['titolo'] : ( 'auto' === $a['modo'] ? 'Quote ' . $rows[0]['league_name'] : 'Quote delle partite' );
+	$titolo = '' !== $a['titolo'] ? $a['titolo'] : ( 'auto' === $a['modo'] ? 'Quote ' . bnc_odds_league_label( $rows[0]['league_name'] ) : 'Quote delle partite' );
 	$h      = '<div class="bnq bnq-tab"><p class="bnq-title">' . esc_html( $titolo ) . '</p>';
 	$day    = '';
 	$latest = 0;
@@ -101,7 +101,7 @@ function bnc_odds_table_render( $a ) {
 		if ( '' !== $r['score'] && false !== strpos( $r['score'], '-' ) ) {
 			$score = explode( '-', $r['score'], 2 );
 		}
-		$h .= '<div class="bnq-mt">' . $when . '<div class="bnq-teams2"><span>' . esc_html( $r['home'] ) . '</span><span>' . esc_html( $r['away'] ) . '</span></div>';
+		$h .= '<div class="bnq-mt">' . $when . '<div class="bnq-teams2"><span>' . esc_html( bnc_odds_team( $r['home'] ) ) . '</span><span>' . esc_html( bnc_odds_team( $r['away'] ) ) . '</span></div>';
 		$h .= '<div class="bnq-sc">' . ( 'settled' === $r['status'] ? '<b>' . esc_html( trim( $score[0] ) ) . '</b><b>' . esc_html( trim( $score[1] ) ) . '</b>' : '' ) . '</div><div class="bnq-o3">';
 		foreach ( $outs as $ok => $ol ) {
 			$best = 0.0;
@@ -117,10 +117,10 @@ function bnc_odds_table_render( $a ) {
 			}
 			$inner = '<span class="bnq-ol">' . esc_html( $ol ) . '</span><strong>' . esc_html( bnc_odds_fmt( $best ) ) . '</strong>';
 			if ( $bop && ! $started && ! empty( $bop['go_url'] ) ) {
-				$inner .= '<span class="bnq-bk">' . esc_html( $bop['name'] ) . '</span>';
+				$inner .= '<span class="bnq-bk">' . esc_html( bnc_odds_book_label( $bop['name'] ) ) . '</span>';
 				$h     .= '<a class="bnq-oc" href="' . esc_url( $bop['go_url'] ) . '" rel="nofollow sponsored noopener"' . ( ! empty( $bop['go_blank'] ) ? ' target="_blank"' : '' ) . ' title="' . esc_attr( 'Quota ' . $ol . ' su ' . $bop['name'] ) . '">' . $inner . '</a>';
 			} else {
-				$h .= '<span class="bnq-oc is-off">' . $inner . '</span>';
+				$h .= '<span class="bnq-oc is-off">' . $inner . '<span class="bnq-bk">&nbsp;</span></span>';
 			}
 		}
 		$h .= '</div></div>';
@@ -174,11 +174,11 @@ add_action( 'rest_api_init', function () {
 				$out['campionati'][ $slug ] = $slug;
 			}
 			foreach ( $rows as $r ) {
-				$out['campionati'][ $r['league_slug'] ] = $r['league_name'];
+				$out['campionati'][ $r['league_slug'] ] = bnc_odds_league_label( $r['league_name'] );
 				$out['partite'][] = array(
 					'id'    => (int) $r['id'],
-					'label' => wp_date( 'd/m H:i', strtotime( $r['start'] . ' UTC' ) ) . ' ' . $r['home'] . ' - ' . $r['away'],
-					'lega'  => $r['league_name'],
+					'label' => wp_date( 'd/m H:i', strtotime( $r['start'] . ' UTC' ) ) . ' ' . bnc_odds_team( $r['home'] ) . ' - ' . bnc_odds_team( $r['away'] ),
+					'lega'  => bnc_odds_league_label( $r['league_name'] ),
 				);
 			}
 			return $out;

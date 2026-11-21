@@ -287,6 +287,44 @@ function bnc_odds_sync( $force = false ) {
 	return $rep;
 }
 
+/* ---------- Nomi da mostrare (0.7.1) ---------- */
+
+/** Campionato senza il paese davanti: "Italy - Serie A" diventa "Serie A". */
+function bnc_odds_league_label( $name ) {
+	$name = (string) $name;
+	$pos  = strpos( $name, ' - ' );
+	$out  = false !== $pos ? substr( $name, $pos + 3 ) : $name;
+	return (string) apply_filters( 'bnc_odds_league_label', $out, $name );
+}
+
+/** Squadra con il nome usato in Italia: "Juventus Turin" diventa "Juventus", "SSC Napoli" diventa "Napoli". */
+function bnc_odds_team( $name ) {
+	$orig  = (string) $name;
+	$fixed = array(
+		'AC Milan'      => 'Milan',
+		'Inter Milano'  => 'Inter',
+		'Inter Milan'   => 'Inter',
+		'Lazio Rome'    => 'Lazio',
+		'Juventus Turin' => 'Juventus',
+		'Hellas Verona' => 'Verona',
+		'Paris Saint-Germain FC' => 'PSG',
+		'Paris Saint Germain' => 'PSG',
+	);
+	if ( isset( $fixed[ $orig ] ) ) {
+		$out = $fixed[ $orig ];
+	} else {
+		$out = preg_replace( '/^(?:SSC|AS|AC|US|ACF|SS|UC|FC|AFC|SC|CFC)\s+/u', '', $orig );
+		$out = preg_replace( '/\s+(?:FC|CF|Calcio|BC|CFC|SC|1907|1913|1909|1919)$/u', '', $out );
+		$out = '' !== trim( $out ) ? $out : $orig;
+	}
+	return (string) apply_filters( 'bnc_odds_team', $out, $orig );
+}
+
+/** Nome corto del bookmaker: "Marathonbet Scommesse" diventa "Marathonbet". */
+function bnc_odds_book_label( $name ) {
+	return trim( preg_replace( '/\s+(?:Scommesse|Sport|Casino|Casin\x{00F2})$/iu', '', (string) $name ) );
+}
+
 /* ---------- Lettura della copia locale ---------- */
 
 function bnc_odds_event( $id ) {
@@ -415,11 +453,11 @@ function bnc_odds_metabox( $post ) {
 	$group = null;
 	foreach ( $rows as $r ) {
 		if ( $group !== $r['league_name'] ) {
-			echo ( null !== $group ? '</optgroup>' : '' ) . '<optgroup label="' . esc_attr( $r['league_name'] ) . '">';
+			echo ( null !== $group ? '</optgroup>' : '' ) . '<optgroup label="' . esc_attr( bnc_odds_league_label( $r['league_name'] ) ) . '">';
 			$group = $r['league_name'];
 		}
 		$when = wp_date( 'd/m H:i', strtotime( $r['start'] . ' UTC' ) );
-		echo '<option value="' . (int) $r['id'] . '"' . selected( $sel_ev, (int) $r['id'], false ) . '>' . esc_html( $when . ' ' . $r['home'] . ' - ' . $r['away'] ) . '</option>';
+		echo '<option value="' . (int) $r['id'] . '"' . selected( $sel_ev, (int) $r['id'], false ) . '>' . esc_html( $when . ' ' . bnc_odds_team( $r['home'] ) . ' - ' . bnc_odds_team( $r['away'] ) ) . '</option>';
 	}
 	echo ( null !== $group ? '</optgroup>' : '' ) . '</select></p>';
 	echo '<p><label for="bnc-quote-sel"><strong>Pronostico</strong></label><br><select id="bnc-quote-sel" name="bnc_quote_scelta" style="width:100%"><option value="">Nessuno</option>';
@@ -469,7 +507,7 @@ function bnc_odds_metabox_preview( $post_id ) {
 	}
 	$upd = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : 'mai';
 	$h   = '<div style="background:#f6f7f7;border:1px solid #dcdcde;border-radius:4px;padding:8px 10px;margin:0 0 10px">';
-	$h  .= '<strong>' . esc_html( $ev['home'] . ' - ' . $ev['away'] ) . '</strong><br>';
+	$h  .= '<strong>' . esc_html( bnc_odds_team( $ev['home'] ) . ' - ' . bnc_odds_team( $ev['away'] ) ) . '</strong><br>';
 	$h  .= esc_html( sprintf( '%d bookmaker su %d con quote, aggiornate alle %s.', $with, count( $books ), $upd ) );
 	if ( isset( $m[ $mk ]['out'][ $out ] ) ) {
 		$h .= '<br>' . esc_html( $m[ $mk ]['label'] . ': ' . $m[ $mk ]['out'][ $out ] ) . ' &rarr; ' . ( $best > 0 ? '<strong>' . esc_html( bnc_odds_fmt( $best ) ) . '</strong> ' . esc_html( $bname ) : '<span style="color:#b32d2e">nessuna quota per questo esito</span>' );
@@ -606,7 +644,7 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	}
 	$upd             = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : '';
 	$note            = $started ? ( '' !== $ev['score'] && 'settled' === $ev['status'] ? 'Risultato finale ' . $ev['score'] . '. Quote pre-partita.' : 'Partita iniziata: quote pre-partita.' ) : ( $upd ? 'Quote aggiornate alle ' . $upd . ( $stale ? ' (aggiornamento in ritardo, controlla sul sito del bookmaker).' : '.' ) : '' );
-	$head            = '<div class="bnq-match"><span class="bnq-league">' . esc_html( $ev['league_name'] ) . ' &middot; ' . esc_html( bnc_odds_when( $ev['start'] ) ) . '</span><strong class="bnq-teams">' . esc_html( $ev['home'] ) . ' <span>-</span> ' . esc_html( $ev['away'] ) . '</strong></div>';
+	$head            = '<div class="bnq-match"><span class="bnq-league">' . esc_html( bnc_odds_league_label( $ev['league_name'] ) ) . ' &middot; ' . esc_html( bnc_odds_when( $ev['start'] ) ) . '</span><strong class="bnq-teams">' . esc_html( bnc_odds_team( $ev['home'] ) ) . ' <span>-</span> ' . esc_html( bnc_odds_team( $ev['away'] ) ) . '</strong></div>';
 
 	if ( 'pronostico' === $tipo ) {
 		if ( ! isset( $markets[ $mk ]['out'][ $out ] ) ) {
