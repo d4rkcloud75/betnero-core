@@ -138,7 +138,8 @@ add_filter( 'cron_schedules', function ( $s ) {
 	return $s;
 } );
 
-add_action( 'init', function () {
+/** Programma (o ferma) l'aggiornamento automatico. 0.6.1: chiamata anche subito dopo i salvataggi. */
+function bnc_odds_schedule() {
 	$active = '' !== bnc_odds_key() && ! empty( bnc_odds_settings()['leagues'] );
 	$next   = wp_next_scheduled( 'bnc_odds_sync' );
 	if ( $active && ! $next ) {
@@ -146,7 +147,8 @@ add_action( 'init', function () {
 	} elseif ( ! $active && $next ) {
 		wp_clear_scheduled_hook( 'bnc_odds_sync' );
 	}
-} );
+}
+add_action( 'init', 'bnc_odds_schedule' );
 
 add_action( 'bnc_odds_sync', 'bnc_odds_sync' );
 
@@ -563,10 +565,12 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	if ( ! $grid ) {
 		return '<div class="bnq bnq-cmp">' . $head . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
 	}
-	$h  = '<div class="bnq bnq-cmp">' . $head . '<p class="bnq-title">' . esc_html( 'Confronto quote: ' . $markets[ $cm ]['label'] ) . '</p>';
+	$solo = has_block( 'betnero/quota-pronostico', $post_id ) ? '' : $head; // 0.6.1: la testata c'e' gia' nel blocco del pronostico
+	$h  = '<div class="bnq bnq-cmp">' . $solo . '<p class="bnq-title">' . esc_html( 'Confronto quote: ' . $markets[ $cm ]['label'] ) . '</p>';
 	$h .= '<div class="bnq-table" style="--bnq-cols:' . count( $cols ) . '"><div class="bnq-tr bnq-th"><span>Bookmaker</span>';
-	foreach ( $cols as $cl ) {
-		$h .= '<span>' . esc_html( $cl ) . '</span>';
+	foreach ( $cols as $ck => $cl ) {
+		$is_pick = $cm === $mk && $ck === $out;
+		$h      .= '<span' . ( $is_pick ? ' class="is-pick" title="Il nostro pronostico"' : '' ) . '>' . esc_html( $cl ) . ( $is_pick ? ' &#9733;' : '' ) . '</span>';
 	}
 	$h .= '<span></span></div>';
 	foreach ( $grid as $g ) {
@@ -687,6 +691,9 @@ function bnc_odds_page() {
 		}
 	}
 
+	if ( $notice ) {
+		bnc_odds_schedule();
+	}
 	$key   = bnc_odds_key();
 	$state = (array) get_option( 'bnc_odds_state', array() );
 	$cnt   = (array) get_option( 'bnc_odds_count', array() );
@@ -709,7 +716,7 @@ function bnc_odds_page() {
 	}
 	echo '<form method="post">';
 	wp_nonce_field( 'bnc_odds' );
-	echo '<input type="hidden" name="bnc_odds_action" value="key"><input type="password" name="bnc_odds_key" autocomplete="off" class="regular-text" placeholder="' . ( $key ? 'Nuova chiave (per sostituirla)' : 'Incolla la chiave di odds-api.io' ) . '"> <button class="button button-primary">Salva la chiave</button></form>';
+	echo '<input type="hidden" name="bnc_odds_action" value="key"><input type="text" name="bnc_odds_key" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" style="-webkit-text-security:disc" class="regular-text" placeholder="' . ( $key ? 'Nuova chiave (per sostituirla)' : 'Incolla la chiave di odds-api.io' ) . '"> <button class="button button-primary">Salva la chiave</button></form>';
 
 	if ( ! $key ) {
 		echo '</div>';

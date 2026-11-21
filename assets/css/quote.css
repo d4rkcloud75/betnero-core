@@ -20,7 +20,8 @@
 .bnq-th span:first-child { text-align: left; }
 .bnq-tr .bnq-odd { text-align: center; font-size: 15px; border-radius: 6px; padding: 6px 0; }
 .bnq-tr .bnq-odd.is-best { background: #E4F4EA; color: var(--bnq-green); }
-.bnq-tr .bnq-odd.is-pick { outline: 2px solid var(--bnq-blue); outline-offset: -2px; }
+.bnq-tr .bnq-odd.is-pick { box-shadow: inset 0 0 0 2px var(--bnq-blue); }
+.bnq-th .is-pick { color: var(--bnq-blue); font-weight: 800; }
 .bnq .bnt-btn { display: block; text-align: center; font-weight: 700; font-size: 13px; line-height: 1.2; padding: 9px 10px; border-radius: 999px; text-decoration: none !important; color: #fff !important; background: var(--bnq-blue); }
 .bnq-note { font-size: 12px; color: var(--bnq-muted); margin: 8px 0 0; }
 .bnq-adm { font-size: 10px; color: var(--bnq-muted); text-align: center; margin: 6px 0 0; }

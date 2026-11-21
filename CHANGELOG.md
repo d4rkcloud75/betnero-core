@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+- Quote: il campo della chiave non viene piu' riempito dal browser con una password salvata.
+- L'aggiornamento automatico si programma subito dopo il salvataggio di chiave e campionati.
+- Confronto quote: se nell'articolo c'e' anche "Quota del pronostico", non ripete campionato, data e squadre.
+- Confronto quote: la colonna del pronostico ha l'intestazione blu con la stella e le quote con il bordo blu.
+
 ## 0.6.0
 - Quote da odds-api.io. Operatori > Quote: chiave (mai mostrata), bookmaker scelti nel pannello di odds-api.io collegati agli operatori Betnero, campionati da seguire, stato e "Aggiorna adesso".
 - Lettura ogni 10 minuti con copia locale (tabella bnc_quote): le pagine leggono la copia, le richieste non dipendono dal traffico e se l'API non risponde restano le ultime quote.
