@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.5
+- Quote automatiche: negli articoli con partita collegata, pronostico e confronto compaiono da soli prima del primo H2 (prima della toplist), se non ci sono gia' i blocchi. Si spegne in Operatori > Quote.
+- Riquadro "Quote del pronostico": ricerca della partita per squadra o campionato, e anteprima delle quote (bookmaker con quote, ora dell'aggiornamento, quota migliore per il pronostico).
+- Quote vecchie: se una partita non iniziata non viene aggiornata da piu' di 3 ore, i blocchi lo dicono; dopo 24 ore non si mostrano.
+
 ## 0.6.4
 - Editor: il pannello "Meta Box" parte chiuso correggendo la preferenza dell'utente quando WordPress la legge (la 0.6.3 lo faceva dal browser, troppo tardi).
 

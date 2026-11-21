@@ -32,6 +32,7 @@ function bnc_odds_settings() {
 		'map'        => array(), // nome API => id operatore Betnero (0 = non mostrare)
 		'leagues'    => array(), // slug dei campionati seguiti
 		'days'       => 7,       // giorni in avanti
+		'auto'       => '1',     // 0.6.5: blocchi automatici nei pronostici con partita collegata
 	) );
 }
 
@@ -409,7 +410,8 @@ function bnc_odds_metabox( $post ) {
 		echo '<p>Imposta la chiave e i campionati in <a href="' . esc_url( admin_url( 'edit.php?post_type=' . BNC_POST_TYPE . '&page=bnc-quote' ) ) . '">Operatori &gt; Quote</a>.</p>';
 		return;
 	}
-	echo '<p><label for="bnc-quote-ev"><strong>Partita</strong></label><br><select id="bnc-quote-ev" name="bnc_quote_evento" style="width:100%"><option value="">Nessuna</option>';
+	// 0.6.5: ricerca per squadra o campionato
+	echo '<p><label for="bnc-quote-cerca"><strong>Partita</strong></label><br><input type="search" id="bnc-quote-cerca" placeholder="Cerca squadra o campionato" style="width:100%;margin-bottom:4px" oninput="bncQuoteCerca(this.value)"><br><select id="bnc-quote-ev" name="bnc_quote_evento" style="width:100%"><option value="">Nessuna</option>';
 	$group = null;
 	foreach ( $rows as $r ) {
 		if ( $group !== $r['league_name'] ) {
@@ -429,7 +431,71 @@ function bnc_odds_metabox( $post ) {
 		}
 		echo '</optgroup>';
 	}
-	echo '</select></p><p class="description">Poi inserisci i blocchi "Quota del pronostico" e "Confronto quote". Le partite arrivano dai campionati scelti in Operatori &gt; Quote.</p>';
+	echo '</select></p>';
+	echo bnc_odds_metabox_preview( $post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput
+	$auto = '1' === (string) bnc_odds_settings()['auto'];
+	echo '<p class="description">' . ( $auto ? 'Le quote compaiono da sole prima del primo titolo H2. Per metterle in un altro punto inserisci i blocchi "Quota del pronostico" e "Confronto quote".' : 'Inserisci i blocchi "Quota del pronostico" e "Confronto quote".' ) . ' Le partite arrivano dai campionati scelti in Operatori &gt; Quote.</p>';
+	echo "<script>function bncQuoteCerca(q){q=(q||'').toLowerCase().trim();var s=document.getElementById('bnc-quote-ev');if(!s)return;s.querySelectorAll('optgroup').forEach(function(g){var any=false;var gl=(g.label||'').toLowerCase();g.querySelectorAll('option').forEach(function(o){var ok=!q||o.textContent.toLowerCase().indexOf(q)>-1||gl.indexOf(q)>-1||o.selected;o.hidden=!ok;o.disabled=!ok&&!o.selected;any=any||ok;});g.hidden=!any;});}</script>";
+}
+
+/** 0.6.5: sotto le scelte, le quote che vedranno i lettori (dopo il salvataggio). */
+function bnc_odds_metabox_preview( $post_id ) {
+	$ev_id = (int) get_post_meta( $post_id, '_bn_quote_evento', true );
+	if ( ! $ev_id ) {
+		return '';
+	}
+	$ev = bnc_odds_event( $ev_id );
+	if ( ! $ev ) {
+		return '<p style="color:#b32d2e">Partita non piu\' presente nella copia locale.</p>';
+	}
+	$sel             = (string) get_post_meta( $post_id, '_bn_quote_scelta', true );
+	list( $mk, $out ) = array_pad( explode( ':', $sel, 2 ), 2, '' );
+	$m               = bnc_odds_markets();
+	$books           = bnc_odds_shown_books();
+	$with            = 0;
+	$best            = 0.0;
+	$bname           = '';
+	foreach ( $books as $name => $op ) {
+		if ( ! empty( $ev['odds'][ $name ] ) ) {
+			$with++;
+		}
+		if ( isset( $m[ $mk ]['out'][ $out ] ) ) {
+			$p = bnc_odds_price( isset( $ev['odds'][ $name ] ) ? $ev['odds'][ $name ] : array(), $mk, $out );
+			if ( $p > $best ) {
+				$best  = $p;
+				$bname = $op['name'];
+			}
+		}
+	}
+	$upd = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : 'mai';
+	$h   = '<div style="background:#f6f7f7;border:1px solid #dcdcde;border-radius:4px;padding:8px 10px;margin:0 0 10px">';
+	$h  .= '<strong>' . esc_html( $ev['home'] . ' - ' . $ev['away'] ) . '</strong><br>';
+	$h  .= esc_html( sprintf( '%d bookmaker su %d con quote, aggiornate alle %s.', $with, count( $books ), $upd ) );
+	if ( isset( $m[ $mk ]['out'][ $out ] ) ) {
+		$h .= '<br>' . esc_html( $m[ $mk ]['label'] . ': ' . $m[ $mk ]['out'][ $out ] ) . ' &rarr; ' . ( $best > 0 ? '<strong>' . esc_html( bnc_odds_fmt( $best ) ) . '</strong> ' . esc_html( $bname ) : '<span style="color:#b32d2e">nessuna quota per questo esito</span>' );
+	}
+	$stale = bnc_odds_stale( $ev );
+	if ( $stale ) {
+		$h .= '<br><span style="color:#b32d2e">' . esc_html( 2 === $stale ? 'Quote ferme da piu\' di 24 ore: sul sito non si vedono.' : 'Quote ferme da piu\' di 3 ore.' ) . '</span>';
+	}
+	return $h . '</div>';
+}
+
+/**
+ * 0.6.5: quote vecchie di una partita non ancora iniziata.
+ * 0 = fresche, 1 = ferme da piu' di 3 ore (si avvisa), 2 = da piu' di 24 ore (non si mostrano).
+ */
+function bnc_odds_stale( $ev ) {
+	$start = strtotime( $ev['start'] . ' UTC' );
+	if ( 'pending' !== $ev['status'] || $start <= time() ) {
+		return 0;
+	}
+	$upd = $ev['odds_updated'] ? strtotime( $ev['odds_updated'] . ' UTC' ) : 0;
+	if ( ! $upd ) {
+		return 2;
+	}
+	$age = time() - $upd;
+	return $age > DAY_IN_SECONDS ? 2 : ( $age > 3 * HOUR_IN_SECONDS ? 1 : 0 );
 }
 
 add_action( 'save_post_post', function ( $post_id ) {
@@ -497,7 +563,12 @@ function bnc_odds_block( $tipo, $post_id, $a ) {
 	$mercato = isset( $a['mercato'] ) ? sanitize_key( $a['mercato'] ) : 'auto';
 	$inner   = bnc_odds_render( $tipo, $post_id, $mercato );
 	if ( '' === $inner ) {
-		return ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ? '<p class="bnq-empty">Collega partita e pronostico nel riquadro "Quote del pronostico" (a destra), poi aggiorna l\'anteprima.</p>' : '';
+		if ( ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return '';
+		}
+		return get_post_meta( $post_id, '_bn_quote_evento', true )
+			? '<p class="bnq-empty">Quote non disponibili per ora: non ancora lette, oppure ferme da piu\' di 24 ore. Controlla in Operatori &gt; Quote.</p>'
+			: '<p class="bnq-empty">Collega partita e pronostico nel riquadro "Quote del pronostico" (a destra), salva, poi aggiorna l\'anteprima.</p>';
 	}
 	wp_enqueue_script( 'betnero-quote' );
 	return '<div class="bnq-live" data-post="' . (int) $post_id . '" data-tipo="' . esc_attr( $tipo ) . '" data-mercato="' . esc_attr( $mercato ) . '" data-url="' . esc_url( rest_url( 'betnero/v1/quote/blocco' ) ) . '">' . $inner . '</div>';
@@ -512,6 +583,13 @@ function bnc_odds_fmt( $v ) {
 }
 
 function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
+	if ( 'entrambi' === $tipo ) { // 0.6.5: inserimento automatico, pronostico e confronto insieme
+		$a = bnc_odds_render( 'pronostico', $post_id, 'auto' );
+		$GLOBALS['bnc_odds_nohead'] = '' !== $a;
+		$b = bnc_odds_render( 'confronto', $post_id, 'auto' );
+		unset( $GLOBALS['bnc_odds_nohead'] );
+		return $a . $b;
+	}
 	$ev_id = (int) get_post_meta( $post_id, '_bn_quote_evento', true );
 	$ev    = $ev_id ? bnc_odds_event( $ev_id ) : null;
 	if ( ! $ev ) {
@@ -522,8 +600,12 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	$markets         = bnc_odds_markets();
 	$books           = bnc_odds_shown_books();
 	$started         = 'pending' !== $ev['status'] || strtotime( $ev['start'] . ' UTC' ) <= time();
+	$stale           = bnc_odds_stale( $ev );
+	if ( 2 === $stale ) {
+		return ''; // 0.6.5: quote ferme da piu' di 24 ore, meglio non mostrarle
+	}
 	$upd             = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : '';
-	$note            = $started ? ( '' !== $ev['score'] && 'settled' === $ev['status'] ? 'Risultato finale ' . $ev['score'] . '. Quote pre-partita.' : 'Partita iniziata: quote pre-partita.' ) : ( $upd ? 'Quote aggiornate alle ' . $upd . '.' : '' );
+	$note            = $started ? ( '' !== $ev['score'] && 'settled' === $ev['status'] ? 'Risultato finale ' . $ev['score'] . '. Quote pre-partita.' : 'Partita iniziata: quote pre-partita.' ) : ( $upd ? 'Quote aggiornate alle ' . $upd . ( $stale ? ' (aggiornamento in ritardo, controlla sul sito del bookmaker).' : '.' ) : '' );
 	$head            = '<div class="bnq-match"><span class="bnq-league">' . esc_html( $ev['league_name'] ) . ' &middot; ' . esc_html( bnc_odds_when( $ev['start'] ) ) . '</span><strong class="bnq-teams">' . esc_html( $ev['home'] ) . ' <span>-</span> ' . esc_html( $ev['away'] ) . '</strong></div>';
 
 	if ( 'pronostico' === $tipo ) {
@@ -566,7 +648,7 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	if ( ! $grid ) {
 		return '<div class="bnq bnq-cmp">' . $head . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
 	}
-	$solo = has_block( 'betnero/quota-pronostico', $post_id ) ? '' : $head; // 0.6.1: la testata c'e' gia' nel blocco del pronostico
+	$solo = ( ! empty( $GLOBALS['bnc_odds_nohead'] ) || has_block( 'betnero/quota-pronostico', $post_id ) ) ? '' : $head; // la testata c'e' gia' nel blocco del pronostico
 	$h  = '<div class="bnq bnq-cmp">' . $solo . '<p class="bnq-title">' . esc_html( 'Confronto quote: ' . $markets[ $cm ]['label'] ) . '</p>';
 	$h .= '<div class="bnq-table" style="--bnq-cols:' . count( $cols ) . '"><div class="bnq-tr bnq-th"><span>Bookmaker</span>';
 	foreach ( $cols as $ck => $cl ) {
@@ -586,6 +668,42 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	return $h . '</div>' . ( $note ? '<p class="bnq-note">' . esc_html( $note ) . ' In verde la quota migliore.</p>' : '' ) . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
 }
 
+/* ---------- 0.6.5: quote automatiche nei pronostici ---------- */
+
+/**
+ * Articolo con partita collegata e senza i blocchi delle quote: segnaposto prima del primo H2
+ * (priorita' 19, prima della toplist automatica che usa la 20), o dopo il primo paragrafo.
+ * All'ultima priorita' il segnaposto diventa il riquadro, cosi' altri plugin non ci infilano banner.
+ */
+add_filter( 'the_content', function ( $content ) {
+	if ( '1' !== (string) bnc_odds_settings()['auto'] || is_admin() || is_feed() || wp_is_json_request() || doing_action( 'wp_head' ) ) {
+		return $content;
+	}
+	if ( ! is_singular( 'post' ) || get_the_ID() !== get_queried_object_id() ) {
+		return $content;
+	}
+	$pid = get_the_ID();
+	if ( ! get_post_meta( $pid, '_bn_quote_evento', true ) || has_block( 'betnero/quota-pronostico', $pid ) || has_block( 'betnero/confronto-quote', $pid ) || false !== strpos( $content, 'bnq-live' ) ) {
+		return $content;
+	}
+	$marker = '<div class="bnq-auto" data-bnq-auto="1"></div>';
+	$pos    = stripos( $content, '<h2' );
+	if ( false !== $pos ) {
+		return substr( $content, 0, $pos ) . $marker . substr( $content, $pos );
+	}
+	$pos = stripos( $content, '</p>' );
+	return false !== $pos ? substr( $content, 0, $pos + 4 ) . $marker . substr( $content, $pos + 4 ) : $content . $marker;
+}, 19 );
+
+add_filter( 'the_content', function ( $content ) {
+	if ( false === strpos( $content, 'data-bnq-auto="1"' ) ) {
+		return $content;
+	}
+	wp_enqueue_style( 'betnero-quote' );
+	$html = bnc_odds_block( 'entrambi', get_the_ID(), array() );
+	return str_replace( '<div class="bnq-auto" data-bnq-auto="1"></div>', $html, $content );
+}, PHP_INT_MAX );
+
 /* ---------- REST: blocchi aggiornati e anteprima ---------- */
 
 add_action( 'rest_api_init', function () {
@@ -594,7 +712,7 @@ add_action( 'rest_api_init', function () {
 		'permission_callback' => '__return_true',
 		'args'                => array(
 			'post'    => array( 'type' => 'integer', 'required' => true ),
-			'tipo'    => array( 'type' => 'string', 'enum' => array( 'pronostico', 'confronto' ), 'required' => true ),
+			'tipo'    => array( 'type' => 'string', 'enum' => array( 'pronostico', 'confronto', 'entrambi' ), 'required' => true ),
 			'mercato' => array( 'type' => 'string', 'default' => 'auto' ),
 		),
 		'callback'            => function ( $req ) {
@@ -679,6 +797,7 @@ function bnc_odds_page() {
 			$s['map']     = $map;
 			$s['leagues'] = array_values( array_filter( array_map( 'sanitize_title', isset( $in['leagues'] ) ? (array) $in['leagues'] : array() ) ) );
 			$s['days']    = max( 1, min( 14, absint( isset( $in['days'] ) ? $in['days'] : 7 ) ) );
+			$s['auto']    = empty( $in['auto'] ) ? '0' : '1';
 			update_option( 'bnc_odds', $s, false );
 			$notice[] = array( 'success', 'Impostazioni salvate.' );
 		}
@@ -774,6 +893,7 @@ function bnc_odds_page() {
 		echo '</div><p class="description">Tra parentesi le partite in programma. Ogni campionato costa una richiesta ogni 10 minuti.</p>';
 	}
 	echo '<p><label>Partite fino a <input type="number" min="1" max="14" name="bnc_odds[days]" value="' . (int) $s['days'] . '" style="width:60px"> giorni in avanti</label></p>';
+	echo '<p><label><input type="checkbox" name="bnc_odds[auto]" value="1"' . checked( '1', (string) $s['auto'], false ) . '> Negli articoli con partita collegata mostra le quote da sole, prima del primo titolo H2 (se non ci sono gia\' i blocchi)</label></p>';
 	echo '<p><button class="button button-primary">Salva bookmaker e campionati</button></p></form>';
 
 	echo '<h2>3. Stato</h2><table class="widefat" style="max-width:720px"><tbody>';
