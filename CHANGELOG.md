@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0
+- Pulsanti "Vai al sito" e "Gioca" dei blocchi delle quote tutti uguali a quelli della toplist (130px) e centrati nella loro colonna; su mobile a tutta larghezza, come nella toplist.
+- Blocco "Quote più alte": tra le partite in programma trova da solo gli esiti in cui uno dei nostri bookmaker paga molto più della media degli altri (soglia di serie 5%, almeno 3 bookmaker con quota). Dichiara che sono quote normali, non maggiorate. Nessuna richiesta in più a odds-api.io.
+
 ## 0.8.0
 - Quote maggiorate: si inseriscono a mano in Operatori > Quote maggiorate (bookmaker, descrizione, quota normale e maggiorata, scadenza, partita facoltativa, condizioni) e spariscono da sole alla scadenza. Blocco "Quote maggiorate" (tutte le valide, oppure solo quelle della partita del pronostico). Nel riquadro automatico delle quote compaiono le offerte della stessa partita.
 

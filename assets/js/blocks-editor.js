@@ -298,4 +298,27 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.0: Quote piu' alte (quote normali sopra la media dei bookmaker, calcolate da sole). */
+	wp.blocks.registerBlockType( 'betnero/quote-top', {
+		title: 'Quote più alte',
+		icon: 'arrow-up-alt',
+		category: 'betnero',
+		description: 'Le partite in cui uno dei nostri bookmaker paga molto più della media degli altri. Si aggiorna da solo.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( RangeControl, { label: 'Partite dei prossimi giorni', value: a.giorni, min: 1, max: 7, onChange: function ( v ) { props.setAttributes( { giorni: v || 2 } ); } } ),
+						el( RangeControl, { label: 'Quante quote mostrare', value: a.limite, min: 1, max: 15, onChange: function ( v ) { props.setAttributes( { limite: v || 5 } ); } } ),
+						el( RangeControl, { label: 'Almeno quanto sopra la media (%)', value: a.soglia, min: 1, max: 30, onChange: function ( v ) { props.setAttributes( { soglia: v || 5 } ); } } ),
+						el( TextControl, { label: 'Solo un campionato (slug, vuoto = tutti)', value: a.campionato, onChange: set( props, 'campionato' ) } ),
+						el( TextControl, { label: 'Titolo (vuoto = automatico)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/quote-top', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

@@ -2,7 +2,9 @@
 ( function () {
 	function load( box ) {
 		var url = box.getAttribute( 'data-url' );
-		if ( box.hasAttribute( 'data-qm' ) ) {
+		if ( box.hasAttribute( 'data-top' ) ) {
+			url += '?a=' + encodeURIComponent( box.getAttribute( 'data-top' ) );
+		} else if ( box.hasAttribute( 'data-qm' ) ) {
 			url += '?a=' + encodeURIComponent( box.getAttribute( 'data-qm' ) ) + '&post=' + encodeURIComponent( box.getAttribute( 'data-qmpost' ) || '0' );
 		} else if ( box.hasAttribute( 'data-tab' ) ) {
 			url += '?a=' + encodeURIComponent( box.getAttribute( 'data-tab' ) );
@@ -18,7 +20,7 @@
 		} ).catch( function () {} );
 	}
 	function start() {
-		document.querySelectorAll( '.bnq-live[data-post], .bnq-live[data-tab], .bnq-live[data-qm]' ).forEach( load );
+		document.querySelectorAll( '.bnq-live[data-post], .bnq-live[data-tab], .bnq-live[data-qm], .bnq-live[data-top]' ).forEach( load );
 	}
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', start );
