@@ -277,4 +277,25 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.8.0: Quote maggiorate (inserite in Operatori > Quote maggiorate, spariscono alla scadenza). */
+	wp.blocks.registerBlockType( 'betnero/quote-maggiorate', {
+		title: 'Quote maggiorate',
+		icon: 'chart-line',
+		category: 'betnero',
+		description: 'Le quote maggiorate ancora valide, con il pulsante per giocarle. Alla scadenza spariscono da sole.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( SelectControl, { label: 'Quali offerte', value: a.quali, options: [ { label: 'Tutte quelle valide', value: 'tutte' }, { label: 'Solo quelle della partita del pronostico', value: 'pronostico' } ], onChange: set( props, 'quali' ) } ),
+						el( RangeControl, { label: 'Numero massimo', value: a.limite, min: 1, max: 30, onChange: function ( v ) { props.setAttributes( { limite: v || 10 } ); } } ),
+						el( TextControl, { label: 'Titolo (vuoto = automatico)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/quote-maggiorate', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

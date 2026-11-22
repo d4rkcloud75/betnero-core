@@ -626,7 +626,7 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 		$GLOBALS['bnc_odds_nohead'] = '' !== $a;
 		$b = bnc_odds_render( 'confronto', $post_id, 'auto' );
 		unset( $GLOBALS['bnc_odds_nohead'] );
-		return $a . $b;
+		return '' === $a . $b ? '' : (string) apply_filters( 'bnc_odds_entrambi_after', $a . $b, $post_id ); // 0.8.0: quote maggiorate della partita
 	}
 	$ev_id = (int) get_post_meta( $post_id, '_bn_quote_evento', true );
 	$ev    = $ev_id ? bnc_odds_event( $ev_id ) : null;

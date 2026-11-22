@@ -2,7 +2,9 @@
 ( function () {
 	function load( box ) {
 		var url = box.getAttribute( 'data-url' );
-		if ( box.hasAttribute( 'data-tab' ) ) {
+		if ( box.hasAttribute( 'data-qm' ) ) {
+			url += '?a=' + encodeURIComponent( box.getAttribute( 'data-qm' ) ) + '&post=' + encodeURIComponent( box.getAttribute( 'data-qmpost' ) || '0' );
+		} else if ( box.hasAttribute( 'data-tab' ) ) {
 			url += '?a=' + encodeURIComponent( box.getAttribute( 'data-tab' ) );
 		} else {
 			url += '?post=' + encodeURIComponent( box.getAttribute( 'data-post' ) ) + '&tipo=' + encodeURIComponent( box.getAttribute( 'data-tipo' ) ) + '&mercato=' + encodeURIComponent( box.getAttribute( 'data-mercato' ) || 'auto' );
@@ -16,7 +18,7 @@
 		} ).catch( function () {} );
 	}
 	function start() {
-		document.querySelectorAll( '.bnq-live[data-post], .bnq-live[data-tab]' ).forEach( load );
+		document.querySelectorAll( '.bnq-live[data-post], .bnq-live[data-tab], .bnq-live[data-qm]' ).forEach( load );
 	}
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', start );

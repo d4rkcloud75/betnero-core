@@ -3,7 +3,7 @@
  * Plugin Name:       Betnero Core
  * Plugin URI:        https://www.betnero.it/
  * Description:       Operatori (casino e bookmaker), tabelle, toplist, schede recensione e barra in basso di Betnero. Sostituisce JetEngine, JetSmartFilters, JetPopup e lo snippet della toplist.
- * Version:           0.7.2
+ * Version:           0.8.0
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            Carmelo Brischetto
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BETNERO_CORE_VERSION', '0.7.2' );
+define( 'BETNERO_CORE_VERSION', '0.8.0' );
 define( 'BETNERO_CORE_FILE', __FILE__ );
 define( 'BETNERO_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BETNERO_CORE_URL', plugin_dir_url( __FILE__ ) );
@@ -48,6 +48,7 @@ require_once BETNERO_CORE_DIR . 'inc/schema.php';
 require_once BETNERO_CORE_DIR . 'inc/transfer.php';
 require_once BETNERO_CORE_DIR . 'inc/odds.php';
 require_once BETNERO_CORE_DIR . 'inc/odds-table.php';
+require_once BETNERO_CORE_DIR . 'inc/odds-boost.php';
 
 register_activation_hook( __FILE__, function () {
 	bnc_register_post_type();

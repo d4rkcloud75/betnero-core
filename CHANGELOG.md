@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.0
+- Quote maggiorate: si inseriscono a mano in Operatori > Quote maggiorate (bookmaker, descrizione, quota normale e maggiorata, scadenza, partita facoltativa, condizioni) e spariscono da sole alla scadenza. Blocco "Quote maggiorate" (tutte le valide, oppure solo quelle della partita del pronostico). Nel riquadro automatico delle quote compaiono le offerte della stessa partita.
+
 ## 0.7.2
 - Quote automatiche: comparivano di nuovo anche negli articoli che contengono una Tabella partite (la tabella veniva scambiata per i blocchi del pronostico e il riquadro automatico non si aggiungeva).
 
