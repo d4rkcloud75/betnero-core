@@ -167,9 +167,10 @@ function bnc_seo_robots_txt() {
 }
 
 // Se un giorno il file vero sparisse, WordPress servirebbe comunque questo.
-add_filter( 'robots_txt', function () {
-	return bnc_seo_robots_txt();
-}, 99 );
+// Solo per un sito pubblico: lo staging ("scoraggia i motori di ricerca") resta con Disallow: /.
+add_filter( 'robots_txt', function ( $out, $public ) {
+	return $public ? bnc_seo_robots_txt() : $out;
+}, 99, 2 );
 
 add_action( 'rest_api_init', function () {
 	$admin = function () {
@@ -194,6 +195,9 @@ add_action( 'rest_api_init', function () {
 		'methods'             => 'POST',
 		'permission_callback' => $admin,
 		'callback'            => function () {
+			if ( ! get_option( 'blog_public' ) ) {
+				return new WP_Error( 'bnc_robots', 'Sito non pubblico (scoraggia i motori di ricerca): robots.txt non modificato', array( 'status' => 409 ) );
+			}
 			$file = ABSPATH . 'robots.txt';
 			$bak  = '';
 			if ( file_exists( $file ) ) {
