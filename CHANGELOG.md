@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1
+- Crawl budget (email di Andrea e Francesco del 22/11): articoli di Pronostici pubblicati prima del 17/07/2026 in 410 e tolti da archivi, ricerca, feed, articolo precedente/successivo e sitemap di Yoast; vecchie paginazioni di Pronostici (fino alla 105) in 410. Gli articoli restano nel database.
+- noindex, follow con canonical invariato dalla pagina 2 di /blog, delle categorie pronostici, slot-machine, guida-al-casino, altri-giochi, guida-scommesse, roulette, blackjack e di tutte le pagine autore; /autore/redazione anche alla pagina 1.
+- robots.txt nuovo (versione di Andrea), scritto nel file vero con POST /betnero/v1/seo/robots (copia del vecchio); GET /betnero/v1/seo/stato per controllare.
+
 ## 0.8.0
 - Quote maggiorate: si inseriscono a mano in Operatori > Quote maggiorate (bookmaker, descrizione, quota normale e maggiorata, scadenza, partita facoltativa, condizioni) e spariscono da sole alla scadenza. Blocco "Quote maggiorate" (tutte le valide, oppure solo quelle della partita del pronostico). Nel riquadro automatico delle quote compaiono le offerte della stessa partita.
 
