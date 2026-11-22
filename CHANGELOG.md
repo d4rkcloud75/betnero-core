@@ -1,8 +1,16 @@
 # Changelog
 
+## 0.9.1
+- Comprende la 0.8.1 (crawl budget) sopra la 0.9.0.
+
 ## 0.9.0
 - Pulsanti "Vai al sito" e "Gioca" dei blocchi delle quote tutti uguali a quelli della toplist (130px) e centrati nella loro colonna; su mobile a tutta larghezza, come nella toplist.
 - Blocco "Quote più alte": tra le partite in programma trova da solo gli esiti in cui uno dei nostri bookmaker paga molto più della media degli altri (soglia di serie 5%, almeno 3 bookmaker con quota). Dichiara che sono quote normali, non maggiorate. Nessuna richiesta in più a odds-api.io.
+
+## 0.8.1
+- Crawl budget (email di Andrea e Francesco del 22/11): articoli di Pronostici pubblicati prima del 17/07/2026 in 410 e tolti da archivi, ricerca, feed, articolo precedente/successivo e sitemap di Yoast; vecchie paginazioni di Pronostici (fino alla 105) in 410. Gli articoli restano nel database.
+- noindex, follow con canonical invariato dalla pagina 2 di /blog, delle categorie pronostici, slot-machine, guida-al-casino, altri-giochi, guida-scommesse, roulette, blackjack e di tutte le pagine autore; /autore/redazione anche alla pagina 1.
+- robots.txt nuovo (versione di Andrea), scritto nel file vero con POST /betnero/v1/seo/robots (copia del vecchio); GET /betnero/v1/seo/stato per controllare.
 
 ## 0.8.0
 - Quote maggiorate: si inseriscono a mano in Operatori > Quote maggiorate (bookmaker, descrizione, quota normale e maggiorata, scadenza, partita facoltativa, condizioni) e spariscono da sole alla scadenza. Blocco "Quote maggiorate" (tutte le valide, oppure solo quelle della partita del pronostico). Nel riquadro automatico delle quote compaiono le offerte della stessa partita.
