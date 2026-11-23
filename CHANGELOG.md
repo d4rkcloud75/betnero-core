@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+- Pagine noindex, follow: canonical sulla pagina stessa (Yoast non lo stampa sulle pagine noindex).
+- /autore/redazione esce dalla sitemap degli autori, ora che e' noindex.
+
 ## 0.8.1
 - Crawl budget (email di Andrea e Francesco del 22/11): articoli di Pronostici pubblicati prima del 17/07/2026 in 410 e tolti da archivi, ricerca, feed, articolo precedente/successivo e sitemap di Yoast; vecchie paginazioni di Pronostici (fino alla 105) in 410. Gli articoli restano nel database.
 - noindex, follow con canonical invariato dalla pagina 2 di /blog, delle categorie pronostici, slot-machine, guida-al-casino, altri-giochi, guida-scommesse, roulette, blackjack e di tutte le pagine autore; /autore/redazione anche alla pagina 1.
