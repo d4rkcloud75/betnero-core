@@ -141,6 +141,23 @@ add_filter( 'wp_robots', function ( $r ) {
 	return $r;
 } );
 
+// 0.8.2: Yoast non stampa il canonical sulle pagine noindex; Andrea lo vuole sulla pagina stessa.
+add_action( 'wp_head', function () {
+	if ( ! bnc_seo_noindex_here() ) {
+		return;
+	}
+	$path = (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/', PHP_URL_PATH ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	$url  = home_url( '/' === $path ? '/' : untrailingslashit( $path ) );
+	echo '<link rel="canonical" href="' . esc_url( $url ) . '" />' . "\n";
+}, 2 );
+
+// 0.8.2: la pagina autore di redazione e' noindex, quindi esce dalla sitemap degli autori.
+add_filter( 'wpseo_sitemap_exclude_author', function ( $users ) {
+	return array_values( array_filter( (array) $users, function ( $u ) {
+		return ! ( is_object( $u ) && isset( $u->user_nicename ) && 'redazione' === $u->user_nicename );
+	} ) );
+} );
+
 /* ---------- 3. robots.txt ---------- */
 
 function bnc_seo_robots_txt() {

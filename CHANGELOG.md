@@ -1,11 +1,18 @@
 # Changelog
 
+## 0.9.2
+- Comprende la 0.8.2 sopra la 0.9.1.
+
 ## 0.9.1
 - Comprende la 0.8.1 (crawl budget) sopra la 0.9.0.
 
 ## 0.9.0
 - Pulsanti "Vai al sito" e "Gioca" dei blocchi delle quote tutti uguali a quelli della toplist (130px) e centrati nella loro colonna; su mobile a tutta larghezza, come nella toplist.
 - Blocco "Quote più alte": tra le partite in programma trova da solo gli esiti in cui uno dei nostri bookmaker paga molto più della media degli altri (soglia di serie 5%, almeno 3 bookmaker con quota). Dichiara che sono quote normali, non maggiorate. Nessuna richiesta in più a odds-api.io.
+
+## 0.8.2
+- Pagine noindex, follow: canonical sulla pagina stessa (Yoast non lo stampa sulle pagine noindex).
+- /autore/redazione esce dalla sitemap degli autori, ora che e' noindex.
 
 ## 0.8.1
 - Crawl budget (email di Andrea e Francesco del 22/11): articoli di Pronostici pubblicati prima del 17/07/2026 in 410 e tolti da archivi, ricerca, feed, articolo precedente/successivo e sitemap di Yoast; vecchie paginazioni di Pronostici (fino alla 105) in 410. Gli articoli restano nel database.
