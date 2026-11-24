@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.3
+- robots.txt: Disallow: /visita/ (link di affiliazione in uscita), come chiesto da Andrea il 23/11.
+
 ## 0.8.2
 - Pagine noindex, follow: canonical sulla pagina stessa (Yoast non lo stampa sulle pagine noindex).
 - /autore/redazione esce dalla sitemap degli autori, ora che e' noindex.

@@ -179,6 +179,8 @@ function bnc_seo_robots_txt() {
 		. "Disallow: /*?utm_\n"
 		. "Disallow: /*?fbclid=\n"
 		. "Disallow: /*?gclid=\n"
+		. "\n# Blocca i link di affiliazione in uscita\n" // 0.8.3: email di Andrea del 23/11.
+		. "Disallow: /visita/\n"
 		. "\n# Sitemap XML principale\n"
 		. 'Sitemap: ' . home_url( '/sitemap_index.xml' ) . "\n";
 }
