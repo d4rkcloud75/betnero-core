@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.3
+- Comprende la 0.8.3 (Disallow: /visita/ nel robots.txt) sopra la 0.9.2.
+
 ## 0.9.2
 - Comprende la 0.8.2 sopra la 0.9.1.
 
@@ -9,6 +12,9 @@
 ## 0.9.0
 - Pulsanti "Vai al sito" e "Gioca" dei blocchi delle quote tutti uguali a quelli della toplist (130px) e centrati nella loro colonna; su mobile a tutta larghezza, come nella toplist.
 - Blocco "Quote più alte": tra le partite in programma trova da solo gli esiti in cui uno dei nostri bookmaker paga molto più della media degli altri (soglia di serie 5%, almeno 3 bookmaker con quota). Dichiara che sono quote normali, non maggiorate. Nessuna richiesta in più a odds-api.io.
+
+## 0.8.3
+- robots.txt: Disallow: /visita/ (link di affiliazione in uscita), come chiesto da Andrea il 23/11.
 
 ## 0.8.2
 - Pagine noindex, follow: canonical sulla pagina stessa (Yoast non lo stampa sulle pagine noindex).
