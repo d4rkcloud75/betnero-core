@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.9
+- Pagina partita completa come nel design, senza comporla nell'editor: colonna laterale (Migliori bonus, Partite in evidenza, Ultimi pronostici), su mobile toplist a scorrimento in alto e Partite in evidenza dopo le quote.
+- Box BONUS sotto la testata con ancora verso "Dove scommettere: i bonus a confronto" (schede a scorrimento).
+- "Altre partite della giornata" con "Quote" e "Quote e pronostico".
+- Domande frequenti con le risposte prese dai dati della pagina.
+- Comprende la 0.9.8 (niente riga autore e data del tema nella testata).
+
 ## 0.9.8
 - Pagina partita: tolta la riga "Di ... · Aggiornato il" che il tema inserisce dopo il primo H1 (finiva dentro la testata).
 

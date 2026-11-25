@@ -331,7 +331,19 @@ function bnc_match_block() {
 		return '';
 	}
 	wp_enqueue_script( 'betnero-partita' );
-	return bnc_match_render( $ev );
+	wp_enqueue_style( 'betnero-tables' );
+	// 0.9.9: pagina completa come nel design: toplist a scorrimento in alto (solo mobile),
+	// contenuto e colonna laterale (bonus, partite in evidenza, ultimi pronostici).
+	$ops  = array_slice( bnc_operators( 'scommesse' ), 0, 10 );
+	$h    = '<div class="bnm-page">';
+	$h   .= $ops ? '<div class="bnm-only-mobile">' . bnc_bonus_slider( $ops, 'I migliori bookmaker', '' ) . '</div>' : '';
+	$feat = bnc_featured_render( array( 'limite' => 3 ) );
+	$main = bnc_match_render( $ev );
+	// Su mobile "Partite in evidenza" subito dopo le quote, prima dei bonus a confronto.
+	$main = '' !== $feat ? preg_replace( '#<section class="bnb-slider" id="confronto"#', '<div class="bnm-only-mobile">' . $feat . '</div>$0', $main, 1 ) : $main;
+	$h   .= '<div class="bnm-cols"><div class="bnm-main">' . $main . '</div>';
+	$h   .= '<aside class="bnm-aside" aria-label="Colonna laterale"><div class="bnm-only-desktop">' . bnc_side_bonus_render( array( 'limite' => 10 ) ) . $feat . '</div>' . bnc_latest_tips_render( array() ) . '</aside></div></div>';
+	return $h;
 }
 
 function bnc_match_render( $ev ) {
@@ -392,6 +404,9 @@ function bnc_match_render( $ev ) {
 	}
 	$h .= '</div><div class="bnm-hero-foot"><span>' . esc_html( $n_books ? sprintf( 'Quote di %d bookmaker ADM%s', $n_books, $upd ? ', aggiornate alle ' . $upd : '' ) : 'Quote non ancora disponibili' ) . '</span><span>18+ · Gioca responsabilmente</span></div></section>';
 
+	// 0.9.9: box BONUS con ancora verso i bonus a confronto
+	$h .= '<a class="bnm-bonusbox" href="#confronto"><span class="bnm-bb-k">BONUS</span><span class="bnm-bb-t"><strong>' . esc_html( 'Scommetti su ' . $home . '-' . $away . ' con i bonus di benvenuto' ) . '</strong><span>I bonus dei bookmaker ADM delle quote qui sotto</span></span><span class="bnm-bb-go">Vedi i bonus &darr;</span></a>';
+
 	// Articolo collegato
 	$post_id = bnc_match_post( $ev['id'] );
 	if ( $post_id ) {
@@ -431,7 +446,83 @@ function bnc_match_render( $ev ) {
 	if ( '' !== $other ) {
 		$h .= '<div class="bnm-others" data-bnm-others><h2 class="bnm-h2">Altri mercati</h2><p class="bnm-sub">Mercati offerti solo da alcuni dei nostri bookmaker: per ognuno trovi le quote di chi lo offre.</p>' . $other . '</div>';
 	}
+	$ops = array_slice( bnc_operators( 'scommesse' ), 0, 10 );
+	if ( $ops ) {
+		$h .= bnc_bonus_slider( $ops, 'Dove scommettere su ' . $home . '-' . $away . ': i bonus a confronto', 'confronto' );
+	}
+	$h .= bnc_match_others( $ev );
+	$h .= bnc_match_faq( $ev, $tables, $books, $home, $away, $n_books );
 	return $h . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
+}
+
+/** 0.9.9: bonus a scorrimento (schede come nel design). $id = ancora, vuoto = nessuna. */
+function bnc_bonus_slider( $ops, $title, $id ) {
+	$h = '<section class="bnb-slider"' . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . '><div class="bnb-head"><strong>' . esc_html( $title ) . '</strong><span>Bonus di benvenuto scommesse, bookmaker con licenza ADM</span></div><div class="bnb-track">';
+	foreach ( $ops as $i => $op ) {
+		list( $b1, $b2, $b3 ) = bnc_bonus_lines( $op['bonus'] );
+		$h .= '<div class="bnb-card"><span class="bnb-n">' . ( $i + 1 ) . '</span><span class="bnb-logo">' . bnc_logo( $op ) . '</span>';
+		$h .= ( '' !== $b1 ? '<span class="bnb-s">' . esc_html( $b1 ) . '</span>' : '' ) . '<strong class="bnb-big">' . esc_html( $b2 ) . '</strong>' . ( '' !== $b3 ? '<span class="bnb-s">' . esc_html( $b3 ) . '</span>' : '' );
+		$h .= ( '' !== $op['rating'] ? bnc_stars( $op['rating'] ) : '' ) . '<span class="bnb-btns">' . bnc_go_button( $op, 'Vai al sito', 'bnb-go' ) . ( $op['review_url'] ? '<a class="bnb-rev" href="' . esc_url( $op['review_url'] ) . '">Recensione</a>' : '' ) . '</span></div>';
+	}
+	return $h . '</div><p class="bnb-foot">Scorri per vedere gli altri &rarr; · 18+ · Bonus soggetti a termini e condizioni degli operatori</p></section>';
+}
+
+/** 0.9.9: altre partite dello stesso campionato nei prossimi giorni. */
+function bnc_match_others( $ev ) {
+	global $wpdb;
+	$t    = bnc_odds_table();
+	$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$t} WHERE league_slug = %s AND id <> %d AND status = 'pending' AND start > %s ORDER BY start ASC LIMIT 6", $ev['league_slug'], (int) $ev['id'], gmdate( 'Y-m-d H:i:s' ) ), ARRAY_A ); // phpcs:ignore WordPress.DB
+	if ( ! $rows ) {
+		return '';
+	}
+	$books = bnc_odds_shown_books();
+	$h     = '<section class="bnm-others-m"><div class="bnm-om-head"><strong>Altre partite della giornata</strong></div>';
+	foreach ( $rows as $r ) {
+		$r['odds'] = json_decode( (string) $r['odds'], true );
+		$r['odds'] = is_array( $r['odds'] ) ? $r['odds'] : array();
+		$stale     = 2 === bnc_odds_stale( $r );
+		$h        .= '<div class="bnm-om-row"><span class="bnm-om-m"><span>' . esc_html( ucfirst( wp_date( 'D j/n · H:i', strtotime( $r['start'] . ' UTC' ) ) ) ) . '</span><strong>' . esc_html( bnc_odds_team( $r['home'] ) . ' – ' . bnc_odds_team( $r['away'] ) ) . '</strong></span>';
+		foreach ( array( '1', 'X', '2' ) as $o ) {
+			$best = 0.0;
+			if ( ! $stale ) {
+				foreach ( $books as $name => $op ) {
+					$best = max( $best, bnc_odds_price( isset( $r['odds'][ $name ] ) ? $r['odds'][ $name ] : array(), '1x2', $o ) );
+				}
+			}
+			$h .= '<span class="bnm-om-o"><em>' . $o . '</em>' . esc_html( bnc_odds_fmt( $best ) ) . '</span>';
+		}
+		$pid = bnc_match_post( (int) $r['id'] );
+		$h  .= $pid ? '<a class="bnq-go is-tip" href="' . esc_url( get_permalink( $pid ) ) . '">Quote e pronostico</a>' : '<a class="bnq-go" href="' . esc_url( bnc_match_url( $r ) ) . '">Quote</a>';
+		$h  .= '</div>';
+	}
+	return $h . '</section>';
+}
+
+/** 0.9.9: domande frequenti con le risposte prese dai dati della pagina. */
+function bnc_match_faq( $ev, $tables, $books, $home, $away, $n_books ) {
+	$qa = array();
+	if ( isset( $tables['ML']['lines'][''] ) ) {
+		$ml   = $tables['ML']['lines'][''];
+		$best = array();
+		foreach ( array( 'home' => '1 (' . $home . ')', 'draw' => 'X (pareggio)', 'away' => '2 (' . $away . ')' ) as $k => $lab ) {
+			if ( ! empty( $ml[ $k ] ) ) {
+				$max    = max( $ml[ $k ] );
+				$bk     = array_search( $max, $ml[ $k ], true );
+				$best[] = $lab . ' a ' . bnc_odds_fmt( $max ) . ' su ' . bnc_odds_book_label( $books[ $bk ]['name'] );
+			}
+		}
+		if ( $best ) {
+			$qa[] = array( 'Quali sono le quote migliori per ' . $home . '-' . $away . '?', 'Tra i ' . $n_books . ' bookmaker ADM che confrontiamo, le quote più alte sull\'esito finale sono: ' . implode( '; ', $best ) . '.' );
+		}
+	}
+	$qa[] = array( 'Ogni quanto si aggiornano le quote?', 'Le quote si aggiornano in automatico ogni 10 minuti fino al fischio d\'inizio. Dopo l\'inizio della partita restano le ultime quote pre-partita.' );
+	$qa[] = array( 'Come si calcolano le probabilità?', 'Partiamo dalle quote migliori di ogni esito, calcoliamo la probabilità che esprimono e togliamo il margine dei bookmaker, così le percentuali sommano 100.' );
+	$qa[] = array( 'Dove posso scommettere su ' . $home . '-' . $away . '?', 'Sui bookmaker con concessione ADM che trovi nei bonus a confronto qui sopra: ognuno offre un bonus di benvenuto diverso.' );
+	$h = '<section class="bnm-faq"><h2 class="bnm-h2">Domande frequenti su ' . esc_html( $home . '-' . $away ) . '</h2>';
+	foreach ( $qa as $i => $x ) {
+		$h .= '<details' . ( 0 === $i ? ' open' : '' ) . '><summary>' . esc_html( $x[0] ) . '</summary><p>' . esc_html( $x[1] ) . '</p></details>';
+	}
+	return $h . '</section>';
 }
 
 /** Un mercato: barra apribile, eventuali linee, tabella con i bookmaker in colonna. */
