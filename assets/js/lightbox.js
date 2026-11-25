@@ -2,7 +2,7 @@
  * Betnero Core: lightbox per le gallerie delle recensioni (Il sito web, App).
  * Un clic sulla foto la apre ingrandita sopra la pagina; frecce e tastiera
  * per passare alle altre foto della stessa galleria; Esc o clic fuori per chiudere.
- * Senza JavaScript il link apre comunque l'immagine.
+ * Le miniature sono pulsanti con l'immagine grande in data-full (0.8.4).
  */
 ( function () {
 	var box, img, cap, prev, next, list = [], idx = 0, last = null;
@@ -52,7 +52,7 @@
 	function show() {
 		var a = list[ idx ];
 		var t = a.querySelector( 'img' );
-		img.src = a.href;
+		img.src = a.getAttribute( 'data-full' );
 		img.alt = t ? t.alt : '';
 		cap.textContent = list.length > 1 ? ( idx + 1 ) + ' / ' + list.length : '';
 		prev.hidden = next.hidden = list.length < 2;
@@ -68,7 +68,7 @@
 			build();
 		}
 		var grid = a.closest( '.bns-gallery-grid' );
-		list = Array.prototype.slice.call( grid.querySelectorAll( 'a[data-bn-lb]' ) );
+		list = Array.prototype.slice.call( grid.querySelectorAll( '[data-bn-lb]' ) );
 		idx = list.indexOf( a );
 		last = a;
 		show();
@@ -87,8 +87,8 @@
 	}
 
 	document.addEventListener( 'click', function ( e ) {
-		var a = e.target.closest && e.target.closest( 'a[data-bn-lb]' );
-		if ( ! a || e.ctrlKey || e.metaKey || e.shiftKey ) {
+		var a = e.target.closest && e.target.closest( '[data-bn-lb]' );
+		if ( ! a ) {
 			return;
 		}
 		e.preventDefault();
