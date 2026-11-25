@@ -249,6 +249,10 @@ add_filter( 'render_block', function ( $html, $block ) {
 	}
 	return in_array( $block['blockName'], array( 'core/post-title', 'core/post-author', 'core/post-author-name', 'core/post-date', 'core/post-terms' ), true ) ? '' : $html;
 }, 10, 2 );
+/* 0.9.8: il tema mette autore e data dopo il primo H1 del contenuto, cioe' dentro la testata della partita: qui non servono. */
+add_filter( 'render_block_core/post-content', function ( $html ) {
+	return ( get_query_var( 'bn_partita' ) && bnc_match_current() ) ? preg_replace( '#<p class="bn-byline">.*?</p>#s', '', $html, 1 ) : $html;
+}, 30 );
 /* 0.9.7: briciole di pane di Yoast con il nome della partita invece di "Quote partita". */
 add_filter( 'wpseo_breadcrumb_links', function ( $links ) {
 	$t = bnc_match_title();

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.8
+- Pagina partita: tolta la riga "Di ... · Aggiornato il" che il tema inserisce dopo il primo H1 (finiva dentro la testata).
+
 ## 0.9.7
 - Pagina partita: tolti autore e data della pagina, briciole di pane con il nome della partita, sigle delle squadre leggibili.
 
