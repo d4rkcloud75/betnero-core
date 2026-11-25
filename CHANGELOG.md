@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.10
+- Comprende la 0.9.9 (pagina partita completa).
+- Nuovo blocco "Quote campionato": testata della pagina Quote Serie A con titolo H1, stagione e bookmaker, schede Partite, Risultati e Classifica.
+- Stemmi delle squadre salvati sul sito (wp-content/uploads/betnero-stemmi) e mostrati anche nella testata della pagina partita.
+- Classifica con i nomi delle squadre uguali a quelli delle quote (Roma, Milan).
+- Dati calcio: piano e limite giornaliero veri nella pagina di stato.
+
 ## 0.9.9
 - Pagina partita completa come nel design, senza comporla nell'editor: colonna laterale (Migliori bonus, Partite in evidenza, Ultimi pronostici), su mobile toplist a scorrimento in alto e Partite in evidenza dopo le quote.
 - Box BONUS sotto la testata con ancora verso "Dove scommettere: i bonus a confronto" (schede a scorrimento).

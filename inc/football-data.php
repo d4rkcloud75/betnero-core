@@ -78,6 +78,53 @@ function bnc_fd_get( $path, $args = array() ) {
 	return isset( $body['response'] ) ? $body['response'] : array();
 }
 
+/* ---------- Stemmi (0.9.10) ---------- */
+
+/**
+ * Stemma salvato una volta in wp-content/uploads/betnero-stemmi/<id>.png:
+ * le pagine non dipendono dal server delle immagini di API-Football.
+ * Se il download non riesce resta il link originale.
+ */
+function bnc_fd_crest_local( $team_id, $remote ) {
+	if ( ! $team_id || '' === $remote ) {
+		return $remote;
+	}
+	$up  = wp_upload_dir();
+	$dir = trailingslashit( $up['basedir'] ) . 'betnero-stemmi';
+	$url = trailingslashit( $up['baseurl'] ) . 'betnero-stemmi/' . (int) $team_id . '.png';
+	$file = $dir . '/' . (int) $team_id . '.png';
+	if ( file_exists( $file ) && filesize( $file ) > 0 ) {
+		return $url;
+	}
+	wp_mkdir_p( $dir );
+	$res = wp_remote_get( $remote, array( 'timeout' => 15 ) );
+	if ( is_wp_error( $res ) || 200 !== (int) wp_remote_retrieve_response_code( $res ) ) {
+		return $remote;
+	}
+	$body = wp_remote_retrieve_body( $res );
+	if ( '' === $body || false === strpos( (string) wp_remote_retrieve_header( $res, 'content-type' ), 'image' ) ) {
+		return $remote;
+	}
+	return false !== file_put_contents( $file, $body ) ? $url : $remote; // phpcs:ignore WordPress.WP.AlternativeFunctions
+}
+
+/** Stemma di una squadra dal nome usato nelle quote (es. "Venezia"), '' se non c'e'. */
+function bnc_fd_crest( $team ) {
+	static $map = null;
+	if ( null === $map ) {
+		$map = array();
+		foreach ( (array) get_option( 'bnc_fd_standings', array() ) as $data ) {
+			foreach ( isset( $data['righe'] ) ? (array) $data['righe'] : array() as $r ) {
+				$n = function_exists( 'bnc_odds_team' ) ? bnc_odds_team( $r['nome'] ) : $r['nome'];
+				$map[ strtolower( remove_accents( $n ) ) ] = $r['logo'];
+				$map[ strtolower( remove_accents( $r['nome'] ) ) ] = $r['logo'];
+			}
+		}
+	}
+	$k = strtolower( remove_accents( (string) $team ) );
+	return isset( $map[ $k ] ) ? $map[ $k ] : '';
+}
+
 /* ---------- Lettura programmata ---------- */
 
 function bnc_fd_schedule() {
@@ -97,6 +144,11 @@ function bnc_fd_sync() {
 	$all = get_option( 'bnc_fd_standings', array() );
 	$all = is_array( $all ) ? $all : array();
 	$rep = array( 'ok' => 0, 'errori' => array() );
+	// 0.9.10: piano e limite giornaliero, per la pagina di stato (una richiesta).
+	$st = bnc_fd_get( '/status' );
+	if ( ! is_wp_error( $st ) && isset( $st['subscription'] ) ) {
+		update_option( 'bnc_fd_plan', array( 'plan' => (string) $st['subscription']['plan'], 'limit' => isset( $st['requests']['limit_day'] ) ? (int) $st['requests']['limit_day'] : 0 ), false );
+	}
 	foreach ( bnc_fd_leagues() as $l ) {
 		$r = bnc_fd_get( '/standings', array( 'league' => (int) $l['id'], 'season' => (int) $l['stagione'] ) );
 		if ( is_wp_error( $r ) ) {
@@ -110,7 +162,7 @@ function bnc_fd_sync() {
 				'pos'   => (int) $t['rank'],
 				'id'    => (int) $t['team']['id'],
 				'nome'  => (string) $t['team']['name'],
-				'logo'  => (string) $t['team']['logo'],
+				'logo'  => bnc_fd_crest_local( (int) $t['team']['id'], (string) $t['team']['logo'] ),
 				'g'     => (int) $t['all']['played'],
 				'v'     => (int) $t['all']['win'],
 				'n'     => (int) $t['all']['draw'],
@@ -194,7 +246,7 @@ function bnc_fd_standings_render( $league_id, $titolo = '' ) {
 	foreach ( $data['righe'] as $r ) {
 		$z  = bnc_fd_zone( $r['zona'] );
 		$h .= '<tr' . ( $z ? ' class="is-' . esc_attr( $z ) . '"' : '' ) . '><td class="is-pos">' . (int) $r['pos'] . '</td>';
-		$h .= '<th class="is-team" scope="row"><span>' . ( $r['logo'] ? '<img src="' . esc_url( $r['logo'] ) . '" alt="" width="20" height="20" loading="lazy" decoding="async">' : '' ) . esc_html( $r['nome'] ) . '</span></th>';
+		$h .= '<th class="is-team" scope="row"><span>' . ( $r['logo'] ? '<img src="' . esc_url( $r['logo'] ) . '" alt="" width="20" height="20" loading="lazy" decoding="async">' : '' ) . esc_html( function_exists( 'bnc_odds_team' ) ? bnc_odds_team( $r['nome'] ) : $r['nome'] ) . '</span></th>';
 		foreach ( array( 'g', 'v', 'n', 'p', 'gf', 'gs' ) as $k ) {
 			$h .= '<td>' . (int) $r[ $k ] . '</td>';
 		}
@@ -244,6 +296,11 @@ add_action( 'rest_api_init', function () {
 	) );
 } );
 
+function bnc_fd_plan_label() {
+	$pl = (array) get_option( 'bnc_fd_plan', array() );
+	return ! empty( $pl['limit'] ) ? number_format_i18n( (int) $pl['limit'] ) . ' (piano ' . ( '' !== $pl['plan'] ? $pl['plan'] : '?' ) . ')' : '100 (piano Free)';
+}
+
 /* ---------- Operatori > Dati calcio ---------- */
 
 add_action( 'admin_menu', function () {
@@ -265,6 +322,9 @@ function bnc_fd_page() {
 				$notice[] = is_wp_error( $st )
 					? array( 'error', 'Chiave salvata, ma API-Football risponde: ' . $st->get_error_message() )
 					: array( 'success', 'Chiave salvata e funzionante. Piano: ' . ( isset( $st['subscription']['plan'] ) ? $st['subscription']['plan'] : '?' ) . '.' );
+				if ( ! is_wp_error( $st ) ) {
+					update_option( 'bnc_fd_plan', array( 'plan' => isset( $st['subscription']['plan'] ) ? (string) $st['subscription']['plan'] : '', 'limit' => isset( $st['requests']['limit_day'] ) ? (int) $st['requests']['limit_day'] : 0 ), false );
+				}
 			}
 		}
 		if ( 'key_delete' === $act ) {
@@ -337,7 +397,7 @@ function bnc_fd_page() {
 	$lines = array(
 		'Prossimo aggiornamento automatico' => $next ? wp_date( 'd/m H:i', $next ) : 'non programmato',
 		'Ultimo aggiornamento'              => ! empty( $state['quando'] ) ? wp_date( 'd/m H:i:s', strtotime( $state['quando'] . ' UTC' ) ) . ( ! empty( $state['rep']['errori'] ) ? ', errori: ' . implode( ' | ', $state['rep']['errori'] ) : ', riuscito' ) : '-',
-		'Richieste di oggi'                 => ( isset( $cnt['d'] ) && gmdate( 'Ymd' ) === $cnt['d'] ? (int) $cnt['n'] : 0 ) . ' su 100 (piano Free)',
+		'Richieste di oggi'                 => ( isset( $cnt['d'] ) && gmdate( 'Ymd' ) === $cnt['d'] ? (int) $cnt['n'] : 0 ) . ' su ' . bnc_fd_plan_label(),
 	);
 	foreach ( bnc_fd_leagues() as $l ) {
 		$d = isset( $all[ (int) $l['id'] ] ) ? $all[ (int) $l['id'] ] : null;

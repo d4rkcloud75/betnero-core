@@ -38,7 +38,23 @@
 			}
 		} );
 	}
+	/* 0.9.10: schede Partite / Risultati / Classifica del blocco Quote campionato */
+	function tabs( root ) {
+		root.addEventListener( 'click', function ( e ) {
+			var t = e.target.closest( '[data-bnqc-tab]' );
+			if ( ! t ) {
+				return;
+			}
+			root.querySelectorAll( '[data-bnqc-tab]' ).forEach( function ( b ) {
+				b.setAttribute( 'aria-selected', b === t ? 'true' : 'false' );
+			} );
+			root.querySelectorAll( '.bnqc-panel' ).forEach( function ( p ) {
+				p.hidden = p.id !== 'bnqc-p-' + t.getAttribute( 'data-bnqc-tab' );
+			} );
+		} );
+	}
 	function start() {
+		document.querySelectorAll( '[data-bnqc]' ).forEach( tabs );
 		document.querySelectorAll( '[data-bnm]' ).forEach( init );
 	}
 	if ( document.readyState === 'loading' ) {

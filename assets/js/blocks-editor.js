@@ -407,4 +407,26 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.10: testata della pagina Quote campionato (design v3). */
+	wp.blocks.registerBlockType( 'betnero/quote-campionato', {
+		title: 'Quote campionato',
+		icon: 'tickets-alt',
+		category: 'betnero',
+		description: 'Titolo della pagina e schede Partite, Risultati e Classifica di un campionato.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( TextControl, { label: 'Campionato delle quote (slug di odds-api.io)', value: a.campionato, onChange: set( props, 'campionato' ) } ),
+						el( TextControl, { label: 'Id della classifica su API-Football (Serie A = 135, 0 = nessuna)', type: 'number', value: a.classifica, onChange: function ( v ) { props.setAttributes( { classifica: parseInt( v, 10 ) || 0 } ); } } ),
+						el( RangeControl, { label: 'Partite dei prossimi giorni', value: a.giorni, min: 1, max: 14, onChange: function ( v ) { props.setAttributes( { giorni: v || 7 } ); } } ),
+						el( TextControl, { label: 'Titolo (vuoto = "Quote" + campionato)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/quote-campionato', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

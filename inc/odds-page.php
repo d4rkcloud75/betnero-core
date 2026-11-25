@@ -368,7 +368,12 @@ function bnc_match_render( $ev ) {
 	// Testata
 	$h  = '<div class="bnm" data-bnm>';
 	$h .= '<section class="bnm-hero"><div class="bnm-hero-in"><div class="bnm-row1">';
-	$h .= '<span class="bnm-crests" aria-hidden="true"><span>' . esc_html( $ini( $home ) ) . '</span><span>' . esc_html( $ini( $away ) ) . '</span></span>';
+	// 0.9.10: stemmi da API-Football (salvati sul sito), altrimenti le sigle.
+	$crest = function ( $n ) use ( $ini ) {
+		$src = function_exists( 'bnc_fd_crest' ) ? bnc_fd_crest( $n ) : '';
+		return '<span' . ( $src ? ' class="has-img"' : '' ) . '>' . ( $src ? '<img src="' . esc_url( $src ) . '" alt="" width="34" height="34" decoding="async">' : esc_html( $ini( $n ) ) ) . '</span>';
+	};
+	$h .= '<span class="bnm-crests" aria-hidden="true">' . $crest( $home ) . $crest( $away ) . '</span>';
 	$h .= '<h1 class="bnm-title">Quote ' . esc_html( $home . '-' . $away ) . '</h1>';
 	$h .= '<div class="bnm-meta"><strong>' . esc_html( ucfirst( wp_date( 'l j F · H:i', $ts ) ) ) . '</strong><span>' . esc_html( bnc_odds_league_label( $ev['league_name'] ) ) . '</span></div></div>';
 
