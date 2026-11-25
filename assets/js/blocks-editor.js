@@ -341,4 +341,70 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.5: pagina partita e blocchi del design Quote v3. */
+	wp.blocks.registerBlockType( 'betnero/pagina-partita', {
+		title: 'Pagina partita',
+		icon: 'tickets-alt',
+		category: 'betnero',
+		description: 'Va nella pagina con slug "quote-partita": mostra testata, filtri e tutti i mercati della partita aperta da /quote-partita/<id>-<squadre>/. Nell\'editor si vede la prossima partita con quote.',
+		edit: function ( props ) { return preview( 'betnero/pagina-partita', props.attributes ); },
+		save: function () { return null; }
+	} );
+	wp.blocks.registerBlockType( 'betnero/bonus-laterale', {
+		title: 'Migliori bonus (colonna laterale)',
+		icon: 'awards',
+		category: 'betnero',
+		description: 'Toplist scura per la colonna laterale: logo, bonus, voto e "Prendi il bonus".',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( SelectControl, { label: 'Operatori', value: a.tipo, options: [ { label: 'Bookmaker', value: 'scommesse' }, { label: 'Casinò', value: 'casino' } ], onChange: set( props, 'tipo' ) } ),
+						el( RangeControl, { label: 'Quanti', value: a.limite, min: 1, max: 20, onChange: function ( v ) { props.setAttributes( { limite: v || 10 } ); } } ),
+						el( TextControl, { label: 'Titolo (vuoto = automatico)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/bonus-laterale', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
+	wp.blocks.registerBlockType( 'betnero/partite-evidenza', {
+		title: 'Partite in evidenza',
+		icon: 'star-filled',
+		category: 'betnero',
+		description: 'Le prossime partite che hanno un pronostico pubblicato, con le quote 1X2 migliori.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( RangeControl, { label: 'Quante partite', value: a.limite, min: 1, max: 6, onChange: function ( v ) { props.setAttributes( { limite: v || 3 } ); } } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/partite-evidenza', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
+	wp.blocks.registerBlockType( 'betnero/ultimi-pronostici', {
+		title: 'Ultimi pronostici',
+		icon: 'list-view',
+		category: 'betnero',
+		description: 'Gli ultimi articoli di una categoria (di solito "pronostici").',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( TextControl, { label: 'Categoria (slug)', value: a.categoria, onChange: set( props, 'categoria' ) } ),
+						el( RangeControl, { label: 'Quanti articoli', value: a.limite, min: 1, max: 10, onChange: function ( v ) { props.setAttributes( { limite: v || 5 } ); } } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/ultimi-pronostici', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

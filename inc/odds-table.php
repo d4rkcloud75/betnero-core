@@ -123,13 +123,23 @@ function bnc_odds_table_render( $a ) {
 				$h .= '<span class="bnq-oc is-off">' . $inner . '<span class="bnq-bk">&nbsp;</span></span>';
 			}
 		}
-		$h .= '</div></div>';
+		$h .= '</div>';
+		// 0.9.5: "Quote e pronostico" se c'e' l'articolo, altrimenti "Quote" (pagina partita).
+		$pid = function_exists( 'bnc_match_post' ) ? bnc_match_post( (int) $r['id'] ) : 0;
+		if ( $pid ) {
+			$h .= '<a class="bnq-go is-tip" href="' . esc_url( get_permalink( $pid ) ) . '">Quote e pronostico</a>';
+		} elseif ( function_exists( 'bnc_match_url' ) && ! $started ) {
+			$h .= '<a class="bnq-go" href="' . esc_url( bnc_match_url( $r ) ) . '">Quote</a>';
+		} else {
+			$h .= '<span class="bnq-go is-off"></span>';
+		}
+		$h .= '</div>';
 		if ( $r['odds_updated'] ) {
 			$latest = max( $latest, strtotime( $r['odds_updated'] . ' UTC' ) );
 		}
 	}
 	$h .= '</div>';
-	$note = $latest ? 'Quote migliori tra i nostri bookmaker, aggiornate alle ' . wp_date( 'd/m H:i', $latest ) . '. Tocca una quota per andare sul sito.' : '';
+	$note = $latest ? 'Quote migliori tra i nostri bookmaker, aggiornate alle ' . wp_date( 'd/m H:i', $latest ) . '. Tocca una quota per andare sul sito. "Quote e pronostico" apre l\'articolo con le quote; "Quote" apre la pagina della partita con tutti i mercati.' : '';
 	return $h . ( $note ? '<p class="bnq-note">' . esc_html( $note ) . '</p>' : '' ) . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
 }
 

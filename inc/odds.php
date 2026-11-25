@@ -21,7 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'BNC_ODDS_API', 'https://api.odds-api.io/v3' );
 define( 'BNC_ODDS_DB', '1' );
-define( 'BNC_ODDS_MARKETS', 'ML,Double Chance,Totals,Both Teams To Score' );
+// 0.9.5: anche i mercati della pagina partita (massimo 20 per richiesta, una richiesta ogni 10 partite).
+define( 'BNC_ODDS_MARKETS', 'ML,Double Chance,Totals,Both Teams To Score,Draw No Bet,Correct Score,ML HT,Totals HT,Half Time / Full Time,Spread,European Handicap,Corners,Corners Totals,Bookings Totals' );
 
 /* ---------- Impostazioni ---------- */
 

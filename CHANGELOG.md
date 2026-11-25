@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.5
+- Pagina partita (design Quote v3): /quote-partita/<id>-<squadre>/ mostra la pagina con slug "quote-partita" e il blocco "Pagina partita": testata con quote migliori 1X2 e probabilita', filtri per gruppo, un blocco per mercato con i bookmaker in colonna, "Altri mercati" per quelli offerti solo da alcuni bookmaker.
+- Lettura quote: aggiunti i mercati Rimborso, Risultato esatto, Primo tempo, Parziale/finale, Handicap, Corner e Cartellini.
+- Tabella partite: pulsante "Quote e pronostico" (se c'e' l'articolo) o "Quote" (pagina partita), solo desktop.
+- Nuovi blocchi: Migliori bonus (colonna laterale), Partite in evidenza, Ultimi pronostici.
+
 ## 0.9.4
 - Comprende la 0.8.4 (gallerie delle recensioni con pulsanti) sopra la 0.9.3.
 - Nuovo: Operatori > Dati calcio, con la chiave di API-Football e i campionati da seguire; classifiche lette due volte al giorno e salvate.
