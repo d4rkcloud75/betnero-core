@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.7
+- Pagina partita: tolti autore e data della pagina, briciole di pane con il nome della partita, sigle delle squadre leggibili.
+
 ## 0.9.6
 - Pagina partita: l'indirizzo /quote-partita/<id>-<squadre>/ trova la pagina "quote-partita" anche con permalink come /blog/quote-partita.html, senza redirect verso la pagina vuota.
 

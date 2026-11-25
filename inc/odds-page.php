@@ -242,8 +242,20 @@ add_filter( 'wpseo_canonical', function ( $c ) {
 	return $ev ? bnc_match_url( $ev ) : $c;
 } );
 /* Il titolo e' nella testata del blocco: niente titolo della pagina dal tema (un solo H1). */
-add_filter( 'render_block_core/post-title', function ( $html ) {
-	return ( get_query_var( 'bn_partita' ) && bnc_match_current() ) ? '' : $html;
+add_filter( 'render_block', function ( $html, $block ) {
+	// 0.9.7: anche autore e data della pagina (vengono dal modello del tema) non servono.
+	if ( ! get_query_var( 'bn_partita' ) || ! bnc_match_current() || empty( $block['blockName'] ) ) {
+		return $html;
+	}
+	return in_array( $block['blockName'], array( 'core/post-title', 'core/post-author', 'core/post-author-name', 'core/post-date', 'core/post-terms' ), true ) ? '' : $html;
+}, 10, 2 );
+/* 0.9.7: briciole di pane di Yoast con il nome della partita invece di "Quote partita". */
+add_filter( 'wpseo_breadcrumb_links', function ( $links ) {
+	$t = bnc_match_title();
+	if ( '' !== $t && $links ) {
+		$links[ count( $links ) - 1 ]['text'] = $t;
+	}
+	return $links;
 } );
 /* Partita inesistente o vecchia: 404 (e niente pagina vuota indicizzata) */
 add_action( 'template_redirect', function () {
