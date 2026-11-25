@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.6
+- Pagina partita: l'indirizzo /quote-partita/<id>-<squadre>/ trova la pagina "quote-partita" anche con permalink come /blog/quote-partita.html, senza redirect verso la pagina vuota.
+
 ## 0.9.5
 - Pagina partita (design Quote v3): /quote-partita/<id>-<squadre>/ mostra la pagina con slug "quote-partita" e il blocco "Pagina partita": testata con quote migliori 1X2 e probabilita', filtri per gruppo, un blocco per mercato con i bookmaker in colonna, "Altri mercati" per quelli offerti solo da alcuni bookmaker.
 - Lettura quote: aggiunti i mercati Rimborso, Risultato esatto, Primo tempo, Parziale/finale, Handicap, Corner e Cartellini.

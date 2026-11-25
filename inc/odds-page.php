@@ -192,6 +192,25 @@ add_action( 'init', function () {
 	}
 } );
 
+/**
+ * 0.9.6: la regola punta alla pagina con slug "quote-partita" ovunque si trovi
+ * (i permalink delle pagine possono essere /blog/quote-partita.html), e niente
+ * redirect canonico verso l'indirizzo della pagina vuota.
+ */
+add_filter( 'request', function ( $vars ) {
+	if ( empty( $vars['bn_partita'] ) ) {
+		return $vars;
+	}
+	$ids = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'name' => BNC_MATCH_SLUG, 'numberposts' => 1, 'fields' => 'ids' ) );
+	if ( $ids ) {
+		return array( 'page_id' => (int) $ids[0], 'bn_partita' => (int) $vars['bn_partita'] );
+	}
+	return $vars;
+} );
+add_filter( 'redirect_canonical', function ( $url ) {
+	return get_query_var( 'bn_partita' ) ? false : $url;
+} );
+
 /** Partita della richiesta corrente (pagina partita). */
 function bnc_match_current() {
 	static $ev = false;
