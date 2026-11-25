@@ -305,3 +305,6 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnqc-res-row strong { font-size: 13px; }
 .bnqc-res-row b { font-size: 15px; text-align: center; }
 @media (max-width: 640px) { .bnqc-tt h1 { font-size: 22px; } .bnqc-top { padding: 14px 12px 0; } }
+/* 0.9.11: pagina campionato completa */
+.bnqc-main { display: flex; flex-direction: column; gap: 14px; }
+.bnqc-main > .bnq, .bnqc-main > .bnqc { margin: 0; }

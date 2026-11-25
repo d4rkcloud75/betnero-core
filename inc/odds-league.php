@@ -25,6 +25,7 @@ add_action( 'init', function () {
 			'classifica' => array( 'type' => 'number', 'default' => 135 ),
 			'titolo'     => array( 'type' => 'string', 'default' => '' ),
 			'giorni'     => array( 'type' => 'number', 'default' => 7 ),
+			'completa'   => array( 'type' => 'boolean', 'default' => true ),
 			'className'  => array( 'type' => 'string' ),
 		),
 		'render_callback' => 'bnc_league_block',
@@ -86,6 +87,60 @@ function bnc_league_block( $a ) {
 		}
 		$h    .= '<div class="bnqc-panel" role="tabpanel" id="bnqc-p-' . esc_attr( $k ) . '" aria-labelledby="bnqc-t-' . esc_attr( $k ) . '"' . ( $first ? '' : ' hidden' ) . '>' . $tb[1] . '</div>';
 		$first = false;
+	}
+	$h .= '</section>';
+	if ( isset( $a['completa'] ) && ! $a['completa'] ) {
+		return $h;
+	}
+	return bnc_league_page( $h, $slug, $label, $giorni );
+}
+
+/**
+ * 0.9.11: pagina completa come nel design v3, senza comporla nell'editor.
+ * Box BONUS, schede, quote maggiorate e piu' alte, bonus a confronto, FAQ; colonna laterale.
+ */
+function bnc_league_page( $head, $slug, $label, $giorni ) {
+	wp_enqueue_style( 'betnero-tables' );
+	$ops  = function_exists( 'bnc_bonus_slider' ) ? array_slice( bnc_operators( 'scommesse' ), 0, 10 ) : array();
+	$feat = function_exists( 'bnc_featured_render' ) ? bnc_featured_render( array( 'limite' => 3 ) ) : '';
+	$main = '';
+	if ( $ops ) {
+		$main .= '<a class="bnm-bonusbox" href="#confronto"><span class="bnm-bb-k">BONUS</span><span class="bnm-bb-t"><strong>' . esc_html( 'Scommetti sulla ' . $label . ' con i bonus di benvenuto' ) . '</strong><span>Confronta i bonus dei bookmaker ADM che usiamo per le quote</span></span><span class="bnm-bb-go">Confronta i bonus &darr;</span></a>';
+	}
+	$main .= $head;
+	$main .= bnc_boost_render( bnc_boost_active( 0, 5 ), 'Quote maggiorate' );
+	$main .= bnc_top_render( array( 'giorni' => min( 7, $giorni ), 'limite' => 5, 'campionato' => $slug, 'titolo' => 'Le quote più alte della ' . $label ) );
+	$main .= '' !== $feat ? '<div class="bnm-only-mobile">' . $feat . '</div>' : '';
+	if ( $ops ) {
+		$main .= bnc_bonus_slider( $ops, 'Confronta i bonus dei bookmaker per la ' . $label, 'confronto' );
+	}
+	$main .= bnc_league_faq( $slug, $label );
+
+	$h  = '<div class="bnm-page bnqc-page">';
+	$h .= $ops ? '<div class="bnm-only-mobile">' . bnc_bonus_slider( $ops, 'I migliori bookmaker', '' ) . '</div>' : '';
+	$h .= '<div class="bnm-cols"><div class="bnm-main bnqc-main">' . $main . '</div>';
+	$h .= '<aside class="bnm-aside" aria-label="Colonna laterale"><div class="bnm-only-desktop">' . bnc_side_bonus_render( array( 'limite' => 10 ) ) . $feat . '</div>' . bnc_latest_tips_render( array() ) . '</aside></div></div>';
+	return $h;
+}
+
+/** Domande frequenti della pagina campionato, con le risposte prese dai dati. */
+function bnc_league_faq( $slug, $label ) {
+	global $wpdb;
+	$t     = bnc_odds_table();
+	$n     = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$t} WHERE league_slug = %s AND status = 'pending' AND start > %s", $slug, gmdate( 'Y-m-d H:i:s' ) ) ); // phpcs:ignore WordPress.DB
+	$books = array_map( function ( $op ) {
+		return bnc_odds_book_label( $op['name'] );
+	}, array_values( bnc_odds_shown_books() ) );
+	$qa    = array(
+		array( 'Dove trovo le quote più alte per la ' . $label . '?', 'Nella scheda Partite: per ogni partita mostriamo la quota più alta di ogni esito tra i nostri bookmaker' . ( $n ? ' (ora ' . $n . ' partite in programma)' : '' ) . '. Il pulsante "Quote" apre tutti i mercati della partita.' ),
+		array( 'Ogni quanto si aggiornano le quote?', 'In automatico ogni 10 minuti fino al fischio d\'inizio.' ),
+		array( 'Quali bookmaker confrontate?', $books ? 'Solo bookmaker con concessione ADM: ' . implode( ', ', $books ) . '.' : 'Solo bookmaker con concessione ADM.' ),
+		array( 'Che differenza c\'è tra quota normale e quota maggiorata?', 'La quota maggiorata è un\'offerta del bookmaker su un esito preciso, più alta del normale e valida fino a una scadenza. Le quote più alte sono invece quote normali sopra la media degli altri bookmaker.' ),
+		array( 'Dove trovo la classifica della ' . $label . '?', 'Nella scheda Classifica, con la forma delle ultime 5 partite. I dati si aggiornano due volte al giorno.' ),
+	);
+	$h = '<section class="bnm-faq"><h2 class="bnm-h2">Domande frequenti sulle quote ' . esc_html( $label ) . '</h2>';
+	foreach ( $qa as $i => $x ) {
+		$h .= '<details' . ( 0 === $i ? ' open' : '' ) . '><summary>' . esc_html( $x[0] ) . '</summary><p>' . esc_html( $x[1] ) . '</p></details>';
 	}
 	return $h . '</section>';
 }

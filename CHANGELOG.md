@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.11
+- Pagina Quote campionato completa come nel design, senza comporla nell'editor: box BONUS, schede Partite/Risultati/Classifica, Quote maggiorate, Quote più alte del campionato, bonus a confronto a scorrimento, FAQ dai dati; colonna laterale (Migliori bonus, Partite in evidenza, Ultimi pronostici); su mobile toplist in alto e Partite in evidenza prima dei bonus. Interruttore "Pagina completa" nel blocco per avere solo la testata.
+
 ## 0.9.10
 - Comprende la 0.9.9 (pagina partita completa).
 - Nuovo blocco "Quote campionato": testata della pagina Quote Serie A con titolo H1, stagione e bookmaker, schede Partite, Risultati e Classifica.
