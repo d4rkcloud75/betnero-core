@@ -36,9 +36,10 @@
 .wp-block-column.bns-contro li::before { content: "\2717"; color: #C62828; }
 .bns-empty { padding: 12px; border: 1px dashed #c3c4c7; color: #646970; }
 /* Lightbox delle gallerie */
-.bns-gallery-grid a[data-bn-lb] { cursor: zoom-in; display: block; flex: 0 0 auto; }
-.bns-gallery-grid a[data-bn-lb] img { transition: opacity .15s ease; }
-.bns-gallery-grid a[data-bn-lb]:hover img { opacity: .85; }
+.bns-gallery-grid .bns-zoom { cursor: zoom-in; display: block; flex: 0 0 auto; padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit; line-height: 0; border-radius: 8px; }
+.bns-gallery-grid .bns-zoom:focus-visible { outline: 2px solid var(--bns-ink); outline-offset: 2px; }
+.bns-gallery-grid .bns-zoom img { transition: opacity .15s ease; }
+.bns-gallery-grid .bns-zoom:hover img { opacity: .85; }
 html.bn-lb-open { overflow: hidden; }
 .bn-lb { position: fixed; inset: 0; z-index: 100000; background: rgba(10,18,34,.96); display: flex; align-items: center; justify-content: center; padding: 56px 64px; animation: bnLbIn .18s ease; }
 .bn-lb[hidden] { display: none; }

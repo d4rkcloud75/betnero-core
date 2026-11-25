@@ -297,7 +297,9 @@ function bnc_gallery( $ids, $title, $eager_first = false, $name = '' ) {
 		if ( '' === $alt ) {
 			$load['alt'] = $label;
 		}
-		$h .= '<a href="' . esc_url( (string) $full ) . '" data-bn-lb data-elementor-open-lightbox="no" aria-label="' . esc_attr( 'Ingrandisci ' . $label ) . '">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</a>';
+		// 0.8.4: pulsante e non link. Un <a href> verso il file immagine e' segnalato
+		// dai crawler come "risorsa formattata come link alla pagina" (email di Andrea del 24/11).
+		$h .= '<button type="button" class="bns-zoom" data-bn-lb data-full="' . esc_url( (string) $full ) . '" aria-label="' . esc_attr( 'Ingrandisci ' . $label ) . '">' . wp_get_attachment_image( (int) $id, 'medium', false, $load ) . '</button>';
 	}
 	return $h . '</div></figure>';
 }

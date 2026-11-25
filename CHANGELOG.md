@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.4
+- Comprende la 0.8.4 (gallerie delle recensioni con pulsanti) sopra la 0.9.3.
+- Nuovo: Operatori > Dati calcio, con la chiave di API-Football e i campionati da seguire; classifiche lette due volte al giorno e salvate.
+- Nuovo blocco "Classifica campionato": stemmi, forma delle ultime 5 e zone (Champions, Europa e Conference, retrocessione).
+
 ## 0.9.3
 - Comprende la 0.8.3 (Disallow: /visita/ nel robots.txt) sopra la 0.9.2.
 

@@ -321,4 +321,24 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.4: Classifica campionato (API-Football, Operatori > Dati calcio). */
+	wp.blocks.registerBlockType( 'betnero/classifica-campionato', {
+		title: 'Classifica campionato',
+		icon: 'editor-ol',
+		category: 'betnero',
+		description: 'La classifica del campionato con stemmi, forma e zone. Dati di API-Football, aggiornati due volte al giorno.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( TextControl, { label: 'Id del campionato su API-Football (Serie A = 135)', type: 'number', value: a.campionato, onChange: function ( v ) { props.setAttributes( { campionato: parseInt( v, 10 ) || 135 } ); } } ),
+						el( TextControl, { label: 'Titolo (vuoto = automatico)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/classifica-campionato', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );
