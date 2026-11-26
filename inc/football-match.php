@@ -29,7 +29,7 @@ function bnc_fdm_sync_fixtures() {
 		$r = bnc_fd_get( '/fixtures', array(
 			'league' => (int) $l['id'],
 			'season' => (int) $l['stagione'],
-			'from'   => gmdate( 'Y-m-d', time() - 2 * DAY_IN_SECONDS ),
+			'from'   => gmdate( 'Y-m-d', time() - 7 * DAY_IN_SECONDS ), // 0.9.14: anche l'ultima giornata giocata
 			'to'     => gmdate( 'Y-m-d', time() + 10 * DAY_IN_SECONDS ),
 		) );
 		if ( is_wp_error( $r ) ) {
@@ -46,6 +46,8 @@ function bnc_fdm_sync_fixtures() {
 				'lega'  => (int) $l['id'],
 				'home'  => array( 'id' => (int) $f['teams']['home']['id'], 'name' => (string) $f['teams']['home']['name'] ),
 				'away'  => array( 'id' => (int) $f['teams']['away']['id'], 'name' => (string) $f['teams']['away']['name'] ),
+				'st'    => (string) $f['fixture']['status']['short'],
+				'gol'   => array( $f['goals']['home'], $f['goals']['away'] ),
 			);
 		}
 	}
@@ -179,7 +181,22 @@ function bnc_fdm_widget( $ev ) {
 		return '';
 	}
 	$f = bnc_fdm_fixture_for( $ev );
-	if ( ! $f ) {
+	return $f ? bnc_fdm_render( $f, (int) $ev['id'] ) : '';
+}
+
+/** Partita del calendario salvato per id di API-Football (prove e anteprime). */
+function bnc_fdm_fixture_by_id( $id ) {
+	foreach ( (array) get_option( 'bnc_fdm_fixtures', array() ) as $f ) {
+		if ( (int) $f['id'] === (int) $id ) {
+			return $f;
+		}
+	}
+	return null;
+}
+
+/** Widget di una partita di API-Football. $ev_id = partita delle quote (0 = prova, senza diretta). */
+function bnc_fdm_render( $f, $ev_id = 0 ) {
+	if ( '' === bnc_fd_key() ) {
 		return '';
 	}
 	$d = bnc_fdm_data( $f );
@@ -246,7 +263,10 @@ function bnc_fdm_widget( $ev ) {
 	// una volta all'apertura, poi ogni minuto se la partita e' in corso o sta per iniziare.
 	$poll = $live || ( ! $done && (int) $f['ts'] - time() < 20 * MINUTE_IN_SECONDS && (int) $f['ts'] - time() > -3 * HOUR_IN_SECONDS );
 	wp_enqueue_script( 'betnero-partita' );
-	return '<div class="bnw-live" data-bnw-ev="' . (int) $ev['id'] . '" data-bnw-url="' . esc_url( rest_url( 'betnero/v1/calcio/widget' ) ) . '" data-bnw-poll="' . ( $poll ? '1' : '0' ) . '">' . $h . '</div>';
+	if ( ! $ev_id ) {
+		return '<div class="bnw-live">' . $h . '</div>';
+	}
+	return '<div class="bnw-live" data-bnw-ev="' . (int) $ev_id . '" data-bnw-url="' . esc_url( rest_url( 'betnero/v1/calcio/widget' ) ) . '" data-bnw-poll="' . ( $poll ? '1' : '0' ) . '">' . $h . '</div>';
 }
 
 add_action( 'rest_api_init', function () {
@@ -254,10 +274,18 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'betnero/v1', '/calcio/widget', array(
 		'methods'             => 'GET',
 		'permission_callback' => '__return_true',
-		'args'                => array( 'evento' => array( 'type' => 'integer', 'required' => true ) ),
+		'args'                => array(
+			'evento'  => array( 'type' => 'integer', 'default' => 0 ),
+			'partita' => array( 'type' => 'integer', 'default' => 0 ), // 0.9.14: id di API-Football, solo partite del calendario salvato
+		),
 		'callback'            => function ( $req ) {
-			$ev   = bnc_odds_event( (int) $req['evento'] );
-			$html = $ev ? bnc_fdm_widget( $ev ) : '';
+			if ( (int) $req['partita'] ) {
+				$f    = bnc_fdm_fixture_by_id( (int) $req['partita'] );
+				$html = $f ? bnc_fdm_render( $f, 0 ) : '';
+			} else {
+				$ev   = bnc_odds_event( (int) $req['evento'] );
+				$html = $ev ? bnc_fdm_widget( $ev ) : '';
+			}
 			$poll = false !== strpos( $html, 'data-bnw-poll="1"' );
 			$res  = rest_ensure_response( array( 'html' => $html, 'poll' => $poll ) );
 			$res->header( 'Cache-Control', 'public, max-age=' . ( $poll ? 45 : 300 ) );
@@ -472,3 +500,30 @@ function bnc_fdm_tab_injuries( $inj, $hid, $home, $away ) {
 	}
 	return $h . '</div>';
 }
+
+/* ---------- 0.9.14: prova del widget in Operatori > Dati calcio ---------- */
+
+add_action( 'bnc_fd_page_after', function () {
+	$list = array_filter( (array) get_option( 'bnc_fdm_fixtures', array() ), function ( $f ) {
+		return isset( $f['st'] ) && in_array( $f['st'], bnc_fdm_done_codes(), true );
+	} );
+	usort( $list, function ( $a, $b ) {
+		return $b['ts'] <=> $a['ts'];
+	} );
+	echo '<h2>4. Prova del widget</h2>';
+	if ( ! $list ) {
+		echo '<p>Nessuna partita finita nel calendario salvato: premi "Aggiorna adesso".</p>';
+		return;
+	}
+	$sel = isset( $_GET['bnc_prova'] ) ? absint( $_GET['bnc_prova'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+	echo '<form method="get"><input type="hidden" name="post_type" value="' . esc_attr( BNC_POST_TYPE ) . '"><input type="hidden" name="page" value="bnc-calcio"><select name="bnc_prova">';
+	foreach ( $list as $f ) {
+		echo '<option value="' . (int) $f['id'] . '"' . selected( $sel, (int) $f['id'], false ) . '>' . esc_html( wp_date( 'd/m H:i', (int) $f['ts'] ) . ' ' . bnc_odds_team( $f['home']['name'] ) . ' ' . (int) $f['gol'][0] . '-' . (int) $f['gol'][1] . ' ' . bnc_odds_team( $f['away']['name'] ) ) . ' (id ' . (int) $f['id'] . ')</option>';
+	}
+	echo '</select> <button class="button">Mostra il widget</button></form>';
+	if ( $sel ) {
+		$f = bnc_fdm_fixture_by_id( $sel );
+		wp_enqueue_style( 'betnero-quote' );
+		echo '<div style="max-width:900px;margin-top:14px">' . ( $f ? bnc_fdm_render( $f, 0 ) : '' ) . '</div>';
+	}
+} );

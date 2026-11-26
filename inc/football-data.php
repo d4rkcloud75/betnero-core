@@ -412,5 +412,7 @@ function bnc_fd_page() {
 	}
 	echo '</tbody></table><p>';
 	echo $form( 'sync', 'Aggiorna adesso', 'button button-primary' ); // phpcs:ignore WordPress.Security.EscapeOutput
-	echo '</p><p class="description">Per mostrare la classifica in una pagina: blocco "Classifica campionato" (categoria Betnero).</p></div>';
+	echo '</p><p class="description">Per mostrare la classifica in una pagina: blocco "Classifica campionato" (categoria Betnero).</p>';
+	do_action( 'bnc_fd_page_after' );
+	echo '</div>';
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.14
+- Calendario di API-Football da 7 giorni indietro.
+- Operatori > Dati calcio: "Prova del widget" con le partite finite, per vedere eventi, statistiche, formazioni e voti veri.
+- REST /calcio/widget anche con ?partita= (id di API-Football), solo per le partite del calendario salvato.
+
 ## 0.9.13
 - Widget partita in diretta: il browser lo ricarica via REST all'apertura (le pagine in cache di Velox restano ferme) e ogni minuto se la partita e' in corso o inizia entro 20 minuti; si ferma a fine partita. La scheda scelta resta aperta.
 
