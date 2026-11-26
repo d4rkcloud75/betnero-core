@@ -409,6 +409,11 @@ function bnc_match_render( $ev ) {
 	}
 	$h .= '</div><div class="bnm-hero-foot"><span>' . esc_html( $n_books ? sprintf( 'Quote di %d bookmaker ADM%s', $n_books, $upd ? ', aggiornate alle ' . $upd : '' ) : 'Quote non ancora disponibili' ) . '</span><span>18+ · Gioca responsabilmente</span></div></section>';
 
+	// 0.9.12: widget con i dati di API-Football (precedenti, forma, formazioni, eventi, statistiche...)
+	if ( function_exists( 'bnc_fdm_widget' ) ) {
+		$h .= bnc_fdm_widget( $ev );
+	}
+
 	// 0.9.9: box BONUS con ancora verso i bonus a confronto
 	$h .= '<a class="bnm-bonusbox" href="#confronto"><span class="bnm-bb-k">BONUS</span><span class="bnm-bb-t"><strong>' . esc_html( 'Scommetti su ' . $home . '-' . $away . ' con i bonus di benvenuto' ) . '</strong><span>I bonus dei bookmaker ADM delle quote qui sotto</span></span><span class="bnm-bb-go">Vedi i bonus &darr;</span></a>';
 

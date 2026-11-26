@@ -182,6 +182,10 @@ function bnc_fd_sync() {
 		}
 	}
 	update_option( 'bnc_fd_standings', $all, false );
+	// 0.9.12: calendario dei campionati (da 2 giorni fa a 10 giorni avanti), una richiesta per campionato.
+	if ( function_exists( 'bnc_fdm_sync_fixtures' ) ) {
+		$rep['errori'] = array_merge( $rep['errori'], bnc_fdm_sync_fixtures() );
+	}
 	update_option( 'bnc_fd_state', array( 'quando' => gmdate( 'Y-m-d H:i:s' ), 'rep' => $rep ), false );
 	return $rep;
 }

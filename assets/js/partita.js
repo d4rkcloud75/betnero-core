@@ -53,7 +53,23 @@
 			} );
 		} );
 	}
+	/* 0.9.12: schede del widget partita (API-Football) */
+	function wtabs( root ) {
+		root.addEventListener( 'click', function ( e ) {
+			var t = e.target.closest( '[data-bnw-tab]' );
+			if ( ! t ) {
+				return;
+			}
+			root.querySelectorAll( '[data-bnw-tab]' ).forEach( function ( b ) {
+				b.setAttribute( 'aria-selected', b === t ? 'true' : 'false' );
+			} );
+			root.querySelectorAll( '[data-bnw-panel]' ).forEach( function ( p ) {
+				p.hidden = p.getAttribute( 'data-bnw-panel' ) !== t.getAttribute( 'data-bnw-tab' );
+			} );
+		} );
+	}
 	function start() {
+		document.querySelectorAll( '[data-bnw]' ).forEach( wtabs );
 		document.querySelectorAll( '[data-bnqc]' ).forEach( tabs );
 		document.querySelectorAll( '[data-bnm]' ).forEach( init );
 	}

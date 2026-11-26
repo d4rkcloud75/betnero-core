@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.12
+- Widget partita con i dati di API-Football nella pagina partita, sotto la testata: prima della partita Precedenti, Forma, Formazioni e Indisponibili; durante e dopo Eventi, Statistiche, Formazioni (campo con i numeri) e Giocatori (voti).
+- Calendario dei campionati letto con la classifica, per collegare le partite delle quote a quelle di API-Football.
+- Dati letti dal server e salvati in cache: ogni 6 ore prima della partita, ogni 10 minuti nell'ultima ora, ogni 2 minuti durante, una volta a partita finita. La chiave non va mai nella pagina.
+
 ## 0.9.11
 - Pagina Quote campionato completa come nel design, senza comporla nell'editor: box BONUS, schede Partite/Risultati/Classifica, Quote maggiorate, Quote più alte del campionato, bonus a confronto a scorrimento, FAQ dai dati; colonna laterale (Migliori bonus, Partite in evidenza, Ultimi pronostici); su mobile toplist in alto e Partite in evidenza prima dei bonus. Interruttore "Pagina completa" nel blocco per avere solo la testata.
 
