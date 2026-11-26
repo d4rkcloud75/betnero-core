@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.5
+- Menu del header modificabile da Aspetto > Menu (posizione "Menu principale (header)", altrimenti il menu "Main menu"; senza menu restano le voci del tema).
+
 ## 0.8.3
 - robots.txt: Disallow: /visita/ (link di affiliazione in uscita), come chiesto da Andrea il 23/11.
 
