@@ -714,3 +714,44 @@ function bnc_latest_tips_render( $a ) {
 	}
 	return $h . ( $term ? '<a class="bnl-all" href="' . esc_url( get_category_link( $term ) ) . '">Tutti i pronostici</a>' : '' ) . '</section>';
 }
+
+/* ---------- 0.9.17: colonna laterale nuova negli articoli dei pronostici ---------- */
+
+/**
+ * Nel modello degli articoli del tema la colonna laterale e' la parte "sidebar"
+ * (ultimi casino e banner). Negli articoli dei pronostici (partita collegata o categoria
+ * "pronostici") la sostituiamo con quella del design: Migliori bonus (solo desktop),
+ * Partite in evidenza, Ultimi pronostici.
+ */
+function bnc_is_tip_post( $post_id ) {
+	return (bool) get_post_meta( $post_id, '_bn_quote_evento', true ) || has_category( 'pronostici', $post_id );
+}
+
+add_filter( 'render_block_core/template-part', function ( $html, $block ) {
+	if ( empty( $block['attrs']['slug'] ) || 'sidebar' !== $block['attrs']['slug'] || ! is_singular( 'post' ) ) {
+		return $html;
+	}
+	$pid = get_queried_object_id();
+	if ( ! $pid || ! bnc_is_tip_post( $pid ) ) {
+		return $html;
+	}
+	wp_enqueue_style( 'betnero-quote' );
+	wp_enqueue_style( 'betnero-tables' );
+	$inner = '<div class="bnm-only-desktop">' . bnc_side_bonus_render( array( 'limite' => 10 ) ) . '</div>' . bnc_featured_render( array( 'limite' => 3 ) ) . bnc_latest_tips_render( array() );
+	return '<aside class="wp-block-template-part bnm-aside-post" aria-label="Colonna laterale">' . $inner . '</aside>';
+}, 20, 2 );
+
+/* 0.9.17: in fondo ai pronostici con partita collegata, i bonus a confronto (schede a scorrimento) come nella pagina partita. */
+add_filter( 'the_content', function ( $content ) {
+	if ( is_admin() || is_feed() || wp_is_json_request() || ! is_singular( 'post' ) || get_the_ID() !== get_queried_object_id() || false !== strpos( $content, 'id="confronto"' ) ) {
+		return $content;
+	}
+	$ev_id = (int) get_post_meta( get_the_ID(), '_bn_quote_evento', true );
+	$ev    = $ev_id ? bnc_odds_event( $ev_id ) : null;
+	$ops   = $ev ? array_slice( bnc_operators( 'scommesse' ), 0, 10 ) : array();
+	if ( ! $ops ) {
+		return $content;
+	}
+	wp_enqueue_style( 'betnero-quote' );
+	return $content . '<div class="bnw-post">' . bnc_bonus_slider( $ops, 'Dove scommettere su ' . bnc_odds_team( $ev['home'] ) . '-' . bnc_odds_team( $ev['away'] ) . ': i bonus a confronto', 'confronto' ) . '</div>';
+}, PHP_INT_MAX );

@@ -392,3 +392,6 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 }
 /* 0.9.15: widget partita negli articoli */
 .bnw-post { margin: 20px 0 28px; }
+/* 0.9.17: colonna laterale nei pronostici */
+.bnm-aside-post { display: flex; flex-direction: column; gap: 0; }
+@media (max-width: 900px) { .bnm-aside-post .bnm-only-desktop { display: none; } }

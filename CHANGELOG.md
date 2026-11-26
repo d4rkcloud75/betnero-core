@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.17
+- Articoli dei pronostici (partita collegata o categoria "pronostici"): colonna laterale del design al posto di quella del tema (Migliori bonus solo su desktop, Partite in evidenza, Ultimi pronostici).
+- In fondo ai pronostici con partita collegata: "Dove scommettere: i bonus a confronto" a scorrimento.
+
 ## 0.9.16
 - Riquadro "Quote del pronostico": si possono collegare anche le partite finite negli ultimi 7 giorni, segnate "(finita X-Y)".
 
