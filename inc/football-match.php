@@ -120,7 +120,9 @@ function bnc_fdm_data( $f ) {
 		$data['injuries'] = is_wp_error( $inj ) ? array() : (array) $inj;
 	}
 	$to_start = (int) $f['ts'] - time();
-	if ( $done ) {
+	if ( empty( $data['fixture'] ) ) {
+		$ttl = 2 * MINUTE_IN_SECONDS; // 0.9.22: API-Football non ha risposto, si riprova presto
+	} elseif ( $done ) {
 		$ttl = WEEK_IN_SECONDS;
 	} elseif ( $live ) {
 		$ttl = MINUTE_IN_SECONDS; // 0.9.13: in diretta, al massimo un minuto di ritardo

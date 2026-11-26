@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.22
+- Widget partita: se API-Football non risponde, si riprova dopo 2 minuti (prima il dato vuoto restava fino a 6 ore).
+- Schede bonus: senza recensione, "Vai al sito" a tutta larghezza.
+
 ## 0.9.21
 - Mail di Francesco del 26/11: i box neri diventano blu (box bonus, Migliori Bonus in colonna, Altre partite, mercati espandibili, piede della testata).
 - Colonna laterale: schede bonus come quelle dello slider (logo, bonus, stelle, Vai al sito e Recensione), in verticale.

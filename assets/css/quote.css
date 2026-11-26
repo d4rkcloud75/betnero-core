@@ -393,6 +393,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnq-pick-sel { display: flex; flex-direction: column; align-items: flex-start; }
 /* 0.9.21: mail di Francesco del 26/11. Schede bonus in verticale nella colonna laterale. */
 .bns-side-list .bnb-card { flex: none; width: 100%; }
+.bnb-btns > :only-child { grid-column: 1 / -1; } /* 0.9.22: senza recensione, "Vai al sito" a tutta larghezza */
 @media (max-width: 900px) {
 	/* niente box "Confronta i bonus" da mobile: toglie spazio alle quote */
 	.bnm-bonusbox { display: none; }
