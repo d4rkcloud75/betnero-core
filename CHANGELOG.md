@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.20
+- Menu del header modificabile da Aspetto > Menu: posizione "Menu principale (header)"; senza menu assegnato usa "Main menu", senza menu restano le voci del tema. Dopo il salvataggio del menu si svuota la cache delle pagine.
+
 ## 0.9.19
 - Quote di partite iniziate o finite: titolo "Quote pre-partita", etichetta "Finale 1-5" (o "Partita iniziata"), esito uscito segnato con il segno di spunta e bordo verde, niente "Vai al sito"; nota "queste erano le quote prima del calcio d'inizio".
 - Quota del pronostico a partita finita: "Pronostico vincente" o "Pronostico non vincente", e "Quota migliore pre-partita".
