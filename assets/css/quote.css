@@ -124,7 +124,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 	.bnq-go { display: none; }
 }
 /* 0.9.5: pagina partita */
-.bnm { --m-blue: #036AA9; --m-night: #0A1222; --m-orange: #EEA700; --m-green: #13834A; --m-ink: #1D2433; --m-muted: #5D6676; --m-line: #EEF0F4; display: flex; flex-direction: column; gap: 14px; color: var(--m-ink); margin: 0 0 24px; }
+.bnm { --m-blue: #036AA9; --m-night: #02507F; --m-orange: #EEA700; --m-green: #13834A; --m-ink: #1D2433; --m-muted: #5D6676; --m-line: #EEF0F4; display: flex; flex-direction: column; gap: 14px; color: var(--m-ink); margin: 0 0 24px; }
 .bnm-hero { background: var(--m-blue); border-radius: 10px; overflow: hidden; color: #fff; }
 .bnm-hero-in { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
 .bnm-row1 { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
@@ -160,13 +160,12 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnm-mk > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; min-height: 48px; background: var(--m-blue); color: #fff; cursor: pointer; }
 .bnm-mk > summary::-webkit-details-marker { display: none; }
 .bnm-mk > summary strong { flex: 1 1 auto; font-size: 15px; }
-.bnm-mk > summary span { font-size: 11px; color: #C9D1DD; }
+.bnm-mk > summary span { font-size: 11px; color: #EAF2F9; }
 .bnm-mk > summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg); margin: -4px 4px 0; transition: transform .15s; }
 .bnm-mk[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
-.bnm-mk.is-other > summary { background: var(--m-night); }
 .bnm-lines { display: flex; gap: 6px; padding: 10px 16px; flex-wrap: wrap; background: #E6EEF5; border-bottom: 1px solid #D6E2EE; }
 .bnm-lines button { height: 32px; padding: 0 12px; font-size: 12px; box-shadow: none; }
-.bnm-lines button[aria-pressed="true"] { color: #fff; background: var(--m-night); }
+.bnm-lines button[aria-pressed="true"] { color: #fff; background: var(--m-blue); }
 .bnm-scroll { overflow-x: auto; }
 .bnm-tab { min-width: 0; }
 .bnm-tr { display: grid; gap: 6px; align-items: center; padding: 6px 16px; border-bottom: 1px solid var(--m-line); }
@@ -191,24 +190,12 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 	.bnm-tr { padding: 6px 10px; }
 }
 /* 0.9.5: Migliori bonus (colonna laterale) */
-.bns-side { background: #0A1222; border-radius: 10px; overflow: hidden; margin: 0 0 16px; }
+.bns-side { background: #036AA9; border-radius: 10px; overflow: hidden; margin: 0 0 16px; }
 .bns-side-head { padding: 12px 14px 4px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bns-side-head strong { font-size: 15px; color: #fff; }
 .bns-side-head span { font-size: 10px; font-weight: 800; color: #1D2433; background: #EEA700; border-radius: 999px; padding: 3px 8px; }
 .bns-side-list { padding: 8px 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-.bns-side-card { background: #fff; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; color: #1D2433; }
-.bns-side-top { display: flex; align-items: center; gap: 10px; }
-.bns-side-n { width: 22px; height: 22px; border-radius: 999px; background: #036AA9; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
-.bns-side-logo { width: 84px; height: 44px; border: 1px solid #E6E9EF; border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 4px; box-sizing: border-box; flex: none; }
-.bns-side-logo img { max-width: 100%; max-height: 34px; width: auto; height: auto; object-fit: contain; display: block; }
-.bns-side-b { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
-.bns-side-b span { font-size: 11px; color: #5D6676; }
-.bns-side-b strong { font-size: 15px; color: #13834A; }
-.bns-side-bot { display: flex; align-items: center; gap: 8px; }
-.bns-side-bot .bnt-stars { font-size: 12px; }
-.bns-side-bot b { font-size: 12px; flex: 1 1 auto; }
-.bns-side-go { display: flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; font-size: 12px; font-weight: 800; color: #1D2433 !important; background: #EEA700; border-radius: 999px; text-decoration: none !important; white-space: nowrap; margin-left: auto; }
-.bns-side-adm { margin: 0; padding: 0 14px 10px; font-size: 10px; color: #C9D1DD; text-align: center; }
+.bns-side-adm { margin: 0; padding: 0 14px 10px; font-size: 10px; color: #EAF2F9; text-align: center; }
 /* 0.9.5: Partite in evidenza e Ultimi pronostici */
 .bnf, .bnl { background: #fff; border: 1px solid #E6E9EF; border-radius: 8px; overflow: hidden; margin: 0 0 16px; color: #1D2433; }
 .bnf-head, .bnl-head { padding: 10px 14px; background: #036AA9; }
@@ -236,11 +223,11 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnm-main { flex: 999 1 560px; min-width: 0; }
 .bnm-aside { flex: 1 1 280px; max-width: 320px; min-width: 0; }
 .bnm-only-mobile { display: none; }
-.bnm-bonusbox { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: #0A1222; border-radius: 10px; padding: 12px 16px; text-decoration: none !important; }
+.bnm-bonusbox { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: #036AA9; border-radius: 10px; padding: 12px 16px; text-decoration: none !important; }
 .bnm-bb-k { font-size: 11px; font-weight: 800; color: #1D2433; background: #EEA700; border-radius: 999px; padding: 4px 10px; flex: none; }
 .bnm-bb-t { display: flex; flex-direction: column; gap: 1px; flex: 1 1 220px; min-width: 0; }
 .bnm-bb-t strong { font-size: 15px; color: #fff; }
-.bnm-bb-t span { font-size: 12px; color: #C9D1DD; }
+.bnm-bb-t span { font-size: 12px; color: #EAF2F9; }
 .bnm-bb-go { display: flex; align-items: center; height: 40px; padding: 0 16px; font-size: 13px; font-weight: 800; color: #1D2433; background: #EEA700; border-radius: 999px; flex: none; }
 .bnb-slider { background: #F4F6F9; border: 1px solid #E6E9EF; border-radius: 12px; padding: 14px 0 10px; display: flex; flex-direction: column; gap: 10px; color: #1D2433; scroll-margin-top: 80px; }
 .bnb-head { display: flex; flex-direction: column; gap: 2px; padding: 0 14px; }
@@ -258,7 +245,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnb-rev { color: #1D2433 !important; background: #EEA700; }
 .bnb-foot { margin: 0; font-size: 11px; color: #5D6676; text-align: center; padding: 0 14px; }
 .bnm-others-m { background: #fff; border: 1px solid #E6E9EF; border-radius: 8px; overflow: hidden; }
-.bnm-om-head { padding: 12px 16px; background: #0A1222; }
+.bnm-om-head { padding: 12px 16px; background: #036AA9; }
 .bnm-om-head strong { font-size: 15px; color: #fff; }
 .bnm-om-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 64px) 136px; gap: 6px; align-items: center; padding: 6px 16px; min-height: 54px; border-bottom: 1px solid #EEF0F4; }
 .bnm-om-m { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
@@ -404,3 +391,21 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnq-won.is-yes { color: #fff; background: #13834A; }
 .bnq-won.is-no { color: #5D6676; background: #E6E9EF; }
 .bnq-pick-sel { display: flex; flex-direction: column; align-items: flex-start; }
+/* 0.9.21: mail di Francesco del 26/11. Schede bonus in verticale nella colonna laterale. */
+.bns-side-list .bnb-card { flex: none; width: 100%; }
+@media (max-width: 900px) {
+	/* niente box "Confronta i bonus" da mobile: toglie spazio alle quote */
+	.bnm-bonusbox { display: none; }
+	/* toplist in alto piu' piccola (circa 60%) */
+	.bnm-page > .bnm-only-mobile .bnb-slider { padding: 10px 0 8px; gap: 8px; }
+	.bnm-page > .bnm-only-mobile .bnb-head strong { font-size: 16px; }
+	.bnm-page > .bnm-only-mobile .bnb-head span { display: none; }
+	.bnm-page > .bnm-only-mobile .bnb-card { flex-basis: 176px; padding: 8px; gap: 3px; }
+	.bnm-page > .bnm-only-mobile .bnb-n { width: 20px; height: 20px; font-size: 11px; }
+	.bnm-page > .bnm-only-mobile .bnb-logo img { max-width: 96px; max-height: 28px; }
+	.bnm-page > .bnm-only-mobile .bnb-s { font-size: 10px; }
+	.bnm-page > .bnm-only-mobile .bnb-big { font-size: 15px; }
+	.bnm-page > .bnm-only-mobile .bnt-stars { font-size: 11px; }
+	.bnm-page > .bnm-only-mobile .bnb-btns { gap: 6px; }
+	.bnm-page > .bnm-only-mobile .bnb-go, .bnm-page > .bnm-only-mobile .bnb-rev { height: 32px; font-size: 11px; }
+}

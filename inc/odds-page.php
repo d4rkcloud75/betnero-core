@@ -466,13 +466,19 @@ function bnc_match_render( $ev ) {
 }
 
 /** 0.9.9: bonus a scorrimento (schede come nel design). $id = ancora, vuoto = nessuna. */
+/** Scheda bonus (logo, bonus, stelle, Vai al sito e Recensione): slider e colonna laterale. */
+function bnc_bonus_card( $op, $n ) {
+	list( $b1, $b2, $b3 ) = bnc_bonus_lines( $op['bonus'] );
+	$h  = '<div class="bnb-card"><span class="bnb-n">' . (int) $n . '</span><span class="bnb-logo">' . bnc_logo( $op ) . '</span>';
+	$h .= ( '' !== $b1 ? '<span class="bnb-s">' . esc_html( $b1 ) . '</span>' : '' ) . '<strong class="bnb-big">' . esc_html( $b2 ) . '</strong>' . ( '' !== $b3 ? '<span class="bnb-s">' . esc_html( $b3 ) . '</span>' : '' );
+	$h .= ( '' !== $op['rating'] ? bnc_stars( $op['rating'] ) : '' ) . '<span class="bnb-btns">' . bnc_go_button( $op, 'Vai al sito', 'bnb-go' ) . ( $op['review_url'] ? '<a class="bnb-rev" href="' . esc_url( $op['review_url'] ) . '">Recensione</a>' : '' ) . '</span></div>';
+	return $h;
+}
+
 function bnc_bonus_slider( $ops, $title, $id ) {
 	$h = '<section class="bnb-slider"' . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . '><div class="bnb-head"><strong>' . esc_html( $title ) . '</strong><span>Bonus di benvenuto scommesse, bookmaker con licenza ADM</span></div><div class="bnb-track">';
 	foreach ( $ops as $i => $op ) {
-		list( $b1, $b2, $b3 ) = bnc_bonus_lines( $op['bonus'] );
-		$h .= '<div class="bnb-card"><span class="bnb-n">' . ( $i + 1 ) . '</span><span class="bnb-logo">' . bnc_logo( $op ) . '</span>';
-		$h .= ( '' !== $b1 ? '<span class="bnb-s">' . esc_html( $b1 ) . '</span>' : '' ) . '<strong class="bnb-big">' . esc_html( $b2 ) . '</strong>' . ( '' !== $b3 ? '<span class="bnb-s">' . esc_html( $b3 ) . '</span>' : '' );
-		$h .= ( '' !== $op['rating'] ? bnc_stars( $op['rating'] ) : '' ) . '<span class="bnb-btns">' . bnc_go_button( $op, 'Vai al sito', 'bnb-go' ) . ( $op['review_url'] ? '<a class="bnb-rev" href="' . esc_url( $op['review_url'] ) . '">Recensione</a>' : '' ) . '</span></div>';
+		$h .= bnc_bonus_card( $op, $i + 1 );
 	}
 	return $h . '</div><p class="bnb-foot">Scorri per vedere gli altri &rarr; · 18+ · Bonus soggetti a termini e condizioni degli operatori</p></section>';
 }
@@ -643,10 +649,7 @@ function bnc_side_bonus_render( $a ) {
 	$titolo = ! empty( $a['titolo'] ) ? $a['titolo'] : ( 'casino' === $tipo ? 'Migliori Bonus Casinò' : 'Migliori Bonus Scommesse' );
 	$h      = '<section class="bns-side"><div class="bns-side-head"><strong>' . esc_html( $titolo ) . '</strong><span>TOP ' . count( $ops ) . '</span></div><div class="bns-side-list">';
 	foreach ( $ops as $i => $op ) {
-		list( $b1, $b2, $b3 ) = bnc_bonus_lines( $op['bonus'] );
-		$h .= '<div class="bns-side-card"><div class="bns-side-top"><span class="bns-side-n">' . ( $i + 1 ) . '</span><span class="bns-side-logo">' . bnc_logo( $op ) . '</span><span class="bns-side-b">';
-		$h .= ( '' !== $b1 ? '<span>' . esc_html( $b1 ) . '</span>' : '' ) . '<strong>' . esc_html( $b2 ) . '</strong>' . ( '' !== $b3 ? '<span>' . esc_html( $b3 ) . '</span>' : '' ) . '</span></div>';
-		$h .= '<div class="bns-side-bot">' . ( '' !== $op['rating'] ? bnc_stars( $op['rating'] ) . '<b>' . esc_html( str_replace( '.', ',', $op['rating'] ) ) . '</b>' : '<span></span>' ) . bnc_go_button( $op, 'Prendi il bonus', 'bns-side-go' ) . '</div></div>';
+		$h .= bnc_bonus_card( $op, $i + 1 ); // 0.9.21: stesse schede dello slider, in verticale (mail di Francesco del 26/11)
 	}
 	return $h . '</div><p class="bns-side-adm">18+ | Gioca responsabilmente | Solo operatori ADM</p></section>';
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.21
+- Mail di Francesco del 26/11: i box neri diventano blu (box bonus, Migliori Bonus in colonna, Altre partite, mercati espandibili, piede della testata).
+- Colonna laterale: schede bonus come quelle dello slider (logo, bonus, stelle, Vai al sito e Recensione), in verticale.
+- Mobile: niente box "Confronta i bonus"; toplist in alto piu' piccola.
+
 ## 0.9.20
 - Menu del header modificabile da Aspetto > Menu: posizione "Menu principale (header)"; senza menu assegnato usa "Main menu", senza menu restano le voci del tema. Dopo il salvataggio del menu si svuota la cache delle pagine.
 
