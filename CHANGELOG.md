@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.18
+- Slider dei bonus nella pagina partita e nei pronostici: titolo "Tutti i bonus a confronto".
+
 ## 0.9.17
 - Articoli dei pronostici (partita collegata o categoria "pronostici"): colonna laterale del design al posto di quella del tema (Migliori bonus solo su desktop, Partite in evidenza, Ultimi pronostici).
 - In fondo ai pronostici con partita collegata: "Dove scommettere: i bonus a confronto" a scorrimento.

@@ -458,7 +458,7 @@ function bnc_match_render( $ev ) {
 	}
 	$ops = array_slice( bnc_operators( 'scommesse' ), 0, 10 );
 	if ( $ops ) {
-		$h .= bnc_bonus_slider( $ops, 'Dove scommettere su ' . $home . '-' . $away . ': i bonus a confronto', 'confronto' );
+		$h .= bnc_bonus_slider( $ops, 'Tutti i bonus a confronto', 'confronto' );
 	}
 	$h .= bnc_match_others( $ev );
 	$h .= bnc_match_faq( $ev, $tables, $books, $home, $away, $n_books );
@@ -753,5 +753,5 @@ add_filter( 'the_content', function ( $content ) {
 		return $content;
 	}
 	wp_enqueue_style( 'betnero-quote' );
-	return $content . '<div class="bnw-post">' . bnc_bonus_slider( $ops, 'Dove scommettere su ' . bnc_odds_team( $ev['home'] ) . '-' . bnc_odds_team( $ev['away'] ) . ': i bonus a confronto', 'confronto' ) . '</div>';
+	return $content . '<div class="bnw-post">' . bnc_bonus_slider( $ops, 'Tutti i bonus a confronto', 'confronto' ) . '</div>';
 }, PHP_INT_MAX );
