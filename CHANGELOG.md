@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.13
+- Widget partita in diretta: il browser lo ricarica via REST all'apertura (le pagine in cache di Velox restano ferme) e ogni minuto se la partita e' in corso o inizia entro 20 minuti; si ferma a fine partita. La scheda scelta resta aperta.
+
 ## 0.9.12
 - Widget partita con i dati di API-Football nella pagina partita, sotto la testata: prima della partita Precedenti, Forma, Formazioni e Indisponibili; durante e dopo Eventi, Statistiche, Formazioni (campo con i numeri) e Giocatori (voti).
 - Calendario dei campionati letto con la classifica, per collegare le partite delle quote a quelle di API-Football.

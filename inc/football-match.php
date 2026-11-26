@@ -121,7 +121,7 @@ function bnc_fdm_data( $f ) {
 	if ( $done ) {
 		$ttl = WEEK_IN_SECONDS;
 	} elseif ( $live ) {
-		$ttl = 2 * MINUTE_IN_SECONDS;
+		$ttl = MINUTE_IN_SECONDS; // 0.9.13: in diretta, al massimo un minuto di ritardo
 	} elseif ( $to_start < 75 * MINUTE_IN_SECONDS ) {
 		$ttl = 10 * MINUTE_IN_SECONDS; // formazioni ufficiali in arrivo
 	} else {
@@ -240,9 +240,31 @@ function bnc_fdm_widget( $ev ) {
 		$h    .= '<div class="bnw-panel" data-bnw-panel="' . esc_attr( $k ) . '"' . ( $first ? '' : ' hidden' ) . '>' . $t[1] . '</div>';
 		$first = false;
 	}
-	$foot = $after ? ( $live ? 'Dati API-Football, aggiornati ogni 2 minuti durante la partita.' : 'Dati API-Football.' ) : 'Dati API-Football. Le formazioni ufficiali arrivano circa 30 minuti prima del calcio d\'inizio.';
-	return $h . '<p class="bnw-foot">' . esc_html( $foot ) . '</p></section>';
+	$foot = $after ? ( $live ? 'Dati API-Football, aggiornati in diretta durante la partita.' : 'Dati API-Football.' ) : 'Dati API-Football. Le formazioni ufficiali arrivano circa 30 minuti prima del calcio d\'inizio.';
+	$h   .= '<p class="bnw-foot">' . esc_html( $foot ) . '</p></section>';
+	// 0.9.13: il browser ricarica il widget via REST (le pagine in cache di Velox restano ferme):
+	// una volta all'apertura, poi ogni minuto se la partita e' in corso o sta per iniziare.
+	$poll = $live || ( ! $done && (int) $f['ts'] - time() < 20 * MINUTE_IN_SECONDS && (int) $f['ts'] - time() > -3 * HOUR_IN_SECONDS );
+	wp_enqueue_script( 'betnero-partita' );
+	return '<div class="bnw-live" data-bnw-ev="' . (int) $ev['id'] . '" data-bnw-url="' . esc_url( rest_url( 'betnero/v1/calcio/widget' ) ) . '" data-bnw-poll="' . ( $poll ? '1' : '0' ) . '">' . $h . '</div>';
 }
+
+add_action( 'rest_api_init', function () {
+	// Pubblico, come i dati gia' nella pagina: solo l'HTML del widget, mai la chiave.
+	register_rest_route( 'betnero/v1', '/calcio/widget', array(
+		'methods'             => 'GET',
+		'permission_callback' => '__return_true',
+		'args'                => array( 'evento' => array( 'type' => 'integer', 'required' => true ) ),
+		'callback'            => function ( $req ) {
+			$ev   = bnc_odds_event( (int) $req['evento'] );
+			$html = $ev ? bnc_fdm_widget( $ev ) : '';
+			$poll = false !== strpos( $html, 'data-bnw-poll="1"' );
+			$res  = rest_ensure_response( array( 'html' => $html, 'poll' => $poll ) );
+			$res->header( 'Cache-Control', 'public, max-age=' . ( $poll ? 45 : 300 ) );
+			return $res;
+		},
+	) );
+} );
 
 function bnc_fdm_tab_events( $fx, $hid ) {
 	if ( empty( $fx['events'] ) ) {

@@ -68,7 +68,50 @@
 			} );
 		} );
 	}
+	/* 0.9.13: widget partita in diretta. Ricarica via REST all'apertura e, se la partita
+	   e' in corso o sta per iniziare, ogni minuto; mantiene la scheda scelta. */
+	function live( box ) {
+		var url = box.getAttribute( 'data-bnw-url' ) + '?evento=' + encodeURIComponent( box.getAttribute( 'data-bnw-ev' ) );
+		var timer = null;
+		function refresh() {
+			if ( document.hidden ) {
+				return;
+			}
+			fetch( url, { credentials: 'omit' } ).then( function ( r ) {
+				return r.ok ? r.json() : null;
+			} ).then( function ( j ) {
+				if ( ! j || ! j.html ) {
+					return;
+				}
+				var cur = box.querySelector( '[data-bnw-tab][aria-selected="true"]' );
+				var tab = cur ? cur.getAttribute( 'data-bnw-tab' ) : '';
+				var tmp = document.createElement( 'div' );
+				tmp.innerHTML = j.html;
+				var inner = tmp.querySelector( '.bnw-live' );
+				box.innerHTML = inner ? inner.innerHTML : j.html;
+				var sec = box.querySelector( '[data-bnw]' );
+				if ( sec ) {
+					wtabs( sec );
+					var b = tab && sec.querySelector( '[data-bnw-tab="' + tab + '"]' );
+					if ( b ) {
+						b.click();
+					}
+				}
+				if ( ! j.poll && timer ) {
+					clearInterval( timer );
+					timer = null;
+				} else if ( j.poll && ! timer ) {
+					timer = setInterval( refresh, 60000 );
+				}
+			} ).catch( function () {} );
+		}
+		refresh();
+		if ( box.getAttribute( 'data-bnw-poll' ) === '1' ) {
+			timer = setInterval( refresh, 60000 );
+		}
+	}
 	function start() {
+		document.querySelectorAll( '.bnw-live[data-bnw-ev]' ).forEach( live );
 		document.querySelectorAll( '[data-bnw]' ).forEach( wtabs );
 		document.querySelectorAll( '[data-bnqc]' ).forEach( tabs );
 		document.querySelectorAll( '[data-bnm]' ).forEach( init );
