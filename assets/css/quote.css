@@ -390,3 +390,5 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 	.bnw-lus, .bnw-inj { grid-template-columns: 1fr; }
 	.bnw-head strong { font-size: 15px; }
 }
+/* 0.9.15: widget partita negli articoli */
+.bnw-post { margin: 20px 0 28px; }

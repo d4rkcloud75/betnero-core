@@ -527,3 +527,29 @@ add_action( 'bnc_fd_page_after', function () {
 		echo '<div style="max-width:900px;margin-top:14px">' . ( $f ? bnc_fdm_render( $f, 0 ) : '' ) . '</div>';
 	}
 } );
+
+/* ---------- 0.9.15: widget anche negli articoli dei pronostici ---------- */
+
+/**
+ * Articolo con partita collegata (riquadro "Quote del pronostico"): il widget va subito dopo
+ * le quote, cioe' prima del primo titolo H2 (dove la Core mette le quote automatiche).
+ * Senza H2, in fondo all'articolo. Gira dopo l'inserimento automatico delle quote.
+ */
+add_filter( 'the_content', function ( $content ) {
+	if ( is_admin() || is_feed() || wp_is_json_request() || doing_action( 'wp_head' ) ) {
+		return $content;
+	}
+	if ( ! is_singular( 'post' ) || get_the_ID() !== get_queried_object_id() || false !== strpos( $content, 'class="bnw-live"' ) ) {
+		return $content;
+	}
+	$ev_id = (int) get_post_meta( get_the_ID(), '_bn_quote_evento', true );
+	$ev    = $ev_id ? bnc_odds_event( $ev_id ) : null;
+	$w     = $ev ? bnc_fdm_widget( $ev ) : '';
+	if ( '' === $w ) {
+		return $content;
+	}
+	wp_enqueue_style( 'betnero-quote' );
+	$w   = '<div class="bnw-post">' . $w . '</div>';
+	$pos = stripos( $content, '<h2' );
+	return false !== $pos ? substr( $content, 0, $pos ) . $w . substr( $content, $pos ) : $content . $w;
+}, PHP_INT_MAX );

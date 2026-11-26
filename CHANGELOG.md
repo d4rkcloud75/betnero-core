@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.15
+- Widget partita (API-Football) anche negli articoli dei pronostici con la partita collegata: subito dopo le quote, prima del primo titolo H2; in diretta come nella pagina partita.
+
 ## 0.9.14
 - Calendario di API-Football da 7 giorni indietro.
 - Operatori > Dati calcio: "Prova del widget" con le partite finite, per vedere eventi, statistiche, formazioni e voti veri.
