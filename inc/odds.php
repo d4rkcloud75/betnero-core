@@ -623,6 +623,30 @@ function bnc_odds_fmt( $v ) {
 	return $v > 0 ? number_format_i18n( $v, 2 ) : '-';
 }
 
+/**
+ * 0.9.19: l'esito e' uscito? Dal risultato finale "h-a". true / false / null (non si sa).
+ */
+function bnc_odds_won( $mk, $ok, $score ) {
+	if ( ! preg_match( '/^\s*(\d+)\s*-\s*(\d+)\s*$/', (string) $score, $m ) ) {
+		return null;
+	}
+	$h  = (int) $m[1];
+	$a  = (int) $m[2];
+	$ok = (string) $ok;
+	$r  = $h > $a ? '1' : ( $h < $a ? '2' : 'X' );
+	switch ( $mk ) {
+		case '1x2':
+			return $ok === $r;
+		case 'dc':
+			return false !== strpos( $ok, $r ) || ( '12' === $ok && 'X' !== $r );
+		case 'uo':
+			return 'over' === $ok ? $h + $a > 2.5 : ( 'under' === $ok ? $h + $a < 2.5 : null );
+		case 'gg':
+			return 'yes' === $ok ? ( $h > 0 && $a > 0 ) : ( 'no' === $ok ? ! ( $h > 0 && $a > 0 ) : null );
+	}
+	return null;
+}
+
 function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	if ( 'entrambi' === $tipo ) { // 0.6.5: inserimento automatico, pronostico e confronto insieme
 		$a = bnc_odds_render( 'pronostico', $post_id, 'auto' );
@@ -647,7 +671,12 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 	}
 	$upd             = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : '';
 	$note            = $started ? ( '' !== $ev['score'] && 'settled' === $ev['status'] ? 'Risultato finale ' . $ev['score'] . '. Quote pre-partita.' : 'Partita iniziata: quote pre-partita.' ) : ( $upd ? 'Quote aggiornate alle ' . $upd . ( $stale ? ' (aggiornamento in ritardo, controlla sul sito del bookmaker).' : '.' ) : '' );
-	$head            = '<div class="bnq-match"><span class="bnq-league">' . esc_html( bnc_odds_league_label( $ev['league_name'] ) ) . ' &middot; ' . esc_html( bnc_odds_when( $ev['start'] ) ) . '</span><strong class="bnq-teams">' . esc_html( bnc_odds_team( $ev['home'] ) ) . ' <span>-</span> ' . esc_html( bnc_odds_team( $ev['away'] ) ) . '</strong></div>';
+	$final           = 'settled' === $ev['status'] && '' !== $ev['score'];
+	$res_badge       = $final ? '<span class="bnq-res">Finale ' . esc_html( str_replace( '-', ' - ', $ev['score'] ) ) . '</span>' : ( $started ? '<span class="bnq-res is-live">Partita iniziata</span>' : '' );
+	if ( $final ) {
+		$note = 'Partita finita ' . $ev['score'] . ': queste erano le quote prima del calcio d\'inizio.';
+	}
+	$head            = '<div class="bnq-match"><span class="bnq-league">' . esc_html( bnc_odds_league_label( $ev['league_name'] ) ) . ' &middot; ' . esc_html( bnc_odds_when( $ev['start'] ) ) . $res_badge . '</span><strong class="bnq-teams">' . esc_html( bnc_odds_team( $ev['home'] ) ) . ' <span>-</span> ' . esc_html( bnc_odds_team( $ev['away'] ) ) . '</strong></div>';
 
 	if ( 'pronostico' === $tipo ) {
 		if ( ! isset( $markets[ $mk ]['out'][ $out ] ) ) {
@@ -662,9 +691,11 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 				$bop  = $op;
 			}
 		}
-		$h  = '<div class="bnq bnq-pick">' . $head . '<div class="bnq-pick-row"><div class="bnq-pick-sel"><span class="bnq-k">Il nostro pronostico</span><strong>' . esc_html( $markets[ $mk ]['label'] . ': ' . $markets[ $mk ]['out'][ $out ] ) . '</strong></div>';
+		$won = $final ? bnc_odds_won( $mk, $out, $ev['score'] ) : null;
+		$tag = null === $won ? '' : ( $won ? '<span class="bnq-won is-yes">&#10003; Pronostico vincente</span>' : '<span class="bnq-won is-no">Pronostico non vincente</span>' );
+		$h  = '<div class="bnq bnq-pick' . ( $final ? ' is-final' : '' ) . '">' . $head . '<div class="bnq-pick-row"><div class="bnq-pick-sel"><span class="bnq-k">Il nostro pronostico</span><strong>' . esc_html( $markets[ $mk ]['label'] . ': ' . $markets[ $mk ]['out'][ $out ] ) . '</strong>' . $tag . '</div>';
 		if ( $bop ) {
-			$h .= '<div class="bnq-pick-best"><span class="bnq-k">Quota migliore</span><strong class="bnq-odd">' . esc_html( bnc_odds_fmt( $best ) ) . '</strong></div><div class="bnq-pick-op"><div class="bnq-logo">' . bnc_logo( $bop ) . '</div>' . bnc_go_button( $bop, 'Vai al sito', 'bnt-btn bnt-go' ) . '</div>';
+			$h .= '<div class="bnq-pick-best"><span class="bnq-k">' . ( $started ? 'Quota migliore pre-partita' : 'Quota migliore' ) . '</span><strong class="bnq-odd">' . esc_html( bnc_odds_fmt( $best ) ) . '</strong></div><div class="bnq-pick-op"><div class="bnq-logo">' . bnc_logo( $bop ) . '</div>' . ( $started ? '' : bnc_go_button( $bop, 'Vai al sito', 'bnt-btn bnt-go' ) ) . '</div>';
 		}
 		return $h . '</div>' . ( $note ? '<p class="bnq-note">' . esc_html( $note ) . '</p>' : '' ) . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
 	}
@@ -690,11 +721,12 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 		return '<div class="bnq bnq-cmp">' . $head . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
 	}
 	$solo = ( ! empty( $GLOBALS['bnc_odds_nohead'] ) || has_block( 'betnero/quota-pronostico', $post_id ) ) ? '' : $head; // la testata c'e' gia' nel blocco del pronostico
-	$h  = '<div class="bnq bnq-cmp">' . $solo . '<p class="bnq-title">' . esc_html( 'Confronto quote: ' . $markets[ $cm ]['label'] ) . '</p>';
+	$h  = '<div class="bnq bnq-cmp' . ( $started ? ' is-final' : '' ) . '">' . $solo . '<p class="bnq-title">' . esc_html( ( $started ? 'Quote pre-partita: ' : 'Confronto quote: ' ) . $markets[ $cm ]['label'] ) . ( '' === $solo ? $res_badge : '' ) . '</p>';
 	$h .= '<div class="bnq-table" style="--bnq-cols:' . count( $cols ) . '"><div class="bnq-tr bnq-th"><span>Bookmaker</span>';
 	foreach ( $cols as $ck => $cl ) {
 		$is_pick = $cm === $mk && (string) $ck === (string) $out;
-		$h      .= '<span' . ( $is_pick ? ' class="is-pick" title="Il nostro pronostico"' : '' ) . '>' . esc_html( $cl ) . ( $is_pick ? ' &#9733;' : '' ) . '</span>';
+		$is_won  = $final && true === bnc_odds_won( $cm, $ck, $ev['score'] );
+		$h      .= '<span class="' . ( $is_pick ? 'is-pick' : '' ) . ( $is_won ? ' is-won' : '' ) . '"' . ( $is_pick ? ' title="Il nostro pronostico"' : '' ) . '>' . esc_html( $cl ) . ( $is_pick ? ' &#9733;' : '' ) . ( $is_won ? ' &#10003;' : '' ) . '</span>';
 	}
 	$h .= '<span></span></div>';
 	foreach ( $grid as $g ) {
@@ -702,11 +734,14 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 		foreach ( $cols as $ck => $cl ) {
 			$is_best = $g['p'][ $ck ] > 0 && abs( $g['p'][ $ck ] - $best[ $ck ] ) < 0.0001;
 			$is_pick = $cm === $mk && (string) $ck === (string) $out;
-			$h      .= '<span class="bnq-odd' . ( $is_best ? ' is-best' : '' ) . ( $is_pick ? ' is-pick' : '' ) . '" data-label="' . esc_attr( $cl ) . '">' . esc_html( bnc_odds_fmt( $g['p'][ $ck ] ) ) . '</span>';
+			$is_won  = $final && true === bnc_odds_won( $cm, $ck, $ev['score'] );
+			$h      .= '<span class="bnq-odd' . ( $is_best ? ' is-best' : '' ) . ( $is_pick ? ' is-pick' : '' ) . ( $is_won ? ' is-won' : '' ) . '" data-label="' . esc_attr( $cl ) . '">' . esc_html( bnc_odds_fmt( $g['p'][ $ck ] ) ) . '</span>';
 		}
-		$h .= '<span>' . bnc_go_button( $g['op'], 'Vai al sito', 'bnt-btn bnt-go' ) . '</span></div>';
+		// 0.9.19: a partita iniziata niente "Vai al sito" (le quote non si possono piu' giocare).
+		$h .= '<span>' . ( $started ? '' : bnc_go_button( $g['op'], 'Vai al sito', 'bnt-btn bnt-go' ) ) . '</span></div>';
 	}
-	return $h . '</div>' . ( $note ? '<p class="bnq-note">' . esc_html( $note ) . ' In verde la quota migliore.</p>' : '' ) . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
+	$legend = $final ? ' In verde la quota più alta di ogni esito; con il segno &#10003; l\'esito uscito.' : ' In verde la quota migliore.';
+	return $h . '</div>' . ( $note ? '<p class="bnq-note">' . esc_html( $note ) . wp_kses_post( $legend ) . '</p>' : '' ) . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
 }
 
 /* ---------- 0.6.5: quote automatiche nei pronostici ---------- */
