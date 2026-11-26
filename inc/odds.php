@@ -444,7 +444,8 @@ function bnc_odds_metabox( $post ) {
 	$sel_ev = (int) get_post_meta( $post->ID, '_bn_quote_evento', true );
 	$sel    = (string) get_post_meta( $post->ID, '_bn_quote_scelta', true );
 	$t      = bnc_odds_table();
-	$rows   = $wpdb->get_results( $wpdb->prepare( "SELECT id, league_name, home, away, start, status FROM {$t} WHERE ( start > %s AND status IN ('pending','live') ) OR id = %d ORDER BY league_name ASC, start ASC LIMIT 400", gmdate( 'Y-m-d H:i:s', time() - 3 * HOUR_IN_SECONDS ), $sel_ev ), ARRAY_A ); // phpcs:ignore WordPress.DB
+	// 0.9.16: anche le partite finite negli ultimi 7 giorni (pronostici scritti dopo, prove del widget a fine partita).
+	$rows   = $wpdb->get_results( $wpdb->prepare( "SELECT id, league_name, home, away, start, status, score FROM {$t} WHERE ( start > %s AND status IN ('pending','live') ) OR ( start > %s AND status = 'settled' ) OR id = %d ORDER BY league_name ASC, start ASC LIMIT 500", gmdate( 'Y-m-d H:i:s', time() - 3 * HOUR_IN_SECONDS ), gmdate( 'Y-m-d H:i:s', time() - 7 * DAY_IN_SECONDS ), $sel_ev ), ARRAY_A ); // phpcs:ignore WordPress.DB
 	if ( ! $rows && '' === bnc_odds_key() ) {
 		echo '<p>Imposta la chiave e i campionati in <a href="' . esc_url( admin_url( 'edit.php?post_type=' . BNC_POST_TYPE . '&page=bnc-quote' ) ) . '">Operatori &gt; Quote</a>.</p>';
 		return;
@@ -458,7 +459,8 @@ function bnc_odds_metabox( $post ) {
 			$group = $r['league_name'];
 		}
 		$when = wp_date( 'd/m H:i', strtotime( $r['start'] . ' UTC' ) );
-		echo '<option value="' . (int) $r['id'] . '"' . selected( $sel_ev, (int) $r['id'], false ) . '>' . esc_html( $when . ' ' . bnc_odds_team( $r['home'] ) . ' - ' . bnc_odds_team( $r['away'] ) ) . '</option>';
+		$fin  = 'settled' === $r['status'] ? ' (finita' . ( '' !== (string) $r['score'] ? ' ' . $r['score'] : '' ) . ')' : '';
+		echo '<option value="' . (int) $r['id'] . '"' . selected( $sel_ev, (int) $r['id'], false ) . '>' . esc_html( $when . ' ' . bnc_odds_team( $r['home'] ) . ' - ' . bnc_odds_team( $r['away'] ) . $fin ) . '</option>';
 	}
 	echo ( null !== $group ? '</optgroup>' : '' ) . '</select></p>';
 	echo '<p><label for="bnc-quote-sel"><strong>Pronostico</strong></label><br><select id="bnc-quote-sel" name="bnc_quote_scelta" style="width:100%"><option value="">Nessuno</option>';

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.16
+- Riquadro "Quote del pronostico": si possono collegare anche le partite finite negli ultimi 7 giorni, segnate "(finita X-Y)".
+
 ## 0.9.15
 - Widget partita (API-Football) anche negli articoli dei pronostici con la partita collegata: subito dopo le quote, prima del primo titolo H2; in diretta come nella pagina partita.
 
