@@ -475,7 +475,7 @@ function bnc_odds_metabox( $post ) {
 	echo '</select></p>';
 	echo bnc_odds_metabox_preview( $post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput
 	$auto = '1' === (string) bnc_odds_settings()['auto'];
-	echo '<p class="description">' . ( $auto ? 'Le quote compaiono da sole prima del primo titolo H2. Per metterle in un altro punto inserisci i blocchi "Quota del pronostico" e "Confronto quote".' : 'Inserisci i blocchi "Quota del pronostico" e "Confronto quote".' ) . ' Le partite arrivano dai campionati scelti in Operatori &gt; Quote.</p>';
+	echo '<p class="description">' . ( $auto ? 'Le quote compaiono da sole prima del primo titolo H2 (pronostico e quattro mercati principali), il resto dei mercati va in fondo all\'articolo. Per metterle in un altro punto inserisci i blocchi "Quota del pronostico" e "Confronto quote".' : 'Inserisci i blocchi "Quota del pronostico" e "Confronto quote".' ) . ' Le partite arrivano dai campionati scelti in Operatori &gt; Quote.</p>';
 	echo "<script>function bncQuoteCerca(q){q=(q||'').toLowerCase().trim();var s=document.getElementById('bnc-quote-ev');if(!s)return;s.querySelectorAll('optgroup').forEach(function(g){var any=false;var gl=(g.label||'').toLowerCase();g.querySelectorAll('option').forEach(function(o){var ok=!q||o.textContent.toLowerCase().indexOf(q)>-1||gl.indexOf(q)>-1||o.selected;o.hidden=!ok;o.disabled=!ok&&!o.selected;any=any||ok;});g.hidden=!any;});}</script>";
 }
 
@@ -603,6 +603,9 @@ function bnc_odds_block_post( $block ) {
 function bnc_odds_block( $tipo, $post_id, $a ) {
 	$mercato = isset( $a['mercato'] ) ? sanitize_key( $a['mercato'] ) : 'auto';
 	$inner   = bnc_odds_render( $tipo, $post_id, $mercato );
+	if ( in_array( $tipo, array( 'entrambi-top', 'entrambi-rest' ), true ) && '' === $inner ) {
+		return ''; // articolo senza quote: i segnaposto si svuotano e il testo resta
+	}
 	if ( '' === $inner ) {
 		if ( ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return '';
@@ -647,7 +650,27 @@ function bnc_odds_won( $mk, $ok, $score ) {
 	return null;
 }
 
+/**
+ * 0.9.25: le due parti del riquadro automatico negli articoli. La prima e' il pronostico piu'
+ * i quattro mercati principali, la seconda gli altri mercati. Senza quote la seconda e' vuota.
+ */
+function bnc_odds_article_parts( $post_id ) {
+	$ev_id = (int) get_post_meta( $post_id, '_bn_quote_evento', true );
+	$ev    = $ev_id ? bnc_odds_event( $ev_id ) : null;
+	$top   = bnc_odds_render( 'pronostico', $post_id, 'auto' );
+	$mk    = ( $ev && function_exists( 'bnc_match_render' ) ) ? bnc_match_render( $ev, true ) : '';
+	if ( '' !== $mk ) {
+		$mk = (string) apply_filters( 'bnc_odds_entrambi_after', $mk, $post_id );
+	}
+	$parts = explode( '<!--bn-split-->', $mk, 2 );
+	return array( $top . $parts[0], isset( $parts[1] ) ? $parts[1] : '' );
+}
+
 function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
+	if ( 'entrambi-top' === $tipo || 'entrambi-rest' === $tipo ) { // 0.9.25: articolo diviso in due parti
+		$p = bnc_odds_article_parts( $post_id );
+		return 'entrambi-top' === $tipo ? $p[0] : $p[1];
+	}
 	if ( 'entrambi' === $tipo ) { // 0.6.5: inserimento automatico, pronostico e confronto insieme
 		$a = bnc_odds_render( 'pronostico', $post_id, 'auto' );
 		$GLOBALS['bnc_odds_nohead'] = '' !== $a;
@@ -747,9 +770,11 @@ function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
 /* ---------- 0.6.5: quote automatiche nei pronostici ---------- */
 
 /**
- * Articolo con partita collegata e senza i blocchi delle quote: segnaposto prima del primo H2
- * (priorita' 19, prima della toplist automatica che usa la 20), o dopo il primo paragrafo.
- * All'ultima priorita' il segnaposto diventa il riquadro, cosi' altri plugin non ci infilano banner.
+ * Articolo con partita collegata e senza i blocchi delle quote: due segnaposto, uno prima del primo H2
+ * (priorita' 19, prima della toplist automatica che usa la 20), o dopo il primo paragrafo, e uno in fondo.
+ * All'ultima priorita' i segnaposto diventano le due parti del riquadro, cosi' altri plugin non ci infilano banner.
+ * 0.9.25: il primo prende il pronostico e i quattro mercati principali, il secondo il resto dei mercati,
+ * con il testo dell'articolo in mezzo.
  */
 add_filter( 'the_content', function ( $content ) {
 	if ( '1' !== (string) bnc_odds_settings()['auto'] || is_admin() || is_feed() || wp_is_json_request() || doing_action( 'wp_head' ) ) {
@@ -762,22 +787,29 @@ add_filter( 'the_content', function ( $content ) {
 	if ( ! get_post_meta( $pid, '_bn_quote_evento', true ) || has_block( 'betnero/quota-pronostico', $pid ) || has_block( 'betnero/confronto-quote', $pid ) || false !== strpos( $content, 'class="bnq-live" data-post=' ) ) {
 		return $content;
 	}
-	$marker = '<div class="bnq-auto" data-bnq-auto="1"></div>';
-	$pos    = stripos( $content, '<h2' );
+	$top  = '<div class="bnq-auto" data-bnq-auto="top"></div>';
+	$rest = '<div class="bnq-auto" data-bnq-auto="rest"></div>';
+	$pos  = stripos( $content, '<h2' );
 	if ( false !== $pos ) {
-		return substr( $content, 0, $pos ) . $marker . substr( $content, $pos );
+		$content = substr( $content, 0, $pos ) . $top . substr( $content, $pos );
+	} else {
+		$pos     = stripos( $content, '</p>' );
+		$content = false !== $pos ? substr( $content, 0, $pos + 4 ) . $top . substr( $content, $pos + 4 ) : $content . $top;
 	}
-	$pos = stripos( $content, '</p>' );
-	return false !== $pos ? substr( $content, 0, $pos + 4 ) . $marker . substr( $content, $pos + 4 ) : $content . $marker;
+	return $content . $rest;
 }, 19 );
 
 add_filter( 'the_content', function ( $content ) {
-	if ( false === strpos( $content, 'data-bnq-auto="1"' ) ) {
+	if ( false === strpos( $content, 'data-bnq-auto="top"' ) && false === strpos( $content, 'data-bnq-auto="rest"' ) ) {
 		return $content;
 	}
 	wp_enqueue_style( 'betnero-quote' );
-	$html = bnc_odds_block( 'entrambi', get_the_ID(), array() );
-	return str_replace( '<div class="bnq-auto" data-bnq-auto="1"></div>', $html, $content );
+	$pid     = get_the_ID();
+	$top     = bnc_odds_block( 'entrambi-top', $pid, array() );
+	$rest    = bnc_odds_block( 'entrambi-rest', $pid, array() );
+	$content = str_replace( '<div class="bnq-auto" data-bnq-auto="top"></div>', $top, $content );
+	// 0.9.25: il secondo segnaposto si sostituisce sempre, anche con stringa vuota: il testo non deve sparire.
+	return str_replace( '<div class="bnq-auto" data-bnq-auto="rest"></div>', $rest, $content );
 }, PHP_INT_MAX );
 
 /* ---------- REST: blocchi aggiornati e anteprima ---------- */
@@ -788,7 +820,7 @@ add_action( 'rest_api_init', function () {
 		'permission_callback' => '__return_true',
 		'args'                => array(
 			'post'    => array( 'type' => 'integer', 'required' => true ),
-			'tipo'    => array( 'type' => 'string', 'enum' => array( 'pronostico', 'confronto', 'entrambi' ), 'required' => true ),
+			'tipo'    => array( 'type' => 'string', 'enum' => array( 'pronostico', 'confronto', 'entrambi', 'entrambi-top', 'entrambi-rest' ), 'required' => true ),
 			'mercato' => array( 'type' => 'string', 'default' => 'auto' ),
 		),
 		'callback'            => function ( $req ) {

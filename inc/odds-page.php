@@ -346,7 +346,7 @@ function bnc_match_block() {
 	return $h;
 }
 
-function bnc_match_render( $ev ) {
+function bnc_match_render( $ev, $per_articolo = false ) {
 	$books   = bnc_odds_shown_books();
 	$home    = bnc_odds_team( $ev['home'] );
 	$away    = bnc_odds_team( $ev['away'] );
@@ -365,8 +365,9 @@ function bnc_match_render( $ev ) {
 	};
 	$upd     = $ev['odds_updated'] ? wp_date( 'd/m H:i', strtotime( $ev['odds_updated'] . ' UTC' ) ) : '';
 
-	// Testata
+	// Testata (non negli articoli: hanno gia' il loro titolo)
 	$h  = '<div class="bnm" data-bnm>';
+	if ( ! $per_articolo ) {
 	$h .= '<section class="bnm-hero"><div class="bnm-hero-in"><div class="bnm-row1">';
 	// 0.9.10: stemmi da API-Football (salvati sul sito), altrimenti le sigle.
 	$crest = function ( $n ) use ( $ini ) {
@@ -422,12 +423,14 @@ function bnc_match_render( $ev ) {
 	if ( $post_id ) {
 		$h .= '<a class="bnm-tip" href="' . esc_url( get_permalink( $post_id ) ) . '"><span class="bnm-tip-k">IL NOSTRO PRONOSTICO</span><strong>' . esc_html( get_the_title( $post_id ) ) . '</strong><span class="bnm-tip-go">Leggi il pronostico &rsaquo;</span></a>';
 	}
-
-	if ( ! $tables ) {
-		return $h . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
 	}
 
-	// Filtri
+	if ( ! $tables ) {
+		return $per_articolo ? '' : $h . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
+	}
+
+	// Filtri (solo nella pagina partita: nell'articolo i mercati stanno in due contenitori)
+	if ( ! $per_articolo ) {
 	$groups_used = array( 'tutti' => true );
 	foreach ( $tables as $name => $tb ) {
 		$groups_used[ $known[ $name ][1] ] = true;
@@ -439,23 +442,41 @@ function bnc_match_render( $ev ) {
 		}
 	}
 	$h .= '</div>';
+	}
 
 	// Blocchi: completi (tutti i bookmaker) e "Altri mercati"
-	$main  = '';
-	$other = '';
+	// 0.9.25: negli articoli i quattro mercati principali vanno in cima, il resto dopo il testo.
+	$primi  = $per_articolo ? array( 'ML', 'Double Chance', 'Totals', 'Both Teams To Score' ) : array();
+	$blocks = array();
+	$main   = '';
+	$other  = '';
 	foreach ( $tables as $name => $tb ) {
-		$full  = count( $tb['books'] ) >= max( 1, $n_books );
-		$block = bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started );
+		$full            = count( $tb['books'] ) >= max( 1, $n_books );
+		$blocks[ $name ] = bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started );
+		if ( in_array( $name, $primi, true ) ) {
+			continue;
+		}
 		if ( $full ) {
-			$main .= $block;
+			$main .= $blocks[ $name ];
 		} else {
-			$other .= $block;
+			$other .= $blocks[ $name ];
 		}
 	}
-	$h .= $main;
+	if ( $per_articolo ) {
+		$top = '';
+		foreach ( $primi as $name ) {
+			if ( isset( $blocks[ $name ] ) ) {
+				$top .= $blocks[ $name ];
+			}
+		}
+		$h .= '' === $top ? $main : $top . '</div><!--bn-split--><div class="bnm" data-bnm>' . $main;
+	} else {
+		$h .= $main;
+	}
 	if ( '' !== $other ) {
 		$h .= '<div class="bnm-others" data-bnm-others><h2 class="bnm-h2">Altri mercati</h2><p class="bnm-sub">Mercati offerti solo da alcuni dei nostri bookmaker: per ognuno trovi le quote di chi lo offre.</p>' . $other . '</div>';
 	}
+	if ( ! $per_articolo ) {
 	$ops = array_slice( bnc_operators( 'scommesse' ), 0, 10 );
 	if ( $ops ) {
 		$h .= bnc_bonus_slider( $ops, 'Tutti i bonus a confronto', 'confronto' );
@@ -463,6 +484,8 @@ function bnc_match_render( $ev ) {
 	$h .= bnc_match_others( $ev );
 	$h .= bnc_match_faq( $ev, $tables, $books, $home, $away, $n_books );
 	return $h . '<p class="bnq-adm">18+ | Gioca responsabilmente | Le quote possono variare</p></div>';
+	}
+	return $h . '</div>';
 }
 
 /** 0.9.9: bonus a scorrimento (schede come nel design). $id = ancora, vuoto = nessuna. */

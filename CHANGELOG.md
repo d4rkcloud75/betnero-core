@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.25
+- Articoli pronostico divisi in due parti, come chiesto da Francesco il 25/11: in alto l'intro, poi il riquadro "Il nostro pronostico" con i quattro mercati principali (Esito finale 1X2, Doppia chance, Under/Over gol, Goal/No Goal), poi la toplist, poi il resto dell'articolo dal primo H2, poi il widget partita e infine gli altri mercati con "Altri mercati".
+- `bnc_match_render()` accetta un secondo parametro: con `true` salta testata, riquadro del pronostico e coda (bonus, altre partite, FAQ) e mette il segno `<!--bn-split-->` dopo il quarto mercato. La pagina partita chiama la funzione come prima e il suo HTML non cambia.
+- Due segnaposto nel testo al posto di uno: la seconda parte viene sempre sostituita, anche con stringa vuota, cosi' il testo dell'articolo non sparisce quando le quote sono ferme o la partita non esiste piu'.
+- Il widget partita negli articoli passa dopo il testo e prima degli altri mercati.
+- Aggiornamento via REST dei due pezzi con i tipi `entrambi-top` e `entrambi-rest`, senza toccare il JavaScript.
+- Gli articoli con i blocchi quote inseriti a mano restano come sono.
+
 ## 0.9.24
 - Widget partita (pre-partita, in diretta e dopo): dal blu notte al blu degli altri box della pagina, fondo #036AA9 e schede interne #02507F. Testi, bordi, barre delle statistiche e schede delle ultime 5 partite adeguati al fondo chiaro. E' la richiesta della mail di Francesco del 26/11 sui box neri della pagina del pronostico.
 - Testi del widget partita portati a #EAF2F9 (prima grigi e azzurrini, #8E98A8, #C9D1DD e #7FC4F0): si leggono sul fondo blu. La scheda del filtro scelta resta distinta, bianca con testo blu.

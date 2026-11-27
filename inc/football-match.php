@@ -535,7 +535,8 @@ add_action( 'bnc_fd_page_after', function () {
 /**
  * Articolo con partita collegata (riquadro "Quote del pronostico"): il widget va subito dopo
  * le quote, cioe' prima del primo titolo H2 (dove la Core mette le quote automatiche).
- * Senza H2, in fondo all'articolo. Gira dopo l'inserimento automatico delle quote.
+ * Senza H2, in fondo all'articolo. Con il blocco quote diviso in due parti (0.9.25) va dopo il testo
+ * dell'articolo e prima dei mercati restanti.
  */
 add_filter( 'the_content', function ( $content ) {
 	if ( is_admin() || is_feed() || wp_is_json_request() || doing_action( 'wp_head' ) ) {
@@ -551,7 +552,11 @@ add_filter( 'the_content', function ( $content ) {
 		return $content;
 	}
 	wp_enqueue_style( 'betnero-quote' );
-	$w   = '<div class="bnw-post">' . $w . '</div>';
+	$w      = '<div class="bnw-post">' . $w . '</div>';
+	$marker = '<div class="bnq-auto" data-bnq-auto="rest"></div>';
+	if ( false !== strpos( $content, $marker ) ) {
+		return str_replace( $marker, $w . $marker, $content );
+	}
 	$pos = stripos( $content, '<h2' );
 	return false !== $pos ? substr( $content, 0, $pos ) . $w . substr( $content, $pos ) : $content . $w;
-}, PHP_INT_MAX );
+}, PHP_INT_MAX - 1 );
