@@ -2,6 +2,9 @@
 
 ## 0.9.24
 - Widget partita (pre-partita, in diretta e dopo): dal blu notte al blu degli altri box della pagina, fondo #036AA9 e schede interne #02507F. Testi, bordi, barre delle statistiche e schede delle ultime 5 partite adeguati al fondo chiaro. E' la richiesta della mail di Francesco del 26/11 sui box neri della pagina del pronostico.
+- Testi del widget partita portati a #EAF2F9 (prima grigi e azzurrini, #8E98A8, #C9D1DD e #7FC4F0): si leggono sul fondo blu. La scheda del filtro scelta resta distinta, bianca con testo blu.
+- Etichetta "Finale" (.bnq-res) dal nero #0A1222 al blu #036AA9.
+- Filtro dei mercati: da mobile il pulsante selezionato appariva quasi nero. Aggiunta una regola piu' specifica che lo tiene #036AA9 anche con hover, focus e tocco, per vincere il CSS vecchio del tema vecchio caricato a runtime.
 
 ## 0.9.23
 - JavaScript caricati in versione minimizzata (FAQ, filtri delle tabelle, gallerie): da 8.951 a 5.159 byte, il 42 per cento in meno. I sorgenti restano nel repository accanto ai .min.js.

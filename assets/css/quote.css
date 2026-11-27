@@ -156,6 +156,8 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnm-filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
 .bnm-filters button, .bnm-lines button { flex: none; font: inherit; font-size: 13px; font-weight: 700; border: 0; border-radius: 999px; padding: 0 16px; height: 40px; cursor: pointer; white-space: nowrap; color: var(--m-blue); background: #fff; box-shadow: inset 0 0 0 1px #D6E2EE; }
 .bnm-filters button[aria-pressed="true"] { color: #fff; background: var(--m-blue); box-shadow: none; }
+/* 0.9.24: da mobile il filtro selezionato appariva quasi nero (CSS vecchio del tema vecchio, caricato a runtime). Resta blu anche con hover, focus e tocco. */
+.bnm .bnm-filters button[aria-pressed="true"], .bnm .bnm-filters button[aria-pressed="true"]:hover, .bnm .bnm-filters button[aria-pressed="true"]:focus, .bnm .bnm-filters button[aria-pressed="true"]:active { background: #036AA9 !important; color: #fff !important; box-shadow: none; border-color: transparent; }
 .bnm-mk { background: #fff; border: 1px solid #E6E9EF; border-radius: 8px; overflow: hidden; }
 .bnm-mk > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; min-height: 48px; background: var(--m-blue); color: #fff; cursor: pointer; }
 .bnm-mk > summary::-webkit-details-marker { display: none; }
@@ -297,7 +299,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnqc-main > .bnq, .bnqc-main > .bnqc { margin: 0; }
 /* 0.9.12: widget partita (API-Football) */
 /* 0.9.24: mail di Francesco del 26/11, il widget passa dal blu notte al blu degli altri box. */
-.bnw { --w-blue: #036AA9; --w-blue-d: #02507F; --w-text: #DCEAF5; --w-muted: #C3D6E6; --w-line: rgba(255, 255, 255, .22); background: var(--w-blue); color: #fff; border-radius: 10px; overflow: hidden; }
+.bnw { --w-blue: #036AA9; --w-blue-d: #02507F; --w-text: #EAF2F9; --w-line: rgba(255, 255, 255, .22); background: var(--w-blue); color: #fff; border-radius: 10px; overflow: hidden; }
 .bnw-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 14px 16px 12px; }
 .bnw-head strong { font-size: 17px; }
 .bnw-head span { font-size: 12px; color: var(--w-text); }
@@ -312,8 +314,8 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnw-tabs button[aria-selected="true"] { background: #fff; color: var(--w-blue); }
 .bnw-panel { padding: 12px 16px 6px; display: flex; flex-direction: column; gap: 8px; }
 .bnw-panel[hidden] { display: none; }
-.bnw-foot { margin: 0; padding: 8px 16px 10px; font-size: 11px; color: var(--w-muted); border-top: 1px solid var(--w-line); }
-.bnw-empty, .bnw-note { margin: 0; font-size: 12px; color: var(--w-muted); }
+.bnw-foot { margin: 0; padding: 8px 16px 10px; font-size: 11px; color: var(--w-text); border-top: 1px solid var(--w-line); }
+.bnw-empty, .bnw-note { margin: 0; font-size: 12px; color: var(--w-text); }
 .bnw-period { background: var(--w-blue-d); border-radius: 6px; padding: 7px 10px; text-align: center; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
 .bnw-ev { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
 .bnw-ev.is-away { flex-direction: row-reverse; text-align: right; }
@@ -324,7 +326,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnw-ico.is-var { width: auto; font-size: 9px; font-weight: 800; border: 1px solid var(--w-text); border-radius: 3px; padding: 0 3px; color: var(--w-text); }
 .bnw-who { display: flex; flex-direction: column; line-height: 1.3; }
 .bnw-who strong { font-size: 13px; }
-.bnw-who em { font-style: normal; font-size: 11px; color: var(--w-muted); }
+.bnw-who em { font-style: normal; font-size: 11px; color: var(--w-text); }
 .bnw-stat { display: flex; flex-direction: column; gap: 5px; padding: 3px 0; }
 .bnw-stat-t { display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; align-items: center; font-size: 13px; font-variant-numeric: tabular-nums; }
 .bnw-stat-t span { text-align: center; color: var(--w-text); }
@@ -348,7 +350,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnw-team { font-size: 13px; font-weight: 800; margin-top: 6px; }
 .bnw-pl { display: grid; grid-template-columns: 28px minmax(0, 1fr) 44px 40px 48px; gap: 6px; align-items: center; padding: 5px 4px; font-size: 13px; border-bottom: 1px solid var(--w-line); }
 .bnw-pl span:nth-child(n+3) { text-align: center; }
-.bnw-pl-h { font-size: 11px; font-weight: 800; color: var(--w-muted); }
+.bnw-pl-h { font-size: 11px; font-weight: 800; color: var(--w-text); }
 .bnw-rate { font-weight: 800; border-radius: 4px; padding: 2px 0; background: var(--w-blue-d); }
 .bnw-rate.is-good { background: #13834A; }
 .bnw-wins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
@@ -358,11 +360,11 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnw-wins strong.is-away { color: #EEA700; }
 .bnw-wins span { font-size: 11px; color: var(--w-text); }
 .bnw-h2h { display: grid; grid-template-columns: 90px minmax(0, 1fr) 56px; gap: 8px; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--w-line); font-size: 13px; }
-.bnw-h2h span:first-child { font-size: 11px; color: var(--w-muted); }
+.bnw-h2h span:first-child { font-size: 11px; color: var(--w-text); }
 .bnw-h2h strong { text-align: center; }
 .bnw-form { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--w-line); }
 .bnw-form > span:first-child { display: flex; flex-direction: column; }
-.bnw-form em { font-style: normal; font-size: 11px; color: var(--w-muted); }
+.bnw-form em { font-style: normal; font-size: 11px; color: var(--w-text); }
 .bnw-chips { display: flex; gap: 4px; }
 .bnw-chips i { font-style: normal; width: 20px; height: 20px; border-radius: 4px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 .bnw-chips .is-w { background: #13834A; }
@@ -372,7 +374,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnw-inj > div { background: var(--w-blue-d); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
 .bnw-inj > div > span { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; color: var(--w-text); }
 .bnw-inj em { font-style: normal; color: #EEA700; }
-.bnw-none { color: var(--w-muted) !important; }
+.bnw-none { color: var(--w-text) !important; }
 @media (max-width: 640px) {
 	.bnw-pitch { height: 220px; }
 	.bnw-lus, .bnw-inj { grid-template-columns: 1fr; }
@@ -384,7 +386,7 @@ a.bnq-oc strong { color: var(--bnq-blue); }
 .bnm-aside-post { display: flex; flex-direction: column; gap: 0; }
 @media (max-width: 900px) { .bnm-aside-post .bnm-only-desktop { display: none; } }
 /* 0.9.19: quote di partite iniziate o finite */
-.bnq-res { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: #0A1222; border-radius: 999px; padding: 2px 9px; vertical-align: 1px; }
+.bnq-res { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: #036AA9; border-radius: 999px; padding: 2px 9px; vertical-align: 1px; }
 .bnq-res.is-live { background: #EEA700; color: #1D2433; }
 .bnq.is-final .bnq-tr .bnq-odd.is-won { box-shadow: inset 0 0 0 2px #13834A; }
 .bnq.is-final .bnq-th .is-won { color: #13834A; font-weight: 800; }
