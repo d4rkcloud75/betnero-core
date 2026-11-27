@@ -23,10 +23,10 @@ add_action( 'init', function () {
 	wp_register_style( 'betnero-scheda', BETNERO_CORE_URL . 'assets/css/scheda.css', array( 'betnero-tables' ), $v );
 	wp_register_style( 'betnero-bar', BETNERO_CORE_URL . 'assets/css/bar.css', array(), $v );
 	wp_register_style( 'betnero-faq', BETNERO_CORE_URL . 'assets/css/faq.css', array(), $v );
-	wp_register_script( 'betnero-tables', BETNERO_CORE_URL . 'assets/js/tables.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'betnero-tables', BETNERO_CORE_URL . 'assets/js/tables.min.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script( 'betnero-bar', BETNERO_CORE_URL . 'assets/js/bar.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
-	wp_register_script( 'betnero-lightbox', BETNERO_CORE_URL . 'assets/js/lightbox.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
-	wp_register_script( 'betnero-faq', BETNERO_CORE_URL . 'assets/js/faq.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'betnero-lightbox', BETNERO_CORE_URL . 'assets/js/lightbox.min.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_register_script( 'betnero-faq', BETNERO_CORE_URL . 'assets/js/faq.min.js', array(), $v, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_register_script(
 		'betnero-blocks-editor',
 		BETNERO_CORE_URL . 'assets/js/blocks-editor.js',

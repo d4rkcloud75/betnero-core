@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.23
+- JavaScript caricati in versione minimizzata (FAQ, filtri delle tabelle, gallerie): da 8.951 a 5.159 byte, il 42 per cento in meno. I sorgenti restano nel repository accanto ai .min.js.
+- Riordino degli operatori: serve il permesso edit_others_posts (prima bastava edit_posts).
+- tools/__pycache__ tolto dal repository; __pycache__/ e *.pyc aggiunti a .gitignore.
+
 ## 0.9.22
 - Widget partita: se API-Football non risponde, si riprova dopo 2 minuti (prima il dato vuoto restava fino a 6 ore).
 - Schede bonus: senza recensione, "Vai al sito" a tutta larghezza.

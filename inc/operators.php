@@ -164,7 +164,7 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
 
 add_action( 'wp_ajax_bnc_save_order', function () {
 	check_ajax_referer( 'bnc_order', 'nonce' );
-	if ( ! current_user_can( 'edit_posts' ) ) {
+	if ( ! current_user_can( 'edit_others_posts' ) ) {
 		wp_send_json_error( 'permessi', 403 );
 	}
 	$ids = isset( $_POST['ids'] ) ? array_map( 'absint', (array) $_POST['ids'] ) : array();
