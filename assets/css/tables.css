@@ -89,6 +89,34 @@
 	.bnt-toplist .bnt-adm { padding-right: 12px; }
 }
 
+/* 0.9.28: tabella comparativa dei bonus multipla (blocco "Tabella bonus multiple") */
+.bntm { --bnt-blue: #036AA9; --bnt-ink: #1D2433; --bnt-muted: #5D6676; --bnt-line: #E6E9EF;
+	border: 1px solid var(--bnt-line); border-radius: 12px; background: #F4F6F9; padding: 14px; margin: 18px 0 24px; font-family: inherit; }
+.bntm-title { background: var(--bnt-blue); color: #fff; font-weight: 800; font-size: 16px; line-height: 1.3; border-radius: 8px; padding: 10px 14px; margin: 0 0 10px; }
+.bntm-cols, .bntm-row { display: grid; grid-template-columns: 1.2fr .9fr .9fr 1fr 1fr .7fr 1.6fr 1.1fr; gap: 8px; align-items: center; }
+.bntm-cols { font-size: 11px; color: var(--bnt-muted); text-align: center; padding: 0 12px 6px; }
+.bntm-cols span:first-child { text-align: left; }
+.bntm-row { background: #fff; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0, 0, 0, .06); }
+.bntm-logo { display: flex; align-items: center; justify-content: center; min-height: 48px; }
+.bntm-logo img { max-width: 128px !important; max-height: 48px !important; width: auto !important; height: auto !important; object-fit: contain; margin: 0 !important; }
+.bntm-logo .bnt-logo-text { font-weight: 800; color: var(--bnt-ink); }
+.bntm-c { text-align: center; font-size: 13px; line-height: 1.3; color: var(--bnt-ink); }
+.bntm-k { display: none; }
+.bntm-n { display: block; font-size: 11px; color: var(--bnt-muted); }
+.bntm-go { display: flex; justify-content: center; }
+.bntm-go .bnt-btn { width: 100%; }
+
+/* Da mobile ogni bookmaker è una scheda con le voci una sotto l'altra */
+@media (max-width: 899px) {
+	.bntm { padding: 12px; }
+	.bntm-cols { display: none; }
+	.bntm-row { display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 14px; }
+	.bntm-logo { min-height: 0; margin-bottom: 4px; }
+	.bntm-c { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; text-align: right; border-top: 1px solid #EEF1F5; padding-top: 6px; }
+	.bntm-k { display: inline; font-size: 12px; font-weight: 600; color: var(--bnt-muted); text-align: left; }
+	.bntm-go { margin-top: 4px; }
+}
+
 /* Banner di altri plugin (Ad Inserter) dentro le toplist: nascosti */
 .bnt-toplist .code-block { display: none !important; }
 

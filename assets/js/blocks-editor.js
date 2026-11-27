@@ -430,4 +430,23 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.28: tabella comparativa dei bonus multipla (dati da Operatori > Bonus multipla). */
+	wp.blocks.registerBlockType( 'betnero/tabella-bonus-multiple', {
+		title: 'Tabella bonus multiple',
+		icon: 'editor-table',
+		category: 'betnero',
+		description: 'I bookmaker con il bonus multipla: eventi minimi, quota minima, bonus iniziale e massimo. Si compila in Operatori > Bonus multipla.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( TextControl, { label: 'Titolo (vuoto = nessuna testata)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/tabella-bonus-multiple', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

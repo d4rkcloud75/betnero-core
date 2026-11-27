@@ -23,6 +23,7 @@ const BNC_POST_TYPE = 'bn_operatore';
 function bnc_field_groups() {
 	return array(
 		'tabella'    => 'Dati per tabelle e toplist',
+		'multipla'   => 'Bonus multipla',
 		'link'       => 'Link',
 		'filtri'     => 'Filtri delle tabelle',
 		'recensione' => 'Scheda recensione',
@@ -53,6 +54,15 @@ function bnc_fields() {
 		'multipla'          => array( 'label' => 'Bonus multipla', 'type' => 'yesno', 'tipo' => $sport, 'group' => 'tabella' ),
 		'parere'            => array( 'label' => "Il parere dell'esperto", 'type' => 'html', 'tipo' => $both, 'group' => 'tabella', 'help' => 'Mostrato sotto la riga nella tabella completa.' ),
 		'in_tabella'        => array( 'label' => 'Mostra in tabelle e toplist', 'type' => 'bool', 'tipo' => $both, 'group' => 'tabella', 'default' => '1' ),
+
+		/* Bonus multipla: tabella comparativa a parte, solo per i bookmaker */
+		'multipla_eventi'   => array( 'label' => 'Eventi minimi', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'Quanti eventi servono per il bonus. Esempi: "4 eventi", "3-5 eventi".' ),
+		'multipla_quota'    => array( 'label' => 'Quota minima', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'La quota minima della giocata. Esempi: "1,20", "1,25 (1,20 fascia mattino)".' ),
+		'multipla_iniziale' => array( 'label' => 'Bonus iniziale', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'La maggiorazione di partenza. Esempio: "+6% (4 ev.) / +11% (5 ev.)".' ),
+		'multipla_massimo'  => array( 'label' => 'Bonus massimo', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'Esempio: "Fino a +500%". Compilato, il bookmaker entra nella tabella dei bonus multipla.' ),
+		'multipla_live'     => array( 'label' => 'Valido anche live', 'type' => 'yesno', 'tipo' => $sport, 'group' => 'multipla' ),
+		'multipla_live_nota' => array( 'label' => 'Nota sul live', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'Compare sotto il Sì/No. Esempio: "Pre-match".' ),
+		'multipla_nota'     => array( 'label' => 'Caratteristica chiave', 'type' => 'text', 'tipo' => $sport, 'group' => 'multipla', 'help' => 'Una riga sola: è la colonna "Caratteristica" della tabella.' ),
 
 		/* Link */
 		'link'              => array( 'label' => 'Link "Vai al sito"', 'type' => 'url', 'tipo' => $both, 'group' => 'link', 'help' => 'Usa i link /visita/... (redirect), così gli adblock non li bloccano.' ),

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.28
+- Operatori, nuova sezione "Bonus multipla" per i bookmaker (stessi campi e stesso salvataggio di `inc/fields.php`): eventi minimi, quota minima, bonus iniziale, bonus massimo, valido anche live con nota, caratteristica chiave.
+- Nuovo blocco "Tabella bonus multiple" (`inc/bonus-multipla.php`): tabella comparativa separata e integrativa a quella dei bookmaker, mostra solo chi ha il bonus massimo compilato, nell'ordine di Posizione. Colonne: bookmaker con logo, eventi minimi, quota minima, bonus iniziale, bonus massimo, live, caratteristica, "Vai al sito". Riga 18+ sotto, come nelle altre tabelle.
+- Stile in `tables.css`: testata blu #036AA9, righe come le altre tabelle. Sotto 900px ogni bookmaker diventa una scheda con le voci una sotto l'altra, senza scorrimento orizzontale.
+- Senza bookmaker compilati il blocco non stampa niente sul sito; nell'editor mostra l'avviso "Compila la sezione Bonus multipla in Operatori". Nessun dato di esempio nel codice.
+
 ## 0.9.27
 - Articoli, quattro mercati in cima: escono sempre aperti e senza lo stile di "Altri mercati" (`is-other`), anche quando non li offrono tutti i bookmaker (capitava a "Doppia chance"). Restano le colonne dei soli bookmaker che offrono il mercato e la riga che dice quali sono. La pagina partita non cambia.
 - Articoli, seconda parte: se dopo i quattro mercati non resta niente, `bnc_odds_article_parts()` restituisce stringa vuota e non si stampa più un riquadro vuoto. Il segnaposto `rest` continua a essere sostituito sempre.
