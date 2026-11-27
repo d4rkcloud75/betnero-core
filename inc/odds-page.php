@@ -452,7 +452,8 @@ function bnc_match_render( $ev, $per_articolo = false ) {
 	$other  = '';
 	foreach ( $tables as $name => $tb ) {
 		$full            = count( $tb['books'] ) >= max( 1, $n_books );
-		$blocks[ $name ] = bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started );
+		// 0.9.27: i quattro mercati in cima all'articolo escono sempre aperti, anche se non li hanno tutti i bookmaker
+		$blocks[ $name ] = bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started, $per_articolo && in_array( $name, $primi, true ) );
 		if ( in_array( $name, $primi, true ) ) {
 			continue;
 		}
@@ -565,19 +566,20 @@ function bnc_match_faq( $ev, $tables, $books, $home, $away, $n_books ) {
 }
 
 /** Un mercato: barra apribile, eventuali linee, tabella con i bookmaker in colonna. */
-function bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started ) {
+function bnc_match_market_html( $name, $tb, $books, $home, $away, $full, $started, $aperto = false ) {
 	$known = bnc_match_markets();
 	$title = $known[ $name ][0];
 	$group = $known[ $name ][1];
 	$cols  = array_values( array_intersect( array_keys( $books ), array_keys( $tb['books'] ) ) );
 	$lines = $tb['lines'];
 	$main  = bnc_match_main_line( $lines, $name );
-	$open  = $full ? ' open' : '';
+	$open  = ( $full || $aperto ) ? ' open' : ''; // 0.9.27: nell'articolo i quattro mercati in cima restano aperti
+	$other = ! $full && ! $aperto;
 	$who   = $full ? '' : ( 1 === count( $cols ) ? 'quote di ' . bnc_odds_book_label( $books[ $cols[0] ]['name'] ) : implode( ' e ', array_map( function ( $b ) use ( $books ) {
 		return bnc_odds_book_label( $books[ $b ]['name'] );
 	}, $cols ) ) );
 
-	$h  = '<details class="bnm-mk' . ( $full ? '' : ' is-other' ) . '" data-bnm-mk="' . esc_attr( $group ) . '"' . $open . '><summary><strong>' . esc_html( $title ) . '</strong>' . ( $who ? '<span>' . esc_html( $who ) . '</span>' : '' ) . '</summary>';
+	$h  = '<details class="bnm-mk' . ( $other ? ' is-other' : '' ) . '" data-bnm-mk="' . esc_attr( $group ) . '"' . $open . '><summary><strong>' . esc_html( $title ) . '</strong>' . ( $who ? '<span>' . esc_html( $who ) . '</span>' : '' ) . '</summary>';
 	if ( count( $lines ) > 1 ) {
 		$h .= '<div class="bnm-lines" role="toolbar" aria-label="Linea">';
 		foreach ( array_keys( $lines ) as $l ) {

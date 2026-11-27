@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.27
+- Articoli, quattro mercati in cima: escono sempre aperti e senza lo stile di "Altri mercati" (`is-other`), anche quando non li offrono tutti i bookmaker (capitava a "Doppia chance"). Restano le colonne dei soli bookmaker che offrono il mercato e la riga che dice quali sono. La pagina partita non cambia.
+- Articoli, seconda parte: se dopo i quattro mercati non resta niente, `bnc_odds_article_parts()` restituisce stringa vuota e non si stampa più un riquadro vuoto. Il segnaposto `rest` continua a essere sostituito sempre.
+
 ## 0.9.26
 - `assets/js/partita.js`: un solo listener sul `document` che risale al blocco con `closest()`, invece di un listener per ogni `[data-bnm]`. Negli articoli `quote.js` ricrea i blocchi via REST appena la pagina si apre e i pulsanti delle linee (Under/Over, Handicap) restavano senza ascoltatore. Stessa delega per le schede del blocco campionato e per quelle del widget partita, che hanno lo stesso problema.
 - Negli articoli lo script dei mercati viene caricato anche senza il widget partita: senza `betnero-partita` le schede dei mercati non si aprivano e le linee non rispondevano.

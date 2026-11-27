@@ -653,6 +653,7 @@ function bnc_odds_won( $mk, $ok, $score ) {
 /**
  * 0.9.25: le due parti del riquadro automatico negli articoli. La prima e' il pronostico piu'
  * i quattro mercati principali, la seconda gli altri mercati. Senza quote la seconda e' vuota.
+ * 0.9.27: se dopo i quattro mercati non resta niente, anche la seconda e' vuota.
  */
 function bnc_odds_article_parts( $post_id ) {
 	$ev_id = (int) get_post_meta( $post_id, '_bn_quote_evento', true );
@@ -663,7 +664,12 @@ function bnc_odds_article_parts( $post_id ) {
 		$mk = (string) apply_filters( 'bnc_odds_entrambi_after', $mk, $post_id );
 	}
 	$parts = explode( '<!--bn-split-->', $mk, 2 );
-	return array( $top . $parts[0], isset( $parts[1] ) ? $parts[1] : '' );
+	$rest  = isset( $parts[1] ) ? $parts[1] : '';
+	// 0.9.27: seconda parte vuota (resta solo il contenitore, senza mercati): non si stampa il riquadro.
+	if ( '</div>' === trim( str_replace( '<div class="bnm" data-bnm>', '', $rest ) ) ) {
+		$rest = '';
+	}
+	return array( $top . $parts[0], $rest );
 }
 
 function bnc_odds_render( $tipo, $post_id, $mercato = 'auto' ) {
