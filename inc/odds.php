@@ -807,6 +807,9 @@ add_filter( 'the_content', function ( $content ) {
 	$pid     = get_the_ID();
 	$top     = bnc_odds_block( 'entrambi-top', $pid, array() );
 	$rest    = bnc_odds_block( 'entrambi-rest', $pid, array() );
+	if ( '' !== $top || '' !== $rest ) {
+		wp_enqueue_script( 'betnero-partita' ); // 0.9.26: schede e linee dei mercati anche negli articoli
+	}
 	$content = str_replace( '<div class="bnq-auto" data-bnq-auto="top"></div>', $top, $content );
 	// 0.9.25: il secondo segnaposto si sostituisce sempre, anche con stringa vuota: il testo non deve sparire.
 	return str_replace( '<div class="bnq-auto" data-bnq-auto="rest"></div>', $rest, $content );

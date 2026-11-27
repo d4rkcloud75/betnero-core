@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.26
+- `assets/js/partita.js`: un solo listener sul `document` che risale al blocco con `closest()`, invece di un listener per ogni `[data-bnm]`. Negli articoli `quote.js` ricrea i blocchi via REST appena la pagina si apre e i pulsanti delle linee (Under/Over, Handicap) restavano senza ascoltatore. Stessa delega per le schede del blocco campionato e per quelle del widget partita, che hanno lo stesso problema.
+- Negli articoli lo script dei mercati viene caricato anche senza il widget partita: senza `betnero-partita` le schede dei mercati non si aprivano e le linee non rispondevano.
+
 ## 0.9.25
 - Articoli pronostico divisi in due parti, come chiesto da Francesco il 25/11: in alto l'intro, poi il riquadro "Il nostro pronostico" con i quattro mercati principali (Esito finale 1X2, Doppia chance, Under/Over gol, Goal/No Goal), poi la toplist, poi il resto dell'articolo dal primo H2, poi il widget partita e infine gli altri mercati con "Altri mercati".
 - `bnc_match_render()` accetta un secondo parametro: con `true` salta testata, riquadro del pronostico e coda (bonus, altre partite, FAQ) e mette il segno `<!--bn-split-->` dopo il quarto mercato. La pagina partita chiama la funzione come prima e il suo HTML non cambia.
