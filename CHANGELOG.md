@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.24
+- Widget partita (pre-partita, in diretta e dopo): dal blu notte al blu degli altri box della pagina, fondo #036AA9 e schede interne #02507F. Testi, bordi, barre delle statistiche e schede delle ultime 5 partite adeguati al fondo chiaro. E' la richiesta della mail di Francesco del 26/11 sui box neri della pagina del pronostico.
+
 ## 0.9.23
 - JavaScript caricati in versione minimizzata (FAQ, filtri delle tabelle, gallerie): da 8.951 a 5.159 byte, il 42 per cento in meno. I sorgenti restano nel repository accanto ai .min.js.
 - Riordino degli operatori: serve il permesso edit_others_posts (prima bastava edit_posts).
