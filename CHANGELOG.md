@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.30
+- Pagina quote campionato, loghi nelle celle 1 X 2: da 15 a 20px di altezza, con `max-height: 20px`, larghezza automatica fino a tutta la cella e `object-fit: contain`. Marathonbet ed Eurobet, loghi lunghi e bassi, diventano leggibili. Le tre celle restano `minmax(0,1fr)`, il logo non le allarga.
+- Mercato marcatori: `Anytime Goalscorer` aggiunto a `BNC_ODDS_MARKETS` (15 mercati sui 20 per richiesta) e nuovo lettore `bnc_odds_labelled()` in `inc/odds.php` per i mercati con una riga per giocatore (etichetta e quota). `bnc_odds_price()` resta com'è.
+- Nuovo blocco "Marcatori" (`inc/odds-scorer.php`): prossime partite del campionato, per un solo bookmaker scelto nelle impostazioni (di serie Eurobet), giocatori con la quota "segna in qualsiasi momento" ordinati dalla quota più bassa, limite in tutto configurabile (di serie 5). Ogni riga: giocatore con la partita sotto in piccolo, quota, pulsante Gioca. Testata blu #036AA9 "Marcatori" più il bookmaker. Senza il mercato o senza dati non stampa niente sul sito, nell'editor un avviso. Nessun dato di esempio.
+- Nuovo blocco "Quote maggiorate e più alte" (`inc/odds-verdi.php`): un box solo con testata verde #13834A che richiama `bnc_boost_render()` e `bnc_top_render()` senza riscriverne la logica. Se entrambi sono vuoti non stampa niente.
+- Pagina campionato completa (`bnc_league_page`): marcatori dopo la tabella delle partite e prima del box verde; le due chiamate separate a quote maggiorate e quote più alte diventano una sola al nuovo box.
+- Editor dei blocchi (`assets/js/blocks-editor.js`): impostazioni dei due blocchi nuovi, con i bookmaker delle quote presi da `/betnero/v1/quote/bookmakers`.
+- Indice dei titoli H2: non fatto, si decide nella call con Francesco (la pagina non ha ancora il testo redazionale).
+
 ## 0.9.29
 - Pagina quote campionato: sotto le quote 1 X 2, al posto del nome del bookmaker in testo piccolo, il logo dell'operatore collegato (alto 15px, come nella pagina partita). Chi non ha logo continua a mostrare il nome. Le tre celle restano larghe uguale anche da mobile, il logo non esce dalla cella.
 - Widget partita nella pagina partita (`bnc_match_render`, senza pronostico): non più subito sotto la testata ma dopo i mercati completi, prima di "Altri mercati" (se non ci sono altri mercati, subito dopo l'ultimo mercato). In alto restano le quote. Anche senza quote il widget resta visibile.

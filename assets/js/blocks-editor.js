@@ -449,4 +449,60 @@
 		},
 		save: function () { return null; }
 	} );
+	/* 0.9.30: Marcatori (quota "segna in qualsiasi momento" di un bookmaker, dal mercato Anytime Goalscorer). */
+	function MarcatoriControls( props ) {
+		var a = props.attributes;
+		var st = useState( null );
+		var books = st[ 0 ];
+		var setBooks = st[ 1 ];
+		useEffect( function () {
+			wp.apiFetch( { path: '/betnero/v1/quote/bookmakers' } ).then( setBooks ).catch( function () { setBooks( [] ); } );
+		}, [] );
+		var opts = [ { label: 'Eurobet (o il primo bookmaker con le quote)', value: '' } ];
+		( books || [] ).forEach( function ( b ) {
+			opts.push( { label: b.label, value: b.value } );
+		} );
+		return el( PanelBody, { title: 'Impostazioni' },
+			el( SelectControl, { label: 'Bookmaker delle quote', value: a.bookmaker, options: opts, onChange: set( props, 'bookmaker' ) } ),
+			el( TextControl, { label: 'Campionato delle quote (slug di odds-api.io, vuoto = tutti)', value: a.campionato, onChange: set( props, 'campionato' ) } ),
+			el( RangeControl, { label: 'Prossimi giorni', value: a.giorni, min: 1, max: 14, onChange: function ( v ) { props.setAttributes( { giorni: v || 7 } ); } } ),
+			el( RangeControl, { label: 'Quanti giocatori in tutto', value: a.limite, min: 1, max: 30, onChange: function ( v ) { props.setAttributes( { limite: v || 5 } ); } } ),
+			el( TextControl, { label: 'Titolo (vuoto = Marcatori e bookmaker)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+		);
+	}
+	wp.blocks.registerBlockType( 'betnero/marcatori', {
+		title: 'Marcatori',
+		icon: 'groups',
+		category: 'betnero',
+		description: 'I giocatori con la quota "segna in qualsiasi momento" di un bookmaker, per le prossime partite.',
+		edit: function ( props ) {
+			return [
+				el( InspectorControls, { key: 'i' }, el( MarcatoriControls, props ) ),
+				el( 'div', { key: 'p' }, preview( 'betnero/marcatori', props.attributes ) )
+			];
+		},
+		save: function () { return null; }
+	} );
+	/* 0.9.30: Quote maggiorate e più alte insieme, in un box solo con la testata verde. */
+	wp.blocks.registerBlockType( 'betnero/quote-verdi', {
+		title: 'Quote maggiorate e più alte',
+		icon: 'chart-bar',
+		category: 'betnero',
+		description: 'Le quote maggiorate valide e le quote normali sopra la media dei bookmaker, in un box solo.',
+		edit: function ( props ) {
+			var a = props.attributes;
+			return [
+				el( InspectorControls, { key: 'i' },
+					el( PanelBody, { title: 'Impostazioni' },
+						el( RangeControl, { label: 'Partite dei prossimi giorni', value: a.giorni, min: 1, max: 7, onChange: function ( v ) { props.setAttributes( { giorni: v || 7 } ); } } ),
+						el( RangeControl, { label: 'Quante offerte e quote mostrare', value: a.limite, min: 1, max: 15, onChange: function ( v ) { props.setAttributes( { limite: v || 5 } ); } } ),
+						el( TextControl, { label: 'Solo un campionato (slug, vuoto = tutti)', value: a.campionato, onChange: set( props, 'campionato' ) } ),
+						el( TextControl, { label: 'Titolo (vuoto = Quote maggiorate e quote più alte)', value: a.titolo, onChange: set( props, 'titolo' ) } )
+					)
+				),
+				el( 'div', { key: 'p' }, preview( 'betnero/quote-verdi', a ) )
+			];
+		},
+		save: function () { return null; }
+	} );
 } )( window.wp );

@@ -108,8 +108,10 @@ function bnc_league_page( $head, $slug, $label, $giorni ) {
 		$main .= '<a class="bnm-bonusbox" href="#confronto"><span class="bnm-bb-k">BONUS</span><span class="bnm-bb-t"><strong>' . esc_html( 'Scommetti sulla ' . $label . ' con i bonus di benvenuto' ) . '</strong><span>Confronta i bonus dei bookmaker ADM che usiamo per le quote</span></span><span class="bnm-bb-go">Confronta i bonus &darr;</span></a>';
 	}
 	$main .= $head;
-	$main .= bnc_boost_render( bnc_boost_active( 0, 5 ), 'Quote maggiorate' );
-	$main .= bnc_top_render( array( 'giorni' => min( 7, $giorni ), 'limite' => 5, 'campionato' => $slug, 'titolo' => 'Le quote più alte della ' . $label ) );
+	// 0.9.30: marcatori del campionato dopo la tabella delle partite, prima del box verde.
+	$main .= bnc_scorer_render( array( 'campionato' => $slug, 'giorni' => $giorni, 'limite' => 5 ) );
+	// 0.9.30: quote maggiorate e quote più alte in un box solo, con la testata verde.
+	$main .= bnc_verdi_render( array( 'campionato' => $slug, 'giorni' => min( 7, $giorni ), 'limite' => 5, 'label' => $label ) );
 	$main .= '' !== $feat ? '<div class="bnm-only-mobile">' . $feat . '</div>' : '';
 	if ( $ops ) {
 		$main .= bnc_bonus_slider( $ops, 'Confronta i bonus dei bookmaker per la ' . $label, 'confronto' );

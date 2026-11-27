@@ -22,7 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'BNC_ODDS_API', 'https://api.odds-api.io/v3' );
 define( 'BNC_ODDS_DB', '1' );
 // 0.9.5: anche i mercati della pagina partita (massimo 20 per richiesta, una richiesta ogni 10 partite).
-define( 'BNC_ODDS_MARKETS', 'ML,Double Chance,Totals,Both Teams To Score,Draw No Bet,Correct Score,ML HT,Totals HT,Half Time / Full Time,Spread,European Handicap,Corners,Corners Totals,Bookings Totals' );
+// 0.9.30: aggiunto Anytime Goalscorer (marcatori). Sono 15 mercati su un massimo di 20 per richiesta.
+define( 'BNC_ODDS_MARKETS', 'ML,Double Chance,Totals,Both Teams To Score,Draw No Bet,Correct Score,ML HT,Totals HT,Half Time / Full Time,Spread,European Handicap,Corners,Corners Totals,Bookings Totals,Anytime Goalscorer' );
 
 /* ---------- Impostazioni ---------- */
 
@@ -404,6 +405,55 @@ function bnc_odds_price( $odds, $mkt, $out ) {
 		}
 	}
 	return 0.0;
+}
+
+/**
+ * 0.9.30: mercati in forma "labelled", una riga per giocatore con etichetta e quota
+ * (Anytime Goalscorer, First Goalscorer). Restituisce [ giocatore => quota ], dalla quota più bassa.
+ * $odds = elenco dei mercati di un bookmaker.
+ */
+function bnc_odds_labelled( $odds, $market ) {
+	$out  = array();
+	$want = strtolower( trim( (string) $market ) );
+	if ( ! is_array( $odds ) || '' === $want ) {
+		return $out;
+	}
+	foreach ( $odds as $m ) {
+		if ( ! isset( $m['name'] ) || strtolower( (string) $m['name'] ) !== $want || empty( $m['odds'] ) ) {
+			continue;
+		}
+		foreach ( (array) $m['odds'] as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$label = '';
+			foreach ( array( 'label', 'player', 'name' ) as $k ) {
+				if ( ! empty( $row[ $k ] ) && is_scalar( $row[ $k ] ) ) {
+					$label = trim( (string) $row[ $k ] );
+					break;
+				}
+			}
+			if ( '' === $label ) {
+				continue;
+			}
+			$price = 0.0;
+			foreach ( array( 'odds', 'price', 'odd' ) as $k ) {
+				if ( isset( $row[ $k ] ) && is_numeric( $row[ $k ] ) ) {
+					$price = (float) $row[ $k ];
+					break;
+				}
+			}
+			if ( $price <= 1 ) {
+				continue;
+			}
+			if ( ! isset( $out[ $label ] ) || $price > $out[ $label ] ) {
+				$out[ $label ] = round( $price, 2 );
+			}
+		}
+		break; // un solo mercato con quel nome
+	}
+	asort( $out );
+	return $out;
 }
 
 /** Bookmaker da mostrare: nome API => operatore Betnero (con logo e "Vai al sito"). */
