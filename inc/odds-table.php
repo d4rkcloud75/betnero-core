@@ -117,7 +117,9 @@ function bnc_odds_table_render( $a ) {
 			}
 			$inner = '<span class="bnq-ol">' . esc_html( $ol ) . '</span><strong>' . esc_html( bnc_odds_fmt( $best ) ) . '</strong>';
 			if ( $bop && ! $started && ! empty( $bop['go_url'] ) ) {
-				$inner .= '<span class="bnq-bk">' . esc_html( bnc_odds_book_label( $bop['name'] ) ) . '</span>';
+				// 0.9.29: sotto la quota il logo del bookmaker (mail di Francesco del 27/11); senza logo resta il nome.
+				$blogo  = ( ! empty( $bop['logo_id'] ) || ! empty( $bop['logo_url'] ) ) ? bnc_logo( $bop ) : '';
+				$inner .= '' !== $blogo ? '<span class="bnq-bk is-logo">' . $blogo . '</span>' : '<span class="bnq-bk">' . esc_html( bnc_odds_book_label( $bop['name'] ) ) . '</span>';
 				$h     .= '<a class="bnq-oc" href="' . esc_url( $bop['go_url'] ) . '" rel="nofollow sponsored noopener"' . ( ! empty( $bop['go_blank'] ) ? ' target="_blank"' : '' ) . ' title="' . esc_attr( 'Quota ' . $ol . ' su ' . $bop['name'] ) . '">' . $inner . '</a>';
 			} else {
 				$h .= '<span class="bnq-oc is-off">' . $inner . '<span class="bnq-bk">&nbsp;</span></span>';

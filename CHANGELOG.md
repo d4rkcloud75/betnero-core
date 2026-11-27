@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.29
+- Pagina quote campionato: sotto le quote 1 X 2, al posto del nome del bookmaker in testo piccolo, il logo dell'operatore collegato (alto 15px, come nella pagina partita). Chi non ha logo continua a mostrare il nome. Le tre celle restano larghe uguale anche da mobile, il logo non esce dalla cella.
+- Widget partita nella pagina partita (`bnc_match_render`, senza pronostico): non più subito sotto la testata ma dopo i mercati completi, prima di "Altri mercati" (se non ci sono altri mercati, subito dopo l'ultimo mercato). In alto restano le quote. Anche senza quote il widget resta visibile.
+- Widget partita negli articoli pronostico, partita in programma o in diretta: dopo i quattro mercati in cima (dopo Goal/No Goal) e prima del testo dal primo H2.
+- Widget partita negli articoli pronostico, partita già finita (risultato finale presente, stesso criterio di "Finale X - Y"): in alto, subito dopo l'intro e prima del riquadro del pronostico e delle quote.
+- Gli articoli con i blocchi quote inseriti a mano restano come prima (widget prima del primo H2, o in fondo).
+
 ## 0.9.28
 - Operatori, nuova sezione "Bonus multipla" per i bookmaker (stessi campi e stesso salvataggio di `inc/fields.php`): eventi minimi, quota minima, bonus iniziale, bonus massimo, valido anche live con nota, caratteristica chiave.
 - Nuovo blocco "Tabella bonus multiple" (`inc/bonus-multipla.php`): tabella comparativa separata e integrativa a quella dei bookmaker, mostra solo chi ha il bonus massimo compilato, nell'ordine di Posizione. Colonne: bookmaker con logo, eventi minimi, quota minima, bonus iniziale, bonus massimo, live, caratteristica, "Vai al sito". Riga 18+ sotto, come nelle altre tabelle.

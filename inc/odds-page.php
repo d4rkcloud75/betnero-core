@@ -367,6 +367,7 @@ function bnc_match_render( $ev, $per_articolo = false ) {
 
 	// Testata (non negli articoli: hanno gia' il loro titolo)
 	$h  = '<div class="bnm" data-bnm>';
+	$widget = ''; // 0.9.29: widget letto adesso e stampato dopo i mercati completi (solo pagina partita).
 	if ( ! $per_articolo ) {
 	$h .= '<section class="bnm-hero"><div class="bnm-hero-in"><div class="bnm-row1">';
 	// 0.9.10: stemmi da API-Football (salvati sul sito), altrimenti le sigle.
@@ -410,10 +411,9 @@ function bnc_match_render( $ev, $per_articolo = false ) {
 	}
 	$h .= '</div><div class="bnm-hero-foot"><span>' . esc_html( $n_books ? sprintf( 'Quote di %d bookmaker ADM%s', $n_books, $upd ? ', aggiornate alle ' . $upd : '' ) : 'Quote non ancora disponibili' ) . '</span><span>18+ · Gioca responsabilmente</span></div></section>';
 
-	// 0.9.12: widget con i dati di API-Football (precedenti, forma, formazioni, eventi, statistiche...)
-	if ( function_exists( 'bnc_fdm_widget' ) ) {
-		$h .= bnc_fdm_widget( $ev );
-	}
+	// 0.9.29: widget con i dati di API-Football (precedenti, forma, formazioni, eventi, statistiche...).
+	// Non piu' sotto la testata: va dopo i mercati completi, prima di "Altri mercati" (mail di Francesco del 27/11).
+	$widget = function_exists( 'bnc_fdm_widget' ) ? bnc_fdm_widget( $ev ) : '';
 
 	// 0.9.9: box BONUS con ancora verso i bonus a confronto
 	$h .= '<a class="bnm-bonusbox" href="#confronto"><span class="bnm-bb-k">BONUS</span><span class="bnm-bb-t"><strong>' . esc_html( 'Scommetti su ' . $home . '-' . $away . ' con i bonus di benvenuto' ) . '</strong><span>I bonus dei bookmaker ADM delle quote qui sotto</span></span><span class="bnm-bb-go">Vedi i bonus &darr;</span></a>';
@@ -426,7 +426,7 @@ function bnc_match_render( $ev, $per_articolo = false ) {
 	}
 
 	if ( ! $tables ) {
-		return $per_articolo ? '' : $h . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
+		return $per_articolo ? '' : $h . $widget . '<p class="bnq-note">Quote non ancora disponibili per questa partita.</p></div>';
 	}
 
 	// Filtri (solo nella pagina partita: nell'articolo i mercati stanno in due contenitori)
@@ -472,7 +472,7 @@ function bnc_match_render( $ev, $per_articolo = false ) {
 		}
 		$h .= '' === $top ? $main : $top . '</div><!--bn-split--><div class="bnm" data-bnm>' . $main;
 	} else {
-		$h .= $main;
+		$h .= $main . $widget;
 	}
 	if ( '' !== $other ) {
 		$h .= '<div class="bnm-others" data-bnm-others><h2 class="bnm-h2">Altri mercati</h2><p class="bnm-sub">Mercati offerti solo da alcuni dei nostri bookmaker: per ognuno trovi le quote di chi lo offre.</p>' . $other . '</div>';

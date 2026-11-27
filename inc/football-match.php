@@ -533,10 +533,12 @@ add_action( 'bnc_fd_page_after', function () {
 /* ---------- 0.9.15: widget anche negli articoli dei pronostici ---------- */
 
 /**
- * Articolo con partita collegata (riquadro "Quote del pronostico"): il widget va subito dopo
- * le quote, cioe' prima del primo titolo H2 (dove la Core mette le quote automatiche).
- * Senza H2, in fondo all'articolo. Con il blocco quote diviso in due parti (0.9.25) va dopo il testo
- * dell'articolo e prima dei mercati restanti.
+ * Articolo con partita collegata (riquadro "Quote del pronostico"): posizione del widget.
+ * 0.9.29, tre casi (mail di Francesco del 27/11):
+ * - partita finita (risultato finale, stesso criterio di "Finale X - Y"): il widget riassume il
+ *   risultato, va in alto subito dopo l'intro, prima del riquadro del pronostico e delle quote;
+ * - partita in programma o in diretta: dopo i quattro mercati in cima e prima del testo dal primo H2;
+ * - articoli con i blocchi quote messi a mano: come prima, prima del primo H2 o in fondo.
  */
 add_filter( 'the_content', function ( $content ) {
 	if ( is_admin() || is_feed() || wp_is_json_request() || doing_action( 'wp_head' ) ) {
@@ -552,10 +554,15 @@ add_filter( 'the_content', function ( $content ) {
 		return $content;
 	}
 	wp_enqueue_style( 'betnero-quote' );
-	$w      = '<div class="bnw-post">' . $w . '</div>';
-	$marker = '<div class="bnq-auto" data-bnq-auto="rest"></div>';
-	if ( false !== strpos( $content, $marker ) ) {
-		return str_replace( $marker, $w . $marker, $content );
+	$w     = '<div class="bnw-post">' . $w . '</div>';
+	$final = 'settled' === $ev['status'] && '' !== $ev['score'];
+	$top   = '<div class="bnq-auto" data-bnq-auto="top"></div>';
+	$rest  = '<div class="bnq-auto" data-bnq-auto="rest"></div>';
+	if ( false !== strpos( $content, $top ) ) {
+		return str_replace( $top, $final ? $w . $top : $top . $w, $content );
+	}
+	if ( false !== strpos( $content, $rest ) ) {
+		return str_replace( $rest, $w . $rest, $content );
 	}
 	$pos = stripos( $content, '<h2' );
 	return false !== $pos ? substr( $content, 0, $pos ) . $w . substr( $content, $pos ) : $content . $w;
