@@ -165,6 +165,18 @@ function bnc_match_url( $ev ) {
 	return home_url( '/' . BNC_MATCH_SLUG . '/' . (int) $ev['id'] . '-' . $slug . '/' );
 }
 
+/**
+ * 0.9.31: partita finita da piu' di 24 ore (mail di Andrea del 28/11).
+ * La "fine" e' l'inizio piu' 2 ore, quindi la pagina risponde 410 quando
+ * l'inizio e' piu' vecchio di 26 ore, indipendentemente dallo stato.
+ * La stessa regola vale per i link dei blocchi: niente pulsante "Quote"
+ * verso una pagina che risponderebbe 410.
+ */
+function bnc_match_expired( $ev ) {
+	$start = ! empty( $ev['start'] ) ? strtotime( $ev['start'] . ' UTC' ) : 0;
+	return $start > 0 && ( $start + 26 * HOUR_IN_SECONDS ) < time();
+}
+
 /** Articolo pubblicato collegato a una partita (0 se non c'e'). */
 function bnc_match_post( $event_id ) {
 	static $cache = array();
@@ -241,6 +253,19 @@ add_filter( 'wpseo_canonical', function ( $c ) {
 	$ev = bnc_match_current();
 	return $ev ? bnc_match_url( $ev ) : $c;
 } );
+/* 0.9.31: le pagine partita non vanno nei risultati di ricerca. Canonical invariato. */
+add_filter( 'wpseo_robots', function ( $robots ) {
+	return get_query_var( 'bn_partita' ) ? 'noindex, follow' : $robots;
+}, 99 );
+// Riserva senza Yoast (o se Yoast non stampa il meta): stesso noindex con WordPress.
+add_filter( 'wp_robots', function ( $r ) {
+	if ( ! defined( 'WPSEO_VERSION' ) && get_query_var( 'bn_partita' ) ) {
+		$r['noindex'] = true;
+		$r['follow']  = true;
+		unset( $r['index'] );
+	}
+	return $r;
+} );
 /* Il titolo e' nella testata del blocco: niente titolo della pagina dal tema (un solo H1). */
 add_filter( 'render_block', function ( $html, $block ) {
 	// 0.9.7: anche autore e data della pagina (vengono dal modello del tema) non servono.
@@ -261,14 +286,27 @@ add_filter( 'wpseo_breadcrumb_links', function ( $links ) {
 	}
 	return $links;
 } );
-/* Partita inesistente o vecchia: 404 (e niente pagina vuota indicizzata) */
+/*
+ * 0.9.31: partita inesistente, cancellata o finita da piu' di 24 ore: 410 (Gone)
+ * invece del 404, come i pronostici vecchi di inc/seo-crawl.php. La pagina non
+ * va in cache (LiteSpeed): nocache_headers() piu' la costante DONOTCACHEPAGE.
+ */
 add_action( 'template_redirect', function () {
-	if ( get_query_var( 'bn_partita' ) && ! bnc_match_current() ) {
-		global $wp_query;
-		$wp_query->set_404();
-		status_header( 404 );
-		nocache_headers();
+	if ( ! get_query_var( 'bn_partita' ) ) {
+		return;
 	}
+	$ev = bnc_match_current();
+	if ( $ev && ! bnc_match_expired( $ev ) ) {
+		return;
+	}
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	global $wp_query;
+	$wp_query->set_404();
+	status_header( 410 );
+	nocache_headers();
+	header( 'X-Robots-Tag: noindex' );
 } );
 
 /* ---------- Blocco Pagina partita ---------- */
@@ -532,7 +570,13 @@ function bnc_match_others( $ev ) {
 			$h .= '<span class="bnm-om-o"><em>' . $o . '</em>' . esc_html( bnc_odds_fmt( $best ) ) . '</span>';
 		}
 		$pid = bnc_match_post( (int) $r['id'] );
-		$h  .= $pid ? '<a class="bnq-go is-tip" href="' . esc_url( get_permalink( $pid ) ) . '">Quote e pronostico</a>' : '<a class="bnq-go" href="' . esc_url( bnc_match_url( $r ) ) . '">Quote</a>';
+		if ( $pid ) {
+			$h .= '<a class="bnq-go is-tip" href="' . esc_url( get_permalink( $pid ) ) . '">Quote e pronostico</a>';
+		} elseif ( bnc_match_expired( $r ) ) {
+			$h .= '<span class="bnq-go is-off"></span>'; // 0.9.31: la pagina risponderebbe 410.
+		} else {
+			$h .= '<a class="bnq-go" href="' . esc_url( bnc_match_url( $r ) ) . '">Quote</a>';
+		}
 		$h  .= '</div>';
 	}
 	return $h . '</section>';

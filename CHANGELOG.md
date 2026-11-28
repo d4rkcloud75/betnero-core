@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.31
+- Pagine partita (`/quote-partita/<id>-<squadre>/`): meta robots `noindex, follow` su tutte, con il filtro `wpseo_robots` di Yoast e la riserva `wp_robots` di WordPress. Il canonical resta quello della pagina partita. Restano fuori dalle sitemap come prima, perché non sono articoli né tipi di contenuto.
+- Pagina partita inesistente o cancellata: risponde 410 (Gone) invece di 404, con `nocache_headers()`, costante `DONOTCACHEPAGE` e header `X-Robots-Tag: noindex`, come i pronostici vecchi di `inc/seo-crawl.php`.
+- Pagina partita di un evento già giocato: 410 quando sono passate più di 24 ore dalla fine, calcolata come inizio più 2 ore (quindi quando l'inizio è più vecchio di 26 ore), indipendentemente dallo stato. Prima di quel momento la pagina resta visibile con il noindex e mostra la partita conclusa come oggi.
+- Nuova `bnc_match_expired()` in `inc/odds-page.php`, usata sia dal `template_redirect` sia dai blocchi: la tabella partite e "Altre partite della giornata" non stampano più il pulsante "Quote" verso una pagina che risponderebbe 410.
+- Link alle pagine partita: restano normali `<a href>`, nessun `onclick`. robots.txt invariato (il Disallow si decide nella call) e pulizia dei 30 giorni invariata.
+
 ## 0.9.30
 - Pagina quote campionato, loghi nelle celle 1 X 2: da 15 a 20px di altezza, con `max-height: 20px`, larghezza automatica fino a tutta la cella e `object-fit: contain`. Marathonbet ed Eurobet, loghi lunghi e bassi, diventano leggibili. Le tre celle restano `minmax(0,1fr)`, il logo non le allarga.
 - Mercato marcatori: `Anytime Goalscorer` aggiunto a `BNC_ODDS_MARKETS` (15 mercati sui 20 per richiesta) e nuovo lettore `bnc_odds_labelled()` in `inc/odds.php` per i mercati con una riga per giocatore (etichetta e quota). `bnc_odds_price()` resta com'è.

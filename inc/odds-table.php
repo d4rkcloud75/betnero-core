@@ -130,7 +130,8 @@ function bnc_odds_table_render( $a ) {
 		$pid = function_exists( 'bnc_match_post' ) ? bnc_match_post( (int) $r['id'] ) : 0;
 		if ( $pid ) {
 			$h .= '<a class="bnq-go is-tip" href="' . esc_url( get_permalink( $pid ) ) . '">Quote e pronostico</a>';
-		} elseif ( function_exists( 'bnc_match_url' ) && ! $started ) {
+		} elseif ( function_exists( 'bnc_match_url' ) && ! $started && ! bnc_match_expired( $r ) ) {
+			// 0.9.31: niente "Quote" verso una pagina partita che risponderebbe 410.
 			$h .= '<a class="bnq-go" href="' . esc_url( bnc_match_url( $r ) ) . '">Quote</a>';
 		} else {
 			$h .= '<span class="bnq-go is-off"></span>';
