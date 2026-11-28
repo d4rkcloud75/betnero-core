@@ -436,8 +436,12 @@ function bnc_odds_labelled( $odds, $market ) {
 			if ( '' === $label ) {
 				continue;
 			}
+			// 0.9.33: questo genere di mercato segna la linea in "hdp" (0.5 = segna almeno un gol)
+			if ( isset( $row['hdp'] ) && abs( (float) $row['hdp'] - 0.5 ) > 0.001 ) {
+				continue;
+			}
 			$price = 0.0;
-			foreach ( array( 'odds', 'price', 'odd' ) as $k ) {
+			foreach ( array( 'over', 'odds', 'price', 'odd' ) as $k ) {
 				if ( isset( $row[ $k ] ) && is_numeric( $row[ $k ] ) ) {
 					$price = (float) $row[ $k ];
 					break;

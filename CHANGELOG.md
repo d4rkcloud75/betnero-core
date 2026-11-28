@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.33
+- Mercato marcatori: la quota arriva nel campo `over` (stringa, per esempio "16.00"), non in `odds`, `price` o `odd`, quindi `bnc_odds_labelled()` in `inc/odds.php` scartava tutte le righe e i blocchi restavano vuoti. Ora `over` e' il primo campo letto.
+- Mercato marcatori: le righe con `hdp` si tengono solo quando vale 0.5 (segna almeno un gol), come per l'"Anytime Goalscorer" di odds-api.io.
+
 ## 0.9.32
 - Pagine partita: canonical stampato dalla regola 0.8.2 di `inc/seo-crawl.php`, che ora vale anche qui. L'indirizzo è quello della partita, `bnc_match_url( bnc_match_current() )`, non quello ricavato da REQUEST_URI. Con il noindex Yoast non stampa più il suo canonical, quindi in pagina c'è un solo `<link rel="canonical">`. Sulle pagine partita in 410 (inesistente o finita da più di 24 ore) il canonical non viene stampato.
 - Pagine partita: `og:url` con il filtro `wpseo_opengraph_url` punta all'indirizzo della partita invece che alla pagina contenitore `/quote-partita.html`.
