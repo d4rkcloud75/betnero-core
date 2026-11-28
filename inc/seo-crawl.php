@@ -142,8 +142,16 @@ add_filter( 'wp_robots', function ( $r ) {
 } );
 
 // 0.8.2: Yoast non stampa il canonical sulle pagine noindex; Andrea lo vuole sulla pagina stessa.
+// 0.9.32: vale anche per le pagine partita, con l'indirizzo della partita (bnc_match_url),
+// non quello ricavato da REQUEST_URI. Yoast il suo canonical non lo stampa piu' (pagina noindex),
+// quindi in pagina resta un solo <link rel="canonical">. Sulle pagine in 410 non si stampa.
 add_action( 'wp_head', function () {
-	if ( ! bnc_seo_noindex_here() ) {
+	$ev = ( get_query_var( 'bn_partita' ) && function_exists( 'bnc_match_current' ) ) ? bnc_match_current() : null;
+	if ( $ev && ! bnc_match_expired( $ev ) ) {
+		echo '<link rel="canonical" href="' . esc_url( bnc_match_url( $ev ) ) . '" />' . "\n";
+		return;
+	}
+	if ( $ev || ! bnc_seo_noindex_here() ) {
 		return;
 	}
 	$path = (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/', PHP_URL_PATH ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput

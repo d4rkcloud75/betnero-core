@@ -253,6 +253,11 @@ add_filter( 'wpseo_canonical', function ( $c ) {
 	$ev = bnc_match_current();
 	return $ev ? bnc_match_url( $ev ) : $c;
 } );
+/* 0.9.32: og:url della pagina partita, invece della pagina contenitore /quote-partita.html. */
+add_filter( 'wpseo_opengraph_url', function ( $url ) {
+	$ev = bnc_match_current();
+	return $ev ? bnc_match_url( $ev ) : $url;
+} );
 /* 0.9.31: le pagine partita non vanno nei risultati di ricerca. Canonical invariato. */
 add_filter( 'wpseo_robots', function ( $robots ) {
 	return get_query_var( 'bn_partita' ) ? 'noindex, follow' : $robots;

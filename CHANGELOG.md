@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.32
+- Pagine partita: canonical stampato dalla regola 0.8.2 di `inc/seo-crawl.php`, che ora vale anche qui. L'indirizzo è quello della partita, `bnc_match_url( bnc_match_current() )`, non quello ricavato da REQUEST_URI. Con il noindex Yoast non stampa più il suo canonical, quindi in pagina c'è un solo `<link rel="canonical">`. Sulle pagine partita in 410 (inesistente o finita da più di 24 ore) il canonical non viene stampato.
+- Pagine partita: `og:url` con il filtro `wpseo_opengraph_url` punta all'indirizzo della partita invece che alla pagina contenitore `/quote-partita.html`.
+
 ## 0.9.31
 - Pagine partita (`/quote-partita/<id>-<squadre>/`): meta robots `noindex, follow` su tutte, con il filtro `wpseo_robots` di Yoast e la riserva `wp_robots` di WordPress. Il canonical resta quello della pagina partita. Restano fuori dalle sitemap come prima, perché non sono articoli né tipi di contenuto.
 - Pagina partita inesistente o cancellata: risponde 410 (Gone) invece di 404, con `nocache_headers()`, costante `DONOTCACHEPAGE` e header `X-Robots-Tag: noindex`, come i pronostici vecchi di `inc/seo-crawl.php`.
